@@ -12,7 +12,7 @@ The most simple setup to use this plug-in would be:
 
 1. Install it by copying jar into /WEB-INF/lib directory.
 2. Make your action package extend actionflow-default package.
-3. Add <param name="actionFlowStep">1</param> parameters to actions you want to include in action flows. (NOTE: the input result must exist!)
+3. Add `<param name="actionFlowStep">1</param>` parameters to actions you want to include in action flows. (NOTE: the input result must exist!)
 4. Use next and prev actions in JSP to move between flow steps.
 
 ### Action Mappings
