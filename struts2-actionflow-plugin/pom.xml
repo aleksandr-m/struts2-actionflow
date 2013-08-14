@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.amashchenko.struts2.actionflow</groupId>
         <artifactId>struts2-actionflow-parent</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.2</version>
     </parent>
     <artifactId>struts2-actionflow-plugin</artifactId>
     <packaging>jar</packaging>
@@ -40,10 +40,16 @@
  
     <developers>
         <developer>
+            <id>aleksandr-m</id>
             <name>Aleksandr Mashchenko</name>
         </developer>
     </developers>
     
+    <scm>
+        <url>${scm.url}</url>
+        <connection>${scm.url}</connection>
+    </scm>
+ 
  
     <build>
         <plugins>

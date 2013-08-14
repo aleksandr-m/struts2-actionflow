@@ -59,6 +59,9 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
  * <li>prevActionName (optional) - Name of the 'previous' action. If none is
  * specified the default name {@value #DEFAULT_PREV_ACTION_NAME} will be used.</li>
  * <p/>
+ * <li>forceFlowStepsOrder (optional) - To force the order of flow action
+ * executions. The default is true.</li>
+ * <p/>
  * </ul>
  * <p/>
  * <p/>
@@ -108,7 +111,7 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
 public class ActionFlowInterceptor extends AbstractInterceptor {
 
     /** Serial version uid. */
-    private static final long serialVersionUID = 9157212377260099600L;
+    private static final long serialVersionUID = 7715021688586768830L;
 
     /** Logger. */
     public static final Logger LOG = LoggerFactory
@@ -123,16 +126,19 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
     private static final String FIRST_FLOW_ACTION_NAME = "firstFlowAction";
     private static final String GLOBAL_VIEW_RESULT = "actionFlowViewResult";
+    // TODO allow to override
     private static final String DEFAULT_VIEW_ACTION_POSTFIX = "View";
+    // TODO allow to override method name (execute)
     private static final String DEFAULT_VIEW_ACTION_METHOD = "execute";
 
     protected static final String NEXT_ACTION_PARAM = "nextAction";
     protected static final String PREV_ACTION_PARAM = "prevAction";
     protected static final String VIEW_ACTION_PARAM = "viewAction";
 
-    // for overriding with different action names
+    // interceptor parameters
     private String nextActionName = DEFAULT_NEXT_ACTION_NAME;
     private String prevActionName = DEFAULT_PREV_ACTION_NAME;
+    private boolean forceFlowStepsOrder = true;
 
     /** Holds action flows. */
     private Map<String, Map<String, String>> flowMap;
@@ -183,6 +189,22 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             LOG.debug(actionName + "-> prevFlowAction: " + prevFlowAction
                     + ", nextAction: " + nextAction + ", prevAction: "
                     + prevAction);
+        }
+
+        // force order of flow actions
+        if (forceFlowStepsOrder && flowAction && !actionName.equals(nextAction)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("The forceFlowStepsOrder parameter is set to true. The '"
+                        + actionName
+                        + "' will not be executed because it is executed in the wrong order.");
+            }
+
+            invocation
+                    .getInvocationContext()
+                    .getValueStack()
+                    .set(VIEW_ACTION_PARAM,
+                            nextAction + DEFAULT_VIEW_ACTION_POSTFIX);
+            return GLOBAL_VIEW_RESULT;
         }
 
         if (nextActionName.equals(actionName)) {
@@ -486,13 +508,6 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     }
 
     /**
-     * @return the nextActionName
-     */
-    public String getNextActionName() {
-        return nextActionName;
-    }
-
-    /**
      * @param nextActionName
      *            the nextActionName to set
      */
@@ -501,17 +516,18 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     }
 
     /**
-     * @return the prevActionName
-     */
-    public String getPrevActionName() {
-        return prevActionName;
-    }
-
-    /**
      * @param prevActionName
      *            the prevActionName to set
      */
     public void setPrevActionName(String prevActionName) {
         this.prevActionName = prevActionName;
+    }
+
+    /**
+     * @param forceFlowStepsOrder
+     *            the forceFlowStepsOrder to set
+     */
+    public void setForceFlowStepsOrder(String value) {
+        this.forceFlowStepsOrder = Boolean.valueOf(value).booleanValue();
     }
 }
