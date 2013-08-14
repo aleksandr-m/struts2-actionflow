@@ -198,8 +198,13 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                         + actionName
                         + "' will not be executed because it is executed in the wrong order.");
             }
-            // TODO maybe not NONE
-            return Action.NONE;
+
+            invocation
+                    .getInvocationContext()
+                    .getValueStack()
+                    .set(VIEW_ACTION_PARAM,
+                            nextAction + DEFAULT_VIEW_ACTION_POSTFIX);
+            return GLOBAL_VIEW_RESULT;
         }
 
         if (nextActionName.equals(actionName)) {
