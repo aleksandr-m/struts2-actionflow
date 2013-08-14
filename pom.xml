@@ -37,14 +37,20 @@
  
     <developers>
         <developer>
+            <id>aleksandr-m</id>
             <name>Aleksandr Mashchenko</name>
         </developer>
     </developers>
  
+    <scm>
+        <url>${scm.url}</url>
+        <connection>${scm.url}</connection>
+    </scm>
  
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <struts2.version>2.3.15.1</struts2.version>
+        <scm.url>scm:git:git@github.com:aleksandr-m/struts2-actionflow.git</scm.url>
     </properties>
  
     <modules>

@@ -40,10 +40,16 @@
  
     <developers>
         <developer>
+            <id>aleksandr-m</id>
             <name>Aleksandr Mashchenko</name>
         </developer>
     </developers>
     
+    <scm>
+        <url>${scm.url}</url>
+        <connection>${scm.url}</connection>
+    </scm>
+ 
  
     <build>
         <plugins>
