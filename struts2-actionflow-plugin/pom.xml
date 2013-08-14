@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.amashchenko.struts2.actionflow</groupId>
         <artifactId>struts2-actionflow-parent</artifactId>
-        <version>1.2.0</version>
+        <version>1.2.2</version>
     </parent>
     <artifactId>struts2-actionflow-plugin</artifactId>
     <packaging>jar</packaging>

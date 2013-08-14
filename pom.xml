@@ -22,7 +22,7 @@
     <artifactId>struts2-actionflow-parent</artifactId>
     <packaging>pom</packaging>
     <name>struts2-actionflow-parent</name>
-    <version>1.2.0</version>
+    <version>1.2.2</version>
  
     <description>Parent POM for struts2-actionflow</description>
  
@@ -79,9 +79,30 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>com.amashchenko.struts2.actionflow</groupId>
+                <artifactId>struts2-actionflow-plugin</artifactId>
+                <version>${project.version}</version>
+                <type>jar</type>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.struts</groupId>
                 <artifactId>struts2-core</artifactId>
                 <version>${struts2.version}</version>
+                <type>jar</type>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>1.7.5</version>
+                <type>jar</type>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.14</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
