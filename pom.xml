@@ -22,7 +22,7 @@
     <artifactId>struts2-actionflow-parent</artifactId>
     <packaging>pom</packaging>
     <name>struts2-actionflow-parent</name>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
  
     <description>Parent POM for struts2-actionflow</description>
  
