@@ -25,7 +25,6 @@ import org.junit.Test;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionProxy;
-import com.opensymphony.xwork2.config.ConfigurationException;
 import com.opensymphony.xwork2.config.entities.ActionConfig;
 
 /**
@@ -40,105 +39,6 @@ public class ActionFlowInterceptorConfTest extends StrutsJUnit4TestCase<Object> 
     @Override
     protected String getConfigPath() {
         return "struts-plugin.xml, struts-test.xml";
-    }
-
-    @Test(expected = ConfigurationException.class)
-    public void testNoInputResult() throws Exception {
-        ActionProxy proxy = getActionProxy("/noInputResult/noInputResult");
-        Assert.assertNotNull(proxy);
-        proxy.getInvocation().getInvocationContext()
-                .setSession(new HashMap<String, Object>());
-        proxy.execute();
-    }
-
-    @Test(expected = ConfigurationException.class)
-    public void testSameFlowSteps() throws Exception {
-        ActionProxy proxy = getActionProxy("/sameFlowSteps/sameFlowSteps");
-        Assert.assertNotNull(proxy);
-        proxy.getInvocation().getInvocationContext()
-                .setSession(new HashMap<String, Object>());
-        proxy.execute();
-    }
-
-    @Test(expected = ConfigurationException.class)
-    public void testWrongNextAction() throws Exception {
-        ActionProxy proxy = getActionProxy("/wrongNextAction/wrongNextAction");
-        Assert.assertNotNull(proxy);
-        proxy.getInvocation().getInvocationContext()
-                .setSession(new HashMap<String, Object>());
-        proxy.execute();
-    }
-
-    @Test(expected = ConfigurationException.class)
-    public void testWrongTypeNextAction() throws Exception {
-        ActionProxy proxy = getActionProxy("/wrongTypeNextAction/wrongTypeNextAction");
-        Assert.assertNotNull(proxy);
-        proxy.getInvocation().getInvocationContext()
-                .setSession(new HashMap<String, Object>());
-        proxy.execute();
-    }
-
-    @Test(expected = ConfigurationException.class)
-    public void testWrongNextParam() throws Exception {
-        ActionProxy proxy = getActionProxy("/wrongNextParam/wrongNextParam");
-        Assert.assertNotNull(proxy);
-        proxy.getInvocation().getInvocationContext()
-                .setSession(new HashMap<String, Object>());
-        proxy.execute();
-    }
-
-    @Test(expected = ConfigurationException.class)
-    public void testNoPrevAction() throws Exception {
-        ActionProxy proxy = getActionProxy("/noPrevAction/noPrevAction");
-        Assert.assertNotNull(proxy);
-        proxy.getInvocation().getInvocationContext()
-                .setSession(new HashMap<String, Object>());
-        proxy.execute();
-    }
-
-    @Test(expected = ConfigurationException.class)
-    public void testWrongPrevParam() throws Exception {
-        ActionProxy proxy = getActionProxy("/wrongPrevParam/wrongPrevParam");
-        Assert.assertNotNull(proxy);
-        proxy.getInvocation().getInvocationContext()
-                .setSession(new HashMap<String, Object>());
-        proxy.execute();
-    }
-
-    @Test(expected = ConfigurationException.class)
-    public void testPrevNoSuccess() throws Exception {
-        ActionProxy proxy = getActionProxy("/prevNoSuccess/prevNoSuccess");
-        Assert.assertNotNull(proxy);
-        proxy.getInvocation().getInvocationContext()
-                .setSession(new HashMap<String, Object>());
-        proxy.execute();
-    }
-
-    @Test(expected = ConfigurationException.class)
-    public void testNoViewResult() throws Exception {
-        ActionProxy proxy = getActionProxy("/noViewResult/noViewResult");
-        Assert.assertNotNull(proxy);
-        proxy.getInvocation().getInvocationContext()
-                .setSession(new HashMap<String, Object>());
-        proxy.execute();
-    }
-
-    @Test(expected = ConfigurationException.class)
-    public void testWrongViewResultType() throws Exception {
-        ActionProxy proxy = getActionProxy("/wrongViewResultType/wrongViewResultType");
-        Assert.assertNotNull(proxy);
-        proxy.getInvocation().getInvocationContext()
-                .setSession(new HashMap<String, Object>());
-        proxy.execute();
-    }
-
-    @Test(expected = ConfigurationException.class)
-    public void testWrongViewResultParam() throws Exception {
-        ActionProxy proxy = getActionProxy("/wrongViewResultParam/wrongViewResultParam");
-        Assert.assertNotNull(proxy);
-        proxy.getInvocation().getInvocationContext()
-                .setSession(new HashMap<String, Object>());
-        proxy.execute();
     }
 
     @Test
