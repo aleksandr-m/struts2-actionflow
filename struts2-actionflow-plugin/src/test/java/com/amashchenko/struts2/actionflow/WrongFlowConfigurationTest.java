@@ -30,13 +30,13 @@ import com.opensymphony.xwork2.ActionProxy;
 import com.opensymphony.xwork2.config.ConfigurationException;
 
 /**
- * Tests wrong action flow configurations.
+ * Tests for wrong action flow configurations.
  * 
  * @author Aleksandr Mashchenko
  * 
  */
 @RunWith(Parameterized.class)
-public class WrongConfigurationTest extends StrutsJUnit4TestCase<Object> {
+public class WrongFlowConfigurationTest extends StrutsJUnit4TestCase<Object> {
 
     /** URI of the action. */
     private String actionUri;
@@ -70,7 +70,7 @@ public class WrongConfigurationTest extends StrutsJUnit4TestCase<Object> {
      * @param actionUri
      *            URI of the action.
      */
-    public WrongConfigurationTest(final String actionUri) {
+    public WrongFlowConfigurationTest(final String actionUri) {
         this.actionUri = actionUri;
     }
 

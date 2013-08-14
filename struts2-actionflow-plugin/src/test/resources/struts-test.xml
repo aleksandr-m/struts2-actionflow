@@ -53,21 +53,21 @@
 		<action name="start">
 			<result>name</result>
 		</action>
-		<action name="saveName" method="saveName">
+		<action name="saveName">
 			<param name="actionFlowStep">1</param>
 			
 			<result name="input">name</result>
 			<result name="error">name</result>
 			<result type="redirectAction">view</result>
 		</action>
-		<action name="savePhone" method="savePhone">
+		<action name="savePhone">
 			<param name="actionFlowStep">2</param>
 		
 			<result name="input">phone</result>
 			<result name="error">phone</result>
 			<result type="redirectAction">view</result>
 		</action>
-		<action name="saveEmail" method="saveEmail">
+		<action name="saveEmail">
 			<param name="actionFlowStep">3</param>
 		
 			<result name="input">email</result>
@@ -84,6 +84,7 @@
 				<interceptor-ref name="actionflow">
 					<param name="nextActionName">nextOverride</param>
 					<param name="prevActionName">prevOverride</param>
+					<param name="forceFlowStepsOrder">false</param>
 				</interceptor-ref> 
 				<interceptor-ref name="defaultStack"/>
 			</interceptor-stack>
@@ -104,14 +105,14 @@
 		<action name="start">
 			<result>name</result>
 		</action>
-		<action name="saveName" method="saveName">
+		<action name="saveName">
 			<param name="actionFlowStep">1</param>
 			
 			<result name="input">name</result>
 			<result name="error">name</result>
 			<result type="redirectAction">view</result>
 		</action>
-		<action name="savePhone" method="savePhone">
+		<action name="savePhone">
 			<param name="actionFlowStep">2</param>
 		
 			<result name="input">phone</result>
@@ -122,7 +123,7 @@
 		<action name="savePhoneView" method="phone">
 			<result>anotherPhone</result>
 		</action>
-		<action name="saveEmail" method="saveEmail">
+		<action name="saveEmail">
 			<param name="actionFlowStep">3</param>
 		
 			<result name="input">email</result>

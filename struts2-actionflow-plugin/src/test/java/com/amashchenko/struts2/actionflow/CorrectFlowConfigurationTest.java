@@ -28,12 +28,12 @@ import com.opensymphony.xwork2.ActionProxy;
 import com.opensymphony.xwork2.config.entities.ActionConfig;
 
 /**
- * Test for creating action flow map.
+ * Tests for correct action flow configurations.
  * 
  * @author Aleksandr Mashchenko
  * 
  */
-public class ActionFlowInterceptorConfTest extends StrutsJUnit4TestCase<Object> {
+public class CorrectFlowConfigurationTest extends StrutsJUnit4TestCase<Object> {
 
     /** {@inheritDoc} */
     @Override
@@ -41,6 +41,12 @@ public class ActionFlowInterceptorConfTest extends StrutsJUnit4TestCase<Object> 
         return "struts-plugin.xml, struts-test.xml";
     }
 
+    /**
+     * Tests creating action flow configuration.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
     @Test
     public void testCreateFlowMap() throws Exception {
         ActionFlowInterceptor interceptor = new ActionFlowInterceptor();
@@ -93,6 +99,12 @@ public class ActionFlowInterceptorConfTest extends StrutsJUnit4TestCase<Object> 
                 map.get(action).get(ActionFlowInterceptor.PREV_ACTION_PARAM));
     }
 
+    /**
+     * Tests creating action flow override configuration.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
     @Test
     public void testCorrectFlowOverride() throws Exception {
         ActionProxy proxy = getActionProxy("/correctFlowOverride/correctFlowOverride");
@@ -112,6 +124,12 @@ public class ActionFlowInterceptorConfTest extends StrutsJUnit4TestCase<Object> 
                         .get(ServletDispatcherResult.DEFAULT_PARAM));
     }
 
+    /**
+     * Tests creating empty action flow configuration.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
     @Test
     public void testNoFlow() throws Exception {
         ActionProxy proxy = getActionProxy("/noFlow/noFlow");
