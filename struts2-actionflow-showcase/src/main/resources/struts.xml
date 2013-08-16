@@ -126,7 +126,7 @@
 		</action>
 
 		<action name="finish" class="com.amashchenko.struts2.actionflow.showcase.SimpleWizardAction">
-			<result>/WEB-INF/pages/finish.jsp</result>
+			<result>/WEB-INF/advanced/finish.jsp</result>
 		</action>
 		
 	</package>

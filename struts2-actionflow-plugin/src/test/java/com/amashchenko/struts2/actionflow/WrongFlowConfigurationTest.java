@@ -52,10 +52,8 @@ public class WrongFlowConfigurationTest extends StrutsJUnit4TestCase<Object> {
     public static Collection<Object[]> data() {
         Object[][] data = new Object[][] { { "/noInputResult/noInputResult" },
                 { "/sameFlowSteps/sameFlowSteps" },
-                { "/wrongNextAction/wrongNextAction" },
                 { "/wrongTypeNextAction/wrongTypeNextAction" },
                 { "/wrongNextParam/wrongNextParam" },
-                { "/noPrevAction/noPrevAction" },
                 { "/wrongPrevParam/wrongPrevParam" },
                 { "/prevNoSuccess/prevNoSuccess" },
                 { "/noViewResult/noViewResult" },
