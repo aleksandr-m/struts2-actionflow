@@ -22,28 +22,21 @@
     
 <struts>
 
-	<package name="actionflow-default" extends="struts-default">
-		<interceptors>
-			<interceptor name="actionflow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
-			
-			<interceptor-stack name="actionflowDefaultStack">
-				<interceptor-ref name="actionflow"/> 
-				<interceptor-ref name="defaultStack"/>
-			</interceptor-stack>
-		</interceptors>	
-				
-		<default-interceptor-ref name="actionflowDefaultStack" />
-		
-		<global-results>
-			<result name="actionFlowViewResult" type="redirectAction">${viewAction}</result>
-		</global-results>
-		
-		<action name="next">
-			<result type="chain">${nextAction}</result>
-		</action>
-		<action name="prev">
-			<result type="redirectAction">${prevAction}</result>
-		</action>
-	</package>
-	
+    <package name="actionflow-default" extends="struts-default">
+        <interceptors>
+            <interceptor name="actionflow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
+
+            <interceptor-stack name="actionflowDefaultStack">
+                <interceptor-ref name="actionflow"/> 
+                <interceptor-ref name="defaultStack"/>
+            </interceptor-stack>
+        </interceptors>	
+
+        <default-interceptor-ref name="actionflowDefaultStack" />
+
+        <global-results>
+            <result name="actionFlowViewResult" type="redirectAction">${viewAction}</result>
+        </global-results>
+    </package>
+
 </struts>

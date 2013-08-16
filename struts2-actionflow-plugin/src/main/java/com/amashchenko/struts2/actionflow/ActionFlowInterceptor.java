@@ -271,7 +271,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             final String packageName) {
         // holds all actions with PARAM_ACTION_FLOW_STEP parameter
         // using TreeMap for natural ordering of keys
-        Map<String, ActionConfig> actionsMap = new TreeMap<String, ActionConfig>();
+        Map<String, ActionConfig> actionsStepMap = new TreeMap<String, ActionConfig>();
 
         Map<String, Map<String, ActionConfig>> runtimeActionConfigs = configuration
                 .getRuntimeConfiguration().getActionConfigs();
@@ -290,86 +290,26 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                         PARAM_ACTION_FLOW_STEP);
 
                 // action flow steps check
-                if (actionsMap.containsKey(key)) {
+                if (actionsStepMap.containsKey(key)) {
                     throw new ConfigurationException(
                             "There is more than one action defined with the same value of '"
                                     + PARAM_ACTION_FLOW_STEP
                                     + "' parameter. Action '"
-                                    + actionsMap.get(key).getName() + "' and '"
-                                    + actionConfig.getName() + "' in '"
-                                    + actionConfig.getPackageName()
+                                    + actionsStepMap.get(key).getName()
+                                    + "' and '" + actionConfig.getName()
+                                    + "' in '" + actionConfig.getPackageName()
                                     + "' package.", actionConfig);
                 }
 
-                actionsMap.put(key, actionConfig);
+                actionsStepMap.put(key, actionConfig);
             }
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("found action flows: " + actionsMap);
+            LOG.debug("found action flows: " + actionsStepMap);
         }
 
-        // special actions and results check
-        if (actionsMap != null && !actionsMap.isEmpty()) {
-            // next action
-            if (!actionConfigs.containsKey(nextActionName)) {
-                throw new ConfigurationException(
-                        "There is no 'next' action with name '"
-                                + nextActionName + "' defined in '"
-                                + packageName + "' package.", packageConfig);
-            } else {
-                Map<String, ResultConfig> rs = actionConfigs
-                        .get(nextActionName).getResults();
-                if (rs == null
-                        || rs.isEmpty()
-                        || !ActionChainResult.class.getName().equals(
-                                rs.get(Action.SUCCESS).getClassName())) {
-                    throw new ConfigurationException("The '" + nextActionName
-                            + "' action must define '" + Action.SUCCESS
-                            + "' result of 'chain' type in package '"
-                            + packageName + "'.",
-                            actionConfigs.get(nextActionName));
-                } else if (!("${" + NEXT_ACTION_PARAM + "}").equals(rs
-                        .get(Action.SUCCESS).getParams()
-                        .get(ActionChainResult.DEFAULT_PARAM))) {
-                    throw new ConfigurationException("The '" + nextActionName
-                            + "' action '" + Action.SUCCESS + "' result '"
-                            + ActionChainResult.DEFAULT_PARAM
-                            + "' parameter must be '${" + NEXT_ACTION_PARAM
-                            + "}' in package '" + packageName + "'.",
-                            rs.get(Action.SUCCESS));
-                }
-            }
-            // previous action
-            if (!actionConfigs.containsKey(prevActionName)) {
-                throw new ConfigurationException(
-                        "There is no 'previous' action with name '"
-                                + prevActionName + "' defined in '"
-                                + packageName + "' package.", packageConfig);
-            } else {
-                Map<String, ResultConfig> rs = actionConfigs
-                        .get(prevActionName).getResults();
-                if (rs == null
-                        || rs.isEmpty()
-                        || !rs.containsKey(Action.SUCCESS)
-                        || !ServletActionRedirectResult.class.getName().equals(
-                                rs.get(Action.SUCCESS).getClassName())) {
-                    throw new ConfigurationException("The '" + prevActionName
-                            + "' action must define '" + Action.SUCCESS
-                            + "' result of 'redirectAction' type in package '"
-                            + packageName + "'.",
-                            actionConfigs.get(prevActionName));
-                } else if (!("${" + PREV_ACTION_PARAM + "}").equals(rs
-                        .get(Action.SUCCESS).getParams()
-                        .get(ServletActionRedirectResult.DEFAULT_PARAM))) {
-                    throw new ConfigurationException("The '" + prevActionName
-                            + "' action '" + Action.SUCCESS + "' result '"
-                            + ServletActionRedirectResult.DEFAULT_PARAM
-                            + "' parameter must be '${" + PREV_ACTION_PARAM
-                            + "}' in package '" + packageName + "'.",
-                            rs.get(Action.SUCCESS));
-                }
-            }
+        if (actionsStepMap != null && !actionsStepMap.isEmpty()) {
             // view global result
             if (!packageConfig.getAllGlobalResults().containsKey(
                     GLOBAL_VIEW_RESULT)) {
@@ -404,14 +344,14 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         List<ActionConfig> viewActionConfigs = new ArrayList<ActionConfig>();
 
-        List<String> keys = new ArrayList<String>(actionsMap.keySet());
+        List<String> keys = new ArrayList<String>(actionsStepMap.keySet());
         ListIterator<String> mapkeyitr = keys.listIterator();
 
         String prevKey = null;
         while (mapkeyitr.hasNext()) {
             String key = mapkeyitr.next();
 
-            ActionConfig actionConfig = actionsMap.get(key);
+            ActionConfig actionConfig = actionsStepMap.get(key);
 
             // create view action
             if (actionConfigs.containsKey(actionConfig.getName()
@@ -419,7 +359,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("The '" + actionConfig.getName()
                             + DEFAULT_VIEW_ACTION_POSTFIX
-                            + "' action is overrided in '" + packageName
+                            + "' action is overridden in '" + packageName
                             + "' package.");
                 }
             } else {
@@ -440,6 +380,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                         DEFAULT_VIEW_ACTION_METHOD, actionConfig.getClassName())
                         .name(actionConfig.getName()
                                 + DEFAULT_VIEW_ACTION_POSTFIX)
+                        .addInterceptors(actionConfig.getInterceptors())
                         .addResultConfig(resultConfig).build();
                 viewActionConfigs.add(act);
             }
@@ -456,7 +397,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             if (nextKey == null) {
                 nextActionVal = null;
             } else {
-                ActionConfig nextActionConfig = actionsMap.get(nextKey);
+                ActionConfig nextActionConfig = actionsStepMap.get(nextKey);
                 nextActionVal = nextActionConfig.getName();
             }
 
@@ -469,7 +410,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                 v.put(PREV_ACTION_PARAM, FIRST_FLOW_ACTION_NAME);
                 actionFlows.put(FIRST_FLOW_ACTION_NAME, v);
             } else {
-                prevActionVal = actionsMap.get(prevKey).getName();
+                prevActionVal = actionsStepMap.get(prevKey).getName();
             }
 
             Map<String, String> v = new HashMap<String, String>();
@@ -485,25 +426,130 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             LOG.debug("created action flow mapping: " + actionFlows);
         }
 
-        if (viewActionConfigs != null && !viewActionConfigs.isEmpty()) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("view action configurations: " + viewActionConfigs);
-            }
-
-            // build new package configuration with view actions
+        if (actionFlows != null && !actionFlows.isEmpty()) {
+            // build new package configuration with special actions
             PackageConfig.Builder pcb = new PackageConfig.Builder(packageConfig);
 
-            for (ActionConfig ac : viewActionConfigs) {
-                pcb.addActionConfig(ac.getName(), ac);
+            // add view actions
+            if (viewActionConfigs != null && !viewActionConfigs.isEmpty()) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("view action configurations: "
+                            + viewActionConfigs);
+                }
+
+                for (ActionConfig ac : viewActionConfigs) {
+                    pcb.addActionConfig(ac.getName(), ac);
+                }
             }
 
+            // TODO add interceptors ?
+            // previous action
+            if (actionConfigs.containsKey(prevActionName)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("The '" + prevActionName
+                            + "' action is overridden in '" + packageName
+                            + "' package.");
+                }
+
+                // previous action check
+                Map<String, ResultConfig> rs = actionConfigs
+                        .get(prevActionName).getResults();
+                if (rs == null
+                        || rs.isEmpty()
+                        || !rs.containsKey(Action.SUCCESS)
+                        || !ServletActionRedirectResult.class.getName().equals(
+                                rs.get(Action.SUCCESS).getClassName())) {
+                    throw new ConfigurationException("The '" + prevActionName
+                            + "' action must define '" + Action.SUCCESS
+                            + "' result of 'redirectAction' type in package '"
+                            + packageName + "'.",
+                            actionConfigs.get(prevActionName));
+                } else if (!("${" + PREV_ACTION_PARAM + "}").equals(rs
+                        .get(Action.SUCCESS).getParams()
+                        .get(ServletActionRedirectResult.DEFAULT_PARAM))) {
+                    throw new ConfigurationException("The '" + prevActionName
+                            + "' action '" + Action.SUCCESS + "' result '"
+                            + ServletActionRedirectResult.DEFAULT_PARAM
+                            + "' parameter must be '${" + PREV_ACTION_PARAM
+                            + "}' in package '" + packageName + "'.",
+                            rs.get(Action.SUCCESS));
+                }
+            } else {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("There is no 'previous' action with name '"
+                            + prevActionName + "' found in '" + packageName
+                            + "' package. Creating one.");
+                }
+
+                // add previous action
+                ResultConfig prevResultConfig = new ResultConfig.Builder(
+                        Action.SUCCESS,
+                        ServletActionRedirectResult.class.getName()).addParam(
+                        ServletActionRedirectResult.DEFAULT_PARAM,
+                        "${" + PREV_ACTION_PARAM + "}").build();
+                // build previuos action configuration
+                ActionConfig prevAct = new ActionConfig.Builder(packageName,
+                        prevActionName, "").addResultConfig(prevResultConfig)
+                        .build();
+                pcb.addActionConfig(prevAct.getName(), prevAct);
+            }
+
+            // next action
+            if (actionConfigs.containsKey(nextActionName)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("The '" + nextActionName
+                            + "' action is overridden in '" + packageName
+                            + "' package.");
+                }
+
+                // next action check
+                Map<String, ResultConfig> rs = actionConfigs
+                        .get(nextActionName).getResults();
+                if (rs == null
+                        || rs.isEmpty()
+                        || !ActionChainResult.class.getName().equals(
+                                rs.get(Action.SUCCESS).getClassName())) {
+                    throw new ConfigurationException("The '" + nextActionName
+                            + "' action must define '" + Action.SUCCESS
+                            + "' result of 'chain' type in package '"
+                            + packageName + "'.",
+                            actionConfigs.get(nextActionName));
+                } else if (!("${" + NEXT_ACTION_PARAM + "}").equals(rs
+                        .get(Action.SUCCESS).getParams()
+                        .get(ActionChainResult.DEFAULT_PARAM))) {
+                    throw new ConfigurationException("The '" + nextActionName
+                            + "' action '" + Action.SUCCESS + "' result '"
+                            + ActionChainResult.DEFAULT_PARAM
+                            + "' parameter must be '${" + NEXT_ACTION_PARAM
+                            + "}' in package '" + packageName + "'.",
+                            rs.get(Action.SUCCESS));
+                }
+            } else {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("There is no 'next' action with name '"
+                            + nextActionName + "' found in '" + packageName
+                            + "' package. Creating one.");
+                }
+
+                // add next action
+                ResultConfig nextResultConfig = new ResultConfig.Builder(
+                        Action.SUCCESS, ActionChainResult.class.getName())
+                        .addParam(ActionChainResult.DEFAULT_PARAM,
+                                "${" + NEXT_ACTION_PARAM + "}").build();
+                // build next action configuration
+                ActionConfig nextAct = new ActionConfig.Builder(packageName,
+                        nextActionName, "").addResultConfig(nextResultConfig)
+                        .build();
+                pcb.addActionConfig(nextAct.getName(), nextAct);
+            }
+
+            // build flow package
             PackageConfig pconf = pcb.build();
 
             configuration.removePackageConfig(packageName);
             configuration.addPackageConfig(packageName, pconf);
             configuration.rebuildRuntimeConfiguration();
         }
-
         return actionFlows;
     }
 
