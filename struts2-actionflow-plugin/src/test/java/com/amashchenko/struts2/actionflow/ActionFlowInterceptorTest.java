@@ -39,10 +39,10 @@ public class ActionFlowInterceptorTest extends
     }
 
     /** Key for previous flow action. */
-    private static final String PREV_FLOW_ACTION = "com.amashchenko.struts2.actionflow.ActionFlowInterceptor.prevFlowAction";
+    private static final String PREVIOUS_FLOW_ACTION = "com.amashchenko.struts2.actionflow.ActionFlowInterceptor.previousFlowAction";
     /** Expression for getting previous flow action from session. */
-    private static final String SESSION_PREV_FLOW_ACTION = "#session['"
-            + PREV_FLOW_ACTION + "']";
+    private static final String SESSION_PREVIOUS_FLOW_ACTION = "#session['"
+            + PREVIOUS_FLOW_ACTION + "']";
 
     /**
      * Initialize method.
@@ -64,7 +64,7 @@ public class ActionFlowInterceptorTest extends
         executeAction("/correctFlow/correctFlow");
         initServletMockObjects();
         executeAction("/correctFlow/next");
-        String previousAction = (String) findValueAfterExecute(SESSION_PREV_FLOW_ACTION);
+        String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals("saveName", previousAction);
     }
 
@@ -79,7 +79,7 @@ public class ActionFlowInterceptorTest extends
         executeAction("/correctFlow/correctFlow");
         initServletMockObjects();
         executeAction("/correctFlow/prev");
-        String previousAction = (String) findValueAfterExecute(SESSION_PREV_FLOW_ACTION);
+        String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals("firstFlowAction", previousAction);
     }
 
@@ -93,9 +93,9 @@ public class ActionFlowInterceptorTest extends
     public void testPrev() throws Exception {
         executeAction("/correctFlow/correctFlow");
         initServletMockObjects();
-        request.getSession().setAttribute(PREV_FLOW_ACTION, "savePhone");
+        request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "savePhone");
         executeAction("/correctFlow/prev");
-        String previousAction = (String) findValueAfterExecute(SESSION_PREV_FLOW_ACTION);
+        String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals("saveName", previousAction);
     }
 
@@ -109,9 +109,9 @@ public class ActionFlowInterceptorTest extends
     public void testLastNext() throws Exception {
         executeAction("/correctFlow/correctFlow");
         initServletMockObjects();
-        request.getSession().setAttribute(PREV_FLOW_ACTION, "savePhone");
+        request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "savePhone");
         executeAction("/correctFlow/next");
-        String previousAction = (String) findValueAfterExecute(SESSION_PREV_FLOW_ACTION);
+        String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals(null, previousAction);
     }
 
@@ -125,9 +125,9 @@ public class ActionFlowInterceptorTest extends
     public void testWrongFlowOrder() throws Exception {
         executeAction("/correctFlow/correctFlow");
         initServletMockObjects();
-        request.getSession().setAttribute(PREV_FLOW_ACTION, "saveName");
+        request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "saveName");
         executeAction("/correctFlow/saveEmail");
-        String previousAction = (String) findValueAfterExecute(SESSION_PREV_FLOW_ACTION);
+        String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals("saveName", previousAction);
     }
 
@@ -141,9 +141,9 @@ public class ActionFlowInterceptorTest extends
     public void testWrongFlowOrderForceFalse() throws Exception {
         executeAction("/correctFlowOverride/correctFlowOverride");
         initServletMockObjects();
-        request.getSession().setAttribute(PREV_FLOW_ACTION, "saveName");
+        request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "saveName");
         executeAction("/correctFlowOverride/saveEmail");
-        String previousAction = (String) findValueAfterExecute(SESSION_PREV_FLOW_ACTION);
+        String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals(null, previousAction);
     }
 }
