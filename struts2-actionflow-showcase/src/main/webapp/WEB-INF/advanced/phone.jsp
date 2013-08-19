@@ -9,7 +9,7 @@
 		<h4>advanced example</h4>
 		<s:form action="nextAction">
 		
-			<s:textfield key="phone" label="phone" />
+			<s:textfield key="phone" label="Phone" />
 		
 			<tr><td><br/></td></tr>
 		

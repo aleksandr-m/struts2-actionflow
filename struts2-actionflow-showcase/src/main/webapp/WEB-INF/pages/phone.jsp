@@ -9,7 +9,7 @@
 		<h4>simple example</h4>
 		<s:form action="next">
 		
-			<s:textfield key="phone" label="phone" />
+			<s:textfield key="phone" label="Phone" />
 		
 			<tr><td><br/></td></tr>
 		
@@ -22,5 +22,29 @@
 				</td>
 			</tr>
 		</s:form>
+		
+		<br/>
+    <div class="example-code">		
+        <i>Form:</i>
+        <pre>
+&lt;s:form action="next">
+    &lt;s:textfield key="phone" label="Phone" />
+
+    &lt;s:submit value="previous" action="prev" />
+    &lt;s:submit value="next" action="next" />
+&lt;/s:form>
+        </pre>
+        
+        <i>Action configuration:</i>
+        <pre>
+&lt;action name="savePhone" method="savePhone" class="...">
+    &lt;param name="actionFlowStep">2&lt;/param>
+			
+    &lt;result name="input">/WEB-INF/pages/phone.jsp&lt;/result>
+    &lt;result name="error">/WEB-INF/pages/phone.jsp&lt;/result>
+    &lt;result type="redirectAction">finish&lt;/result>
+&lt;/action>
+        </pre>
+    </div>
   </body>
 </html>

@@ -40,14 +40,14 @@
 			
 			<result name="input">/WEB-INF/pages/name.jsp</result>
 			<result name="error">/WEB-INF/pages/name.jsp</result>
-			<result type="redirectAction">view</result>
+			<result type="redirectAction">finish</result>
 		</action>
 		<action name="savePhone" method="savePhone" class="com.amashchenko.struts2.actionflow.showcase.SimpleWizardAction">
 			<param name="actionFlowStep">2</param>
 		
 			<result name="input">/WEB-INF/pages/phone.jsp</result>
 			<result name="error">/WEB-INF/pages/phone.jsp</result>
-			<result type="redirectAction">view</result>
+			<result type="redirectAction">finish</result>
 		</action>
 		<action name="saveEmail" method="saveEmail" class="com.amashchenko.struts2.actionflow.showcase.SimpleWizardAction">
 			<param name="actionFlowStep">3</param>
@@ -85,14 +85,6 @@
 			<result name="actionFlowViewResult" type="redirectAction">${viewAction}</result>
 		</global-results>
 		
-		<action name="nextAction">
-			<result type="chain">${nextAction}</result>
-		</action>
-		<!-- cannot be used for different (not wizard) purposes -->
-		<action name="prevAction" class="com.amashchenko.struts2.actionflow.showcase.SimpleWizardAction">
-			<result type="redirectAction">${prevAction}</result>
-		</action>
-		
 		<action name="start" class="com.amashchenko.struts2.actionflow.showcase.SimpleWizardAction">
 			<result>/WEB-INF/advanced/name.jsp</result>
 		</action>
@@ -102,14 +94,14 @@
 			
 			<result name="input">/WEB-INF/advanced/name.jsp</result>
 			<result name="error">/WEB-INF/advanced/name.jsp</result>
-			<result type="redirectAction">viewAction</result>
+			<result type="redirectAction">finish</result>
 		</action>
 		<action name="savePhone" method="savePhone" class="com.amashchenko.struts2.actionflow.showcase.SimpleWizardAction">
 			<param name="actionFlowStep">2</param>
 		
 			<result name="input">/WEB-INF/advanced/phone.jsp</result>
 			<result name="error">/WEB-INF/advanced/phone.jsp</result>
-			<result type="redirectAction">viewAction</result>
+			<result type="redirectAction">finish</result>
 		</action>
 		
 		<!-- overriding view -->
