@@ -68,10 +68,10 @@
 	<package name="actionflow-advanced-showcase" namespace="/advanced" extends="struts-default">
 		
 		<interceptors>
-			<interceptor name="actionflow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
+			<interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
 			
-			<interceptor-stack name="actionflowDefaultStack">
-				<interceptor-ref name="actionflow">
+			<interceptor-stack name="actionFlowDefaultStack">
+				<interceptor-ref name="actionFlow">
 					<param name="nextActionName">nextAction</param>
 					<param name="prevActionName">prevAction</param>
 				</interceptor-ref> 
@@ -79,7 +79,7 @@
 			</interceptor-stack>
 		</interceptors>	
 				
-		<default-interceptor-ref name="actionflowDefaultStack" />
+		<default-interceptor-ref name="actionFlowDefaultStack" />
 		
 		<global-results>
 			<result name="actionFlowViewResult" type="redirectAction">${viewAction}</result>

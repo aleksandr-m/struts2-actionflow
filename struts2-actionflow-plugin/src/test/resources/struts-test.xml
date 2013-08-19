@@ -26,9 +26,6 @@
 		<action name="noFlow">
 			<result>homepage</result>
 		</action>
-		<action name="start">
-			<result>name</result>
-		</action>
 		<action name="saveName" method="saveName">
 			<result name="input">name</result>
 			<result name="error">name</result>
@@ -49,9 +46,6 @@
 	<package name="correctFlow" namespace="/correctFlow" extends="actionflow-default">
 		<action name="correctFlow">
 			<result>homepage</result>
-		</action>
-		<action name="start">
-			<result>name</result>
 		</action>
 		<action name="saveName">
 			<param name="actionFlowStep">1</param>
@@ -78,10 +72,10 @@
 	
 	<package name="correctFlowOverride" namespace="/correctFlowOverride" extends="actionflow-default">
 		<interceptors>
-			<interceptor name="actionflow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
+			<interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
 			
-			<interceptor-stack name="actionflowDefaultStack">
-				<interceptor-ref name="actionflow">
+			<interceptor-stack name="actionFlowDefaultStack">
+				<interceptor-ref name="actionFlow">
 					<param name="nextActionName">nextOverride</param>
 					<param name="prevActionName">prevOverride</param>
 					<param name="forceFlowStepsOrder">false</param>
@@ -90,7 +84,7 @@
 			</interceptor-stack>
 		</interceptors>	
 				
-		<default-interceptor-ref name="actionflowDefaultStack" />
+		<default-interceptor-ref name="actionFlowDefaultStack" />
 		
 		<action name="nextOverride">
 			<result type="chain">${nextAction}</result>
@@ -101,9 +95,6 @@
 		
 		<action name="correctFlowOverride">
 			<result>homepage</result>
-		</action>
-		<action name="start">
-			<result>name</result>
 		</action>
 		<action name="saveName">
 			<param name="actionFlowStep">1</param>
@@ -137,9 +128,6 @@
 		<action name="noInputResult">
 			<result>homepage</result>
 		</action>
-		<action name="start">
-			<result>name</result>
-		</action>
 		<action name="saveName" method="saveName">
 			<param name="actionFlowStep">1</param>
 			<result name="input">name</result>
@@ -163,9 +151,6 @@
 	<package name="sameFlowSteps" namespace="/sameFlowSteps" extends="actionflow-default">
 		<action name="sameFlowSteps">
 			<result>homepage</result>
-		</action>
-		<action name="start">
-			<result>name</result>
 		</action>
 		<action name="saveName" method="saveName">
 			<param name="actionFlowStep">1</param>
@@ -191,23 +176,19 @@
 
 	<package name="wrongTypeNextAction" namespace="/wrongTypeNextAction" extends="struts-default">
 		<interceptors>
-			<interceptor name="actionflow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
+			<interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
 			
-			<interceptor-stack name="actionflowDefaultStack">
-				<interceptor-ref name="actionflow"/> 
+			<interceptor-stack name="actionFlowDefaultStack">
+				<interceptor-ref name="actionFlow"/> 
 				<interceptor-ref name="defaultStack"/>
 			</interceptor-stack>
 		</interceptors>	
 				
-		<default-interceptor-ref name="actionflowDefaultStack" />
+		<default-interceptor-ref name="actionFlowDefaultStack" />
 		
 		<global-results>
 			<result name="actionFlowViewResult" type="redirectAction">${viewAction}</result>
 		</global-results>
-		
-		<action name="prev">
-			<result type="redirectAction">${prevAction}</result>
-		</action>
 		
 		<action name="wrongTypeNextAction">
 			<result>homepage</result>
@@ -215,9 +196,6 @@
 		<!-- wrong next result type -->
 		<action name="next">
 			<result type="redirectAction">${nextAction}</result>
-		</action>
-		<action name="start">
-			<result>name</result>
 		</action>
 		<action name="saveName" method="saveName">
 			<param name="actionFlowStep">1</param>
@@ -241,23 +219,19 @@
 
 	<package name="wrongNextParam" namespace="/wrongNextParam" extends="struts-default">
 		<interceptors>
-			<interceptor name="actionflow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
+			<interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
 			
-			<interceptor-stack name="actionflowDefaultStack">
-				<interceptor-ref name="actionflow"/> 
+			<interceptor-stack name="actionFlowDefaultStack">
+				<interceptor-ref name="actionFlow"/> 
 				<interceptor-ref name="defaultStack"/>
 			</interceptor-stack>
 		</interceptors>	
 				
-		<default-interceptor-ref name="actionflowDefaultStack" />
+		<default-interceptor-ref name="actionFlowDefaultStack" />
 		
 		<global-results>
 			<result name="actionFlowViewResult" type="redirectAction">${viewAction}</result>
 		</global-results>
-		
-		<action name="prev">
-			<result type="redirectAction">${prevAction}</result>
-		</action>
 		
 		<action name="wrongNextParam">
 			<result>homepage</result>
@@ -265,9 +239,6 @@
 		<!-- wrong next param -->
 		<action name="next">
 			<result type="chain">${nextActionWrong}</result>
-		</action>
-		<action name="start">
-			<result>name</result>
 		</action>
 		<action name="saveName" method="saveName">
 			<param name="actionFlowStep">1</param>
@@ -298,9 +269,6 @@
 		<action name="prev">
 			<result type="redirectAction">${prevActionWrong}</result>
 		</action>
-		<action name="start">
-			<result>name</result>
-		</action>
 		<action name="saveName" method="saveName">
 			<param name="actionFlowStep">1</param>
 			<result name="input">name</result>
@@ -329,9 +297,6 @@
 		<action name="prev">
 			<result name="input">${prevAction}</result>
 		</action>
-		<action name="start">
-			<result>name</result>
-		</action>
 		<action name="saveName" method="saveName">
 			<param name="actionFlowStep">1</param>
 			<result name="input">name</result>
@@ -354,30 +319,20 @@
 	
 	<package name="noViewResult" namespace="/noViewResult" extends="struts-default">
 		<interceptors>
-			<interceptor name="actionflow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
+			<interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
 			
-			<interceptor-stack name="actionflowDefaultStack">
-				<interceptor-ref name="actionflow"/> 
+			<interceptor-stack name="actionFlowDefaultStack">
+				<interceptor-ref name="actionFlow"/> 
 				<interceptor-ref name="defaultStack"/>
 			</interceptor-stack>
 		</interceptors>	
 				
-		<default-interceptor-ref name="actionflowDefaultStack" />
+		<default-interceptor-ref name="actionFlowDefaultStack" />
 		
 		<!-- no global view result -->
 		
-		<action name="prev">
-			<result type="redirectAction">${prevAction}</result>
-		</action>
-		
 		<action name="noViewResult">
 			<result>homepage</result>
-		</action>
-		<action name="next">
-			<result type="chain">${nextAction}</result>
-		</action>
-		<action name="start">
-			<result>name</result>
 		</action>
 		<action name="saveName" method="saveName">
 			<param name="actionFlowStep">1</param>
@@ -401,33 +356,23 @@
 	
 	<package name="wrongViewResultType" namespace="/wrongViewResultType" extends="struts-default">
 		<interceptors>
-			<interceptor name="actionflow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
+			<interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
 			
-			<interceptor-stack name="actionflowDefaultStack">
-				<interceptor-ref name="actionflow"/> 
+			<interceptor-stack name="actionFlowDefaultStack">
+				<interceptor-ref name="actionFlow"/> 
 				<interceptor-ref name="defaultStack"/>
 			</interceptor-stack>
 		</interceptors>	
 				
-		<default-interceptor-ref name="actionflowDefaultStack" />
+		<default-interceptor-ref name="actionFlowDefaultStack" />
 		
 		<global-results>
 			<!-- wrong view result type -->
 			<result name="actionFlowViewResult">${viewAction}</result>
 		</global-results>
 		
-		<action name="prev">
-			<result type="redirectAction">${prevAction}</result>
-		</action>
-		
 		<action name="wrongViewResultType">
 			<result>homepage</result>
-		</action>
-		<action name="next">
-			<result type="chain">${nextAction}</result>
-		</action>
-		<action name="start">
-			<result>name</result>
 		</action>
 		<action name="saveName" method="saveName">
 			<param name="actionFlowStep">1</param>
@@ -451,33 +396,23 @@
 	
 	<package name="wrongViewResultParam" namespace="/wrongViewResultParam" extends="struts-default">
 		<interceptors>
-			<interceptor name="actionflow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
+			<interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
 			
-			<interceptor-stack name="actionflowDefaultStack">
-				<interceptor-ref name="actionflow"/> 
+			<interceptor-stack name="actionFlowDefaultStack">
+				<interceptor-ref name="actionFlow"/> 
 				<interceptor-ref name="defaultStack"/>
 			</interceptor-stack>
 		</interceptors>	
 				
-		<default-interceptor-ref name="actionflowDefaultStack" />
+		<default-interceptor-ref name="actionFlowDefaultStack" />
 		
 		<global-results>
 			<!-- wrong view result type -->
 			<result name="actionFlowViewResult" type="redirectAction">${viewActionWrong}</result>
 		</global-results>
 		
-		<action name="prev">
-			<result type="redirectAction">${prevAction}</result>
-		</action>
-		
 		<action name="wrongViewResultParam">
 			<result>homepage</result>
-		</action>
-		<action name="next">
-			<result type="chain">${nextAction}</result>
-		</action>
-		<action name="start">
-			<result>name</result>
 		</action>
 		<action name="saveName" method="saveName">
 			<param name="actionFlowStep">1</param>

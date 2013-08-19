@@ -37,7 +37,7 @@
         
         <i>Interceptor configuration:</i>
         <pre>
-&lt;interceptor-ref name="actionflow">
+&lt;interceptor-ref name="actionFlow">
     &lt;param name="nextActionName">nextAction&lt;/param>
     &lt;param name="prevActionName">prevAction&lt;/param>
 &lt;/interceptor-ref> 
