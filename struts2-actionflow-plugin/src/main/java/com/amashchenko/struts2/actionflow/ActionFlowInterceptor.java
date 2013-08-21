@@ -130,6 +130,8 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     private static final String DEFAULT_VIEW_ACTION_POSTFIX = "View";
     // TODO allow to override method name (execute)
     private static final String DEFAULT_VIEW_ACTION_METHOD = "execute";
+    // TODO allow to override
+    private static final String DEFAULT_STEP_PARAM_NAME = "step";
 
     protected static final String NEXT_ACTION_PARAM = "nextAction";
     protected static final String PREV_ACTION_PARAM = "prevAction";
@@ -181,6 +183,32 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         if (previousFlowAction == null) {
             previousFlowAction = FIRST_FLOW_ACTION_NAME;
+        }
+
+        // handling of back/forward buttons
+        Object[] stepParam = (Object[]) invocation.getInvocationContext()
+                .getParameters().get(DEFAULT_STEP_PARAM_NAME);
+        if (stepParam != null && stepParam.length > 0) {
+            String step = "" + stepParam[0];
+
+            if (step.isEmpty()) {
+                step = FIRST_FLOW_ACTION_NAME;
+            }
+
+            if (step != null && !step.equals(previousFlowAction)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("The 'previousFlowAction' value from session is '"
+                            + previousFlowAction
+                            + "', but '"
+                            + DEFAULT_STEP_PARAM_NAME
+                            + "' parameter value is '"
+                            + step
+                            + "' The '"
+                            + DEFAULT_STEP_PARAM_NAME
+                            + "' parameter value will be used for 'previousFlowAction'.");
+                }
+                previousFlowAction = step;
+            }
         }
 
         String nextAction = null;

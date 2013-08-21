@@ -116,6 +116,23 @@ public class ActionFlowInterceptorTest extends
     }
 
     /**
+     * Tests step parameter mismatch.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
+    @Test
+    public void testStepParameterMismatch() throws Exception {
+        executeAction("/correctFlow/correctFlow");
+        initServletMockObjects();
+        request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "savePhone");
+        request.setParameter("step", "");
+        executeAction("/correctFlow/next");
+        String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
+        Assert.assertEquals("saveName", previousAction);
+    }
+
+    /**
      * Tests wrong flow action order.
      * 
      * @throws Exception
