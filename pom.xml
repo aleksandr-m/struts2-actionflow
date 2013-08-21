@@ -41,15 +41,19 @@
         </developer>
     </developers>
  
+    <url>${url}</url>
+ 
     <scm>
-        <url>${scm.url}</url>
+        <url>${url}</url>
         <connection>${scm.url}</connection>
+        <developerConnection>${scm.url}</developerConnection>
     </scm>
  
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <struts2.version>2.3.15.1</struts2.version>
         <scm.url>scm:git:git@github.com:aleksandr-m/struts2-actionflow.git</scm.url>
+        <url>https://github.com/aleksandr-m/struts2-actionflow</url>
     </properties>
  
     <modules>
@@ -69,6 +73,17 @@
                         <source>1.6</source>
                         <target>1.6</target>
                         <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.atlassian.maven.plugins</groupId>
+                    <artifactId>maven-jgitflow-plugin</artifactId>
+                    <version>1.0-alpha20</version>
+                    <configuration>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                        <flowInitContext>
+                            <versionTagPrefix>v</versionTagPrefix>
+                        </flowInitContext>
                     </configuration>
                 </plugin>
             </plugins>
