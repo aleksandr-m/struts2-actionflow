@@ -39,7 +39,7 @@ public class ActionFlowInterceptorTest extends
     }
 
     /** Key for previous flow action. */
-    private static final String PREVIOUS_FLOW_ACTION = "com.amashchenko.struts2.actionflow.ActionFlowInterceptor.previousFlowAction";
+    private static final String PREVIOUS_FLOW_ACTION = "actionFlowPreviousAction";
     /** Expression for getting previous flow action from session. */
     private static final String SESSION_PREVIOUS_FLOW_ACTION = "#session['"
             + PREVIOUS_FLOW_ACTION + "']";
@@ -113,6 +113,23 @@ public class ActionFlowInterceptorTest extends
         executeAction("/correctFlow/next");
         String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals(null, previousAction);
+    }
+
+    /**
+     * Tests step parameter mismatch.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
+    @Test
+    public void testStepParameterMismatch() throws Exception {
+        executeAction("/correctFlow/correctFlow");
+        initServletMockObjects();
+        request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "savePhone");
+        request.setParameter("step", "");
+        executeAction("/correctFlow/next");
+        String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
+        Assert.assertEquals("saveName", previousAction);
     }
 
     /**

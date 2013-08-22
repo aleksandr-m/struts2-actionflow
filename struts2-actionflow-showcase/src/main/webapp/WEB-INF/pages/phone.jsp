@@ -8,6 +8,7 @@
 	<body>
 		<h4>simple example</h4>
 		<s:form action="next">
+			<s:hidden name="step" value="%{#session['actionFlowPreviousAction']}"/>
 		
 			<s:textfield key="phone" label="Phone" />
 		
@@ -28,6 +29,8 @@
         <i>Form:</i>
         <pre>
 &lt;s:form action="next">
+    &lt;s:hidden name="step" value="%{#session['actionFlowPreviousAction']}" />
+
     &lt;s:textfield key="phone" label="Phone" />
 
     &lt;s:submit value="previous" action="prev" />

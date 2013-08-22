@@ -1,6 +1,6 @@
 # Struts2 ActionFlow Plug-in
 
-A Struts2 plug-in for creating action flows.
+A Struts2 plug-in for creating wizards (action flows).
 
 ## Installation
 
@@ -39,6 +39,8 @@ The most simple setup to use this plug-in is:
 ### Form
 
     <s:form action="next">
+       <s:hidden name="step" value="%{#session['actionFlowPreviousAction']}" />
+    
        <s:textfield key="name" label="Name" />
        <s:submit value="previous" action="prev" />
        <s:submit value="next" action="next" />
