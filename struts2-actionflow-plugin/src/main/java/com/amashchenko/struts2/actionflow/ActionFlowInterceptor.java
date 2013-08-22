@@ -97,9 +97,11 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
  * <pre>
  * <!-- START SNIPPET: example-form -->
  * &lt;s:form action="next"&gt;
- *     &lt;s:textfield name="name" label="Name"/&gt;
- *     &lt;s:submit value="previous" action="prev"/&gt;
- *     &lt;s:submit value="next" action="next"/&gt;
+ *     &lt;s:hidden name="step" value="%{#session['actionFlowPreviousAction']}" /&gt;
+ * 
+ *     &lt;s:textfield name="name" label="Name" /&gt;
+ *     &lt;s:submit value="previous" action="prev" /&gt;
+ *     &lt;s:submit value="next" action="next" /&gt;
  * &lt;/s:form&gt;
  * <!-- END SNIPPET: example-form -->
  * </pre>
@@ -119,7 +121,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
     private static final String PARAM_ACTION_FLOW_STEP = "actionFlowStep";
 
-    private static final String PREVIOUS_FLOW_ACTION = "com.amashchenko.struts2.actionflow.ActionFlowInterceptor.previousFlowAction";
+    private static final String PREVIOUS_FLOW_ACTION = "actionFlowPreviousAction";
 
     private static final String DEFAULT_NEXT_ACTION_NAME = "next";
     private static final String DEFAULT_PREV_ACTION_NAME = "prev";

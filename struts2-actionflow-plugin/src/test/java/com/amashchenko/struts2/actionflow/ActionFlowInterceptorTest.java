@@ -39,7 +39,7 @@ public class ActionFlowInterceptorTest extends
     }
 
     /** Key for previous flow action. */
-    private static final String PREVIOUS_FLOW_ACTION = "com.amashchenko.struts2.actionflow.ActionFlowInterceptor.previousFlowAction";
+    private static final String PREVIOUS_FLOW_ACTION = "actionFlowPreviousAction";
     /** Expression for getting previous flow action from session. */
     private static final String SESSION_PREVIOUS_FLOW_ACTION = "#session['"
             + PREVIOUS_FLOW_ACTION + "']";
