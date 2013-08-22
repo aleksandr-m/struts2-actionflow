@@ -24,15 +24,15 @@
 
     <package name="actionflow-default" extends="struts-default">
         <interceptors>
-            <interceptor name="actionflow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
+            <interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
 
-            <interceptor-stack name="actionflowDefaultStack">
-                <interceptor-ref name="actionflow"/> 
-                <interceptor-ref name="defaultStack"/>
+            <interceptor-stack name="actionFlowDefaultStack">
+                <interceptor-ref name="actionFlow" />
+                <interceptor-ref name="defaultStack" />
             </interceptor-stack>
-        </interceptors>	
+        </interceptors>
 
-        <default-interceptor-ref name="actionflowDefaultStack" />
+        <default-interceptor-ref name="actionFlowDefaultStack" />
 
         <global-results>
             <result name="actionFlowViewResult" type="redirectAction">${viewAction}</result>

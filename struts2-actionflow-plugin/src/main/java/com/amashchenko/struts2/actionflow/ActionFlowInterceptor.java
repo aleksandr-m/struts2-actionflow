@@ -97,9 +97,11 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
  * <pre>
  * <!-- START SNIPPET: example-form -->
  * &lt;s:form action="next"&gt;
- *     &lt;s:textfield name="name" label="Name"/&gt;
- *     &lt;s:submit value="previous" action="prev"/&gt;
- *     &lt;s:submit value="next" action="next"/&gt;
+ *     &lt;s:hidden name="step" value="%{#session['actionFlowPreviousAction']}" /&gt;
+ * 
+ *     &lt;s:textfield name="name" label="Name" /&gt;
+ *     &lt;s:submit value="previous" action="prev" /&gt;
+ *     &lt;s:submit value="next" action="next" /&gt;
  * &lt;/s:form&gt;
  * <!-- END SNIPPET: example-form -->
  * </pre>
@@ -119,7 +121,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
     private static final String PARAM_ACTION_FLOW_STEP = "actionFlowStep";
 
-    private static final String PREV_FLOW_ACTION = "com.amashchenko.struts2.actionflow.ActionFlowInterceptor.prevFlowAction";
+    private static final String PREVIOUS_FLOW_ACTION = "actionFlowPreviousAction";
 
     private static final String DEFAULT_NEXT_ACTION_NAME = "next";
     private static final String DEFAULT_PREV_ACTION_NAME = "prev";
@@ -130,6 +132,8 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     private static final String DEFAULT_VIEW_ACTION_POSTFIX = "View";
     // TODO allow to override method name (execute)
     private static final String DEFAULT_VIEW_ACTION_METHOD = "execute";
+    // TODO allow to override
+    private static final String DEFAULT_STEP_PARAM_NAME = "step";
 
     protected static final String NEXT_ACTION_PARAM = "nextAction";
     protected static final String PREV_ACTION_PARAM = "prevAction";
@@ -152,27 +156,10 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     public String intercept(ActionInvocation invocation) throws Exception {
         String actionName = invocation.getInvocationContext().getName();
 
-        Map<String, Object> session = invocation.getInvocationContext()
-                .getSession();
-
-        String prevFlowAction = (String) session.get(PREV_FLOW_ACTION);
-
-        if (prevFlowAction == null) {
-            prevFlowAction = FIRST_FLOW_ACTION_NAME;
-        }
-
-        String nextAction = null;
-        String prevAction = null;
-
         if (flowMap == null) {
             String packageName = invocation.getProxy().getConfig()
                     .getPackageName();
             flowMap = createFlowMap(packageName);
-        }
-
-        if (flowMap.containsKey(prevFlowAction)) {
-            nextAction = flowMap.get(prevFlowAction).get(NEXT_ACTION_PARAM);
-            prevAction = flowMap.get(prevFlowAction).get(PREV_ACTION_PARAM);
         }
 
         boolean flowAction = false;
@@ -185,10 +172,59 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             }
         }
 
+        // not a flow nor next nor previous action, just invoke
+        if (!flowAction && !prevActionName.equals(actionName)
+                && !nextActionName.equals(actionName)) {
+            return invocation.invoke();
+        }
+
+        Map<String, Object> session = invocation.getInvocationContext()
+                .getSession();
+
+        String previousFlowAction = (String) session.get(PREVIOUS_FLOW_ACTION);
+
+        if (previousFlowAction == null) {
+            previousFlowAction = FIRST_FLOW_ACTION_NAME;
+        }
+
+        // handling of back/forward buttons
+        Object[] stepParam = (Object[]) invocation.getInvocationContext()
+                .getParameters().get(DEFAULT_STEP_PARAM_NAME);
+        if (stepParam != null && stepParam.length > 0) {
+            String step = "" + stepParam[0];
+
+            if (step.isEmpty()) {
+                step = FIRST_FLOW_ACTION_NAME;
+            }
+
+            if (step != null && !step.equals(previousFlowAction)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("The 'previousFlowAction' value from session is '"
+                            + previousFlowAction
+                            + "', but '"
+                            + DEFAULT_STEP_PARAM_NAME
+                            + "' parameter value is '"
+                            + step
+                            + "' The '"
+                            + DEFAULT_STEP_PARAM_NAME
+                            + "' parameter value will be used for 'previousFlowAction'.");
+                }
+                previousFlowAction = step;
+            }
+        }
+
+        String nextAction = null;
+        String prevAction = null;
+
+        if (flowMap.containsKey(previousFlowAction)) {
+            nextAction = flowMap.get(previousFlowAction).get(NEXT_ACTION_PARAM);
+            prevAction = flowMap.get(previousFlowAction).get(PREV_ACTION_PARAM);
+        }
+
         if (LOG.isDebugEnabled()) {
-            LOG.debug(actionName + "-> prevFlowAction: " + prevFlowAction
-                    + ", nextAction: " + nextAction + ", prevAction: "
-                    + prevAction);
+            LOG.debug(actionName + "-> previousFlowAction: "
+                    + previousFlowAction + ", nextAction: " + nextAction
+                    + ", prevAction: " + prevAction);
         }
 
         // force order of flow actions
@@ -211,7 +247,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             invocation.getInvocationContext().getValueStack()
                     .set(NEXT_ACTION_PARAM, nextAction);
         } else if (prevActionName.equals(actionName)) {
-            if (FIRST_FLOW_ACTION_NAME.equals(prevFlowAction)) {
+            if (FIRST_FLOW_ACTION_NAME.equals(previousFlowAction)) {
                 invocation
                         .getInvocationContext()
                         .getValueStack()
@@ -222,9 +258,10 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                         .getInvocationContext()
                         .getValueStack()
                         .set(PREV_ACTION_PARAM,
-                                prevFlowAction + DEFAULT_VIEW_ACTION_POSTFIX);
+                                previousFlowAction
+                                        + DEFAULT_VIEW_ACTION_POSTFIX);
             }
-            session.put(PREV_FLOW_ACTION, prevAction);
+            session.put(PREVIOUS_FLOW_ACTION, prevAction);
         }
 
         // execute global view result on not last flow action
@@ -249,12 +286,12 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         String result = invocation.invoke();
 
         if (GLOBAL_VIEW_RESULT.equals(result) && flowAction) {
-            session.put(PREV_FLOW_ACTION, actionName);
+            session.put(PREVIOUS_FLOW_ACTION, actionName);
         }
 
         // last flow action
         if (Action.SUCCESS.equals(result) && flowAction && lastAction) {
-            session.put(PREV_FLOW_ACTION, null);
+            session.put(PREVIOUS_FLOW_ACTION, null);
         }
 
         return result;
@@ -487,7 +524,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                         ServletActionRedirectResult.class.getName()).addParam(
                         ServletActionRedirectResult.DEFAULT_PARAM,
                         "${" + PREV_ACTION_PARAM + "}").build();
-                // build previuos action configuration
+                // build previous action configuration
                 ActionConfig prevAct = new ActionConfig.Builder(packageName,
                         prevActionName, "").addResultConfig(prevResultConfig)
                         .build();
