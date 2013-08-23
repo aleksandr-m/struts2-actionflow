@@ -20,7 +20,7 @@
     <parent>
         <groupId>com.amashchenko.struts2.actionflow</groupId>
         <artifactId>struts2-actionflow-parent</artifactId>
-        <version>1.5.1-SNAPSHOT</version>
+        <version>1.5.2</version>
     </parent>
     <artifactId>struts2-actionflow-showcase</artifactId>
     <packaging>war</packaging>
