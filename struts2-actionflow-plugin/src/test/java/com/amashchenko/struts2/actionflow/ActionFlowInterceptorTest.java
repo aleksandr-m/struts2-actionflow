@@ -38,13 +38,21 @@ import org.junit.runners.Parameterized.Parameters;
 public class ActionFlowInterceptorTest extends
         StrutsJUnit4TestCase<ActionFlowInterceptor> {
 
-    /** Package namespace. */
-    private String packageNamespace;
-    /** Next action name. */
-    private String nextActionName;
-    /** Previous action name. */
-    private String prevActionName;
+    /** Suffix to append. */
+    private String suffix;
+    /** Expected wrong order action name. */
     private String expectedWrongOrderAction;
+    /** Expected wrong order view action parameter value. */
+    private String expectedWrongOrderViewParam;
+
+    /** Namespace. */
+    private String namespace;
+    /** Starting action. */
+    private String startingAction;
+    /** Next action. */
+    private String nextAction;
+    /** Previous action. */
+    private String prevAction;
 
     /** {@inheritDoc} */
     @Override
@@ -71,30 +79,32 @@ public class ActionFlowInterceptorTest extends
     /** Parameters to use. */
     @Parameters(name = "{0}")
     public static Collection<Object[]> data() {
-        Object[][] data = new Object[][] {
-                { "/correctFlow", "/next", "/prev", "saveName" },
-                { "/correctFlowOverride", "/nextOverride", "/prevOverride",
-                        null }, };
+        Object[][] data = new Object[][] { { "", "saveName", "savePhoneView" },
+                { "Override", null, null }, };
         return Arrays.asList(data);
     }
 
     /**
      * Parameterized constructor.
      * 
-     * @param packageNamespace
-     *            package namespace.
-     * @param nextActionName
-     *            next action name.
-     * @param prevActionName
-     *            previous action name.
+     * @param suffix
+     *            suffix.
+     * @param expectedWrongOrderAction
+     *            expected wrong order action name.
+     * @param expectedWrongOrderViewParam
+     *            expected wrong order view action parameter value.
      */
-    public ActionFlowInterceptorTest(final String packageNamespace,
-            final String nextActionName, final String prevActionName,
-            final String expectedWrongOrderAction) {
-        this.packageNamespace = packageNamespace;
-        this.nextActionName = nextActionName;
-        this.prevActionName = prevActionName;
+    public ActionFlowInterceptorTest(final String suffix,
+            final String expectedWrongOrderAction,
+            final String expectedWrongOrderViewParam) {
+        this.suffix = suffix;
         this.expectedWrongOrderAction = expectedWrongOrderAction;
+        this.expectedWrongOrderViewParam = expectedWrongOrderViewParam;
+
+        this.namespace = "/correctFlow" + suffix;
+        this.startingAction = namespace + "/correctFlow" + suffix;
+        this.nextAction = namespace + "/next" + suffix;
+        this.prevAction = namespace + "/prev" + suffix;
     }
 
     /**
@@ -105,11 +115,20 @@ public class ActionFlowInterceptorTest extends
      */
     @Test
     public void testNext() throws Exception {
-        executeAction(packageNamespace + packageNamespace);
+        executeAction(startingAction);
         initServletMockObjects();
-        executeAction(packageNamespace + nextActionName);
+        executeAction(nextAction);
         String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals("saveName", previousAction);
+
+        String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
+        Assert.assertEquals("saveName", nextActionParam);
+
+        String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
+        Assert.assertEquals(null, prevActionParam);
+
+        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
+        Assert.assertEquals("savePhoneView" + suffix, viewActionParam);
     }
 
     /**
@@ -120,11 +139,20 @@ public class ActionFlowInterceptorTest extends
      */
     @Test
     public void testFirstPrev() throws Exception {
-        executeAction(packageNamespace + packageNamespace);
+        executeAction(startingAction);
         initServletMockObjects();
-        executeAction(packageNamespace + prevActionName);
+        executeAction(prevAction);
         String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals("firstFlowAction", previousAction);
+
+        String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
+        Assert.assertEquals(null, nextActionParam);
+
+        String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
+        Assert.assertEquals("saveNameView" + suffix, prevActionParam);
+
+        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
+        Assert.assertEquals(null, viewActionParam);
     }
 
     /**
@@ -135,12 +163,21 @@ public class ActionFlowInterceptorTest extends
      */
     @Test
     public void testPrev() throws Exception {
-        executeAction(packageNamespace + packageNamespace);
+        executeAction(startingAction);
         initServletMockObjects();
         request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "savePhone");
-        executeAction(packageNamespace + prevActionName);
+        executeAction(prevAction);
         String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals("saveName", previousAction);
+
+        String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
+        Assert.assertEquals(null, nextActionParam);
+
+        String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
+        Assert.assertEquals("savePhoneView" + suffix, prevActionParam);
+
+        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
+        Assert.assertEquals(null, viewActionParam);
     }
 
     /**
@@ -151,12 +188,21 @@ public class ActionFlowInterceptorTest extends
      */
     @Test
     public void testLastNext() throws Exception {
-        executeAction(packageNamespace + packageNamespace);
+        executeAction(startingAction);
         initServletMockObjects();
         request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "savePhone");
-        executeAction(packageNamespace + nextActionName);
+        executeAction(nextAction);
         String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals(null, previousAction);
+
+        String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
+        Assert.assertEquals("saveEmail", nextActionParam);
+
+        String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
+        Assert.assertEquals(null, prevActionParam);
+
+        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
+        Assert.assertEquals(null, viewActionParam);
     }
 
     /**
@@ -167,13 +213,22 @@ public class ActionFlowInterceptorTest extends
      */
     @Test
     public void testStepParameterMismatch() throws Exception {
-        executeAction(packageNamespace + packageNamespace);
+        executeAction(startingAction);
         initServletMockObjects();
         request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "savePhone");
-        request.setParameter("step", "");
-        executeAction(packageNamespace + nextActionName);
+        request.setParameter("step" + suffix, "");
+        executeAction(nextAction);
         String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals("saveName", previousAction);
+
+        String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
+        Assert.assertEquals("saveName", nextActionParam);
+
+        String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
+        Assert.assertEquals(null, prevActionParam);
+
+        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
+        Assert.assertEquals("savePhoneView" + suffix, viewActionParam);
     }
 
     /**
@@ -184,11 +239,20 @@ public class ActionFlowInterceptorTest extends
      */
     @Test
     public void testWrongFlowOrder() throws Exception {
-        executeAction(packageNamespace + packageNamespace);
+        executeAction(startingAction);
         initServletMockObjects();
         request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "saveName");
-        executeAction(packageNamespace + "/saveEmail");
+        executeAction(namespace + "/saveEmail");
         String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals(expectedWrongOrderAction, previousAction);
+
+        String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
+        Assert.assertEquals(null, nextActionParam);
+
+        String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
+        Assert.assertEquals(null, prevActionParam);
+
+        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
+        Assert.assertEquals(expectedWrongOrderViewParam, viewActionParam);
     }
 }
