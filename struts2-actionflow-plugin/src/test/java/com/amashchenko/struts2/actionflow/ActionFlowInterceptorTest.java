@@ -15,6 +15,8 @@
  */
 package com.amashchenko.struts2.actionflow;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,6 +24,9 @@ import org.apache.struts2.StrutsJUnit4TestCase;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Tests for ActionFlowInterceptor.
@@ -29,8 +34,17 @@ import org.junit.Test;
  * @author Aleksandr Mashchenko
  * 
  */
+@RunWith(Parameterized.class)
 public class ActionFlowInterceptorTest extends
         StrutsJUnit4TestCase<ActionFlowInterceptor> {
+
+    /** Package namespace. */
+    private String packageNamespace;
+    /** Next action name. */
+    private String nextActionName;
+    /** Previous action name. */
+    private String prevActionName;
+    private String expectedWrongOrderAction;
 
     /** {@inheritDoc} */
     @Override
@@ -44,13 +58,43 @@ public class ActionFlowInterceptorTest extends
     private static final String SESSION_PREVIOUS_FLOW_ACTION = "#session['"
             + PREVIOUS_FLOW_ACTION + "']";
 
-    /**
-     * Initialize method.
-     * 
-     */
+    /** Initialize method. */
     @BeforeClass
     public static void init() {
-        Logger.getLogger("").setLevel(Level.FINE);
+        Logger logger = Logger.getLogger("");
+        logger.setLevel(Level.FINE);
+        if (logger.getHandlers().length > 0) {
+            logger.removeHandler(logger.getHandlers()[0]);
+        }
+    }
+
+    /** Parameters to use. */
+    @Parameters(name = "{0}")
+    public static Collection<Object[]> data() {
+        Object[][] data = new Object[][] {
+                { "/correctFlow", "/next", "/prev", "saveName" },
+                { "/correctFlowOverride", "/nextOverride", "/prevOverride",
+                        null }, };
+        return Arrays.asList(data);
+    }
+
+    /**
+     * Parameterized constructor.
+     * 
+     * @param packageNamespace
+     *            package namespace.
+     * @param nextActionName
+     *            next action name.
+     * @param prevActionName
+     *            previous action name.
+     */
+    public ActionFlowInterceptorTest(final String packageNamespace,
+            final String nextActionName, final String prevActionName,
+            final String expectedWrongOrderAction) {
+        this.packageNamespace = packageNamespace;
+        this.nextActionName = nextActionName;
+        this.prevActionName = prevActionName;
+        this.expectedWrongOrderAction = expectedWrongOrderAction;
     }
 
     /**
@@ -61,9 +105,9 @@ public class ActionFlowInterceptorTest extends
      */
     @Test
     public void testNext() throws Exception {
-        executeAction("/correctFlow/correctFlow");
+        executeAction(packageNamespace + packageNamespace);
         initServletMockObjects();
-        executeAction("/correctFlow/next");
+        executeAction(packageNamespace + nextActionName);
         String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals("saveName", previousAction);
     }
@@ -76,9 +120,9 @@ public class ActionFlowInterceptorTest extends
      */
     @Test
     public void testFirstPrev() throws Exception {
-        executeAction("/correctFlow/correctFlow");
+        executeAction(packageNamespace + packageNamespace);
         initServletMockObjects();
-        executeAction("/correctFlow/prev");
+        executeAction(packageNamespace + prevActionName);
         String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals("firstFlowAction", previousAction);
     }
@@ -91,10 +135,10 @@ public class ActionFlowInterceptorTest extends
      */
     @Test
     public void testPrev() throws Exception {
-        executeAction("/correctFlow/correctFlow");
+        executeAction(packageNamespace + packageNamespace);
         initServletMockObjects();
         request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "savePhone");
-        executeAction("/correctFlow/prev");
+        executeAction(packageNamespace + prevActionName);
         String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals("saveName", previousAction);
     }
@@ -107,10 +151,10 @@ public class ActionFlowInterceptorTest extends
      */
     @Test
     public void testLastNext() throws Exception {
-        executeAction("/correctFlow/correctFlow");
+        executeAction(packageNamespace + packageNamespace);
         initServletMockObjects();
         request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "savePhone");
-        executeAction("/correctFlow/next");
+        executeAction(packageNamespace + nextActionName);
         String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals(null, previousAction);
     }
@@ -123,11 +167,11 @@ public class ActionFlowInterceptorTest extends
      */
     @Test
     public void testStepParameterMismatch() throws Exception {
-        executeAction("/correctFlow/correctFlow");
+        executeAction(packageNamespace + packageNamespace);
         initServletMockObjects();
         request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "savePhone");
         request.setParameter("step", "");
-        executeAction("/correctFlow/next");
+        executeAction(packageNamespace + nextActionName);
         String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals("saveName", previousAction);
     }
@@ -140,27 +184,11 @@ public class ActionFlowInterceptorTest extends
      */
     @Test
     public void testWrongFlowOrder() throws Exception {
-        executeAction("/correctFlow/correctFlow");
+        executeAction(packageNamespace + packageNamespace);
         initServletMockObjects();
         request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "saveName");
-        executeAction("/correctFlow/saveEmail");
+        executeAction(packageNamespace + "/saveEmail");
         String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals("saveName", previousAction);
-    }
-
-    /**
-     * Tests wrong flow action force order set to false.
-     * 
-     * @throws Exception
-     *             when something goes wrong.
-     */
-    @Test
-    public void testWrongFlowOrderForceFalse() throws Exception {
-        executeAction("/correctFlowOverride/correctFlowOverride");
-        initServletMockObjects();
-        request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "saveName");
-        executeAction("/correctFlowOverride/saveEmail");
-        String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals(null, previousAction);
+        Assert.assertEquals(expectedWrongOrderAction, previousAction);
     }
 }
