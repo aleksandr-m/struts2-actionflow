@@ -60,7 +60,16 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
  * specified the default name {@value #DEFAULT_PREV_ACTION_NAME} will be used.</li>
  * <p/>
  * <li>forceFlowStepsOrder (optional) - To force the order of flow action
- * executions. The default is true.</li>
+ * executions. The default is <code>true</code>.</li>
+ * <p/>
+ * <li>viewActionPostfix (optional) - String to append to generated view action
+ * name. The default is {@value #DEFAULT_VIEW_ACTION_POSTFIX}.</li>
+ * <p/>
+ * <li>viewActionMethod (optional) - Action method to execute in generated view
+ * actions. The default is {@value #DEFAULT_VIEW_ACTION_METHOD}.</li>
+ * <p/>
+ * <li>stepParameterName (optional) - Name of the form parameter holding
+ * previous action value. The default is {@value #DEFAULT_STEP_PARAM_NAME}.</li>
  * <p/>
  * </ul>
  * <p/>
@@ -113,7 +122,7 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
 public class ActionFlowInterceptor extends AbstractInterceptor {
 
     /** Serial version uid. */
-    private static final long serialVersionUID = 7715021688586768830L;
+    private static final long serialVersionUID = 6161518595680043244L;
 
     /** Logger. */
     public static final Logger LOG = LoggerFactory
@@ -128,11 +137,9 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
     private static final String FIRST_FLOW_ACTION_NAME = "firstFlowAction";
     private static final String GLOBAL_VIEW_RESULT = "actionFlowViewResult";
-    // TODO allow to override
+
     private static final String DEFAULT_VIEW_ACTION_POSTFIX = "View";
-    // TODO allow to override method name (execute)
     private static final String DEFAULT_VIEW_ACTION_METHOD = "execute";
-    // TODO allow to override
     private static final String DEFAULT_STEP_PARAM_NAME = "step";
 
     protected static final String NEXT_ACTION_PARAM = "nextAction";
@@ -143,6 +150,9 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     private String nextActionName = DEFAULT_NEXT_ACTION_NAME;
     private String prevActionName = DEFAULT_PREV_ACTION_NAME;
     private boolean forceFlowStepsOrder = true;
+    private String viewActionPostfix = DEFAULT_VIEW_ACTION_POSTFIX;
+    private String viewActionMethod = DEFAULT_VIEW_ACTION_METHOD;
+    private String stepParameterName = DEFAULT_STEP_PARAM_NAME;
 
     /** Holds action flows. */
     private Map<String, Map<String, String>> flowMap;
@@ -189,7 +199,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         // handling of back/forward buttons
         Object[] stepParam = (Object[]) invocation.getInvocationContext()
-                .getParameters().get(DEFAULT_STEP_PARAM_NAME);
+                .getParameters().get(stepParameterName);
         if (stepParam != null && stepParam.length > 0) {
             String step = "" + stepParam[0];
 
@@ -202,11 +212,11 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                     LOG.debug("The 'previousFlowAction' value from session is '"
                             + previousFlowAction
                             + "', but '"
-                            + DEFAULT_STEP_PARAM_NAME
+                            + stepParameterName
                             + "' parameter value is '"
                             + step
                             + "' The '"
-                            + DEFAULT_STEP_PARAM_NAME
+                            + stepParameterName
                             + "' parameter value will be used for 'previousFlowAction'.");
                 }
                 previousFlowAction = step;
@@ -235,11 +245,8 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                         + "' will not be executed because it is executed in the wrong order.");
             }
 
-            invocation
-                    .getInvocationContext()
-                    .getValueStack()
-                    .set(VIEW_ACTION_PARAM,
-                            nextAction + DEFAULT_VIEW_ACTION_POSTFIX);
+            invocation.getInvocationContext().getValueStack()
+                    .set(VIEW_ACTION_PARAM, nextAction + viewActionPostfix);
             return GLOBAL_VIEW_RESULT;
         }
 
@@ -248,18 +255,14 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                     .set(NEXT_ACTION_PARAM, nextAction);
         } else if (prevActionName.equals(actionName)) {
             if (FIRST_FLOW_ACTION_NAME.equals(previousFlowAction)) {
-                invocation
-                        .getInvocationContext()
-                        .getValueStack()
-                        .set(PREV_ACTION_PARAM,
-                                nextAction + DEFAULT_VIEW_ACTION_POSTFIX);
+                invocation.getInvocationContext().getValueStack()
+                        .set(PREV_ACTION_PARAM, nextAction + viewActionPostfix);
             } else {
                 invocation
                         .getInvocationContext()
                         .getValueStack()
                         .set(PREV_ACTION_PARAM,
-                                previousFlowAction
-                                        + DEFAULT_VIEW_ACTION_POSTFIX);
+                                previousFlowAction + viewActionPostfix);
             }
             session.put(PREVIOUS_FLOW_ACTION, prevAction);
         }
@@ -276,7 +279,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                                 .getInvocationContext()
                                 .getValueStack()
                                 .set(VIEW_ACTION_PARAM,
-                                        nextAct + DEFAULT_VIEW_ACTION_POSTFIX);
+                                        nextAct + viewActionPostfix);
                         invocation.setResultCode(GLOBAL_VIEW_RESULT);
                     }
                 }
@@ -392,12 +395,11 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
             // create view action
             if (actionConfigs.containsKey(actionConfig.getName()
-                    + DEFAULT_VIEW_ACTION_POSTFIX)) {
+                    + viewActionPostfix)) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("The '" + actionConfig.getName()
-                            + DEFAULT_VIEW_ACTION_POSTFIX
-                            + "' action is overridden in '" + packageName
-                            + "' package.");
+                            + viewActionPostfix + "' action is overridden in '"
+                            + packageName + "' package.");
                 }
             } else {
                 ResultConfig inputResultConfig = actionConfig.getResults().get(
@@ -414,9 +416,9 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                         .addParams(inputResultConfig.getParams()).build();
                 // build action configuration
                 ActionConfig act = new ActionConfig.Builder(packageName,
-                        DEFAULT_VIEW_ACTION_METHOD, actionConfig.getClassName())
-                        .name(actionConfig.getName()
-                                + DEFAULT_VIEW_ACTION_POSTFIX)
+                        actionConfig.getName() + viewActionPostfix,
+                        actionConfig.getClassName())
+                        .methodName(viewActionMethod)
                         .addInterceptors(actionConfig.getInterceptors())
                         .addResultConfig(resultConfig).build();
                 viewActionConfigs.add(act);
@@ -612,5 +614,29 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
      */
     public void setForceFlowStepsOrder(String value) {
         this.forceFlowStepsOrder = Boolean.valueOf(value).booleanValue();
+    }
+
+    /**
+     * @param viewActionPostfix
+     *            the viewActionPostfix to set
+     */
+    public void setViewActionPostfix(String viewActionPostfix) {
+        this.viewActionPostfix = viewActionPostfix;
+    }
+
+    /**
+     * @param viewActionMethod
+     *            the viewActionMethod to set
+     */
+    public void setViewActionMethod(String viewActionMethod) {
+        this.viewActionMethod = viewActionMethod;
+    }
+
+    /**
+     * @param stepParameterName
+     *            the stepParameterName to set
+     */
+    public void setStepParameterName(String stepParameterName) {
+        this.stepParameterName = stepParameterName;
     }
 }

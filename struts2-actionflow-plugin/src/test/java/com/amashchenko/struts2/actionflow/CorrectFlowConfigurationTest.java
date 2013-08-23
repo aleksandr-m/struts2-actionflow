@@ -113,13 +113,24 @@ public class CorrectFlowConfigurationTest extends StrutsJUnit4TestCase<Object> {
                 .setSession(new HashMap<String, Object>());
         proxy.execute();
 
-        ActionConfig actionConfig = configuration.getRuntimeConfiguration()
-                .getActionConfig("/correctFlowOverride", "savePhoneView");
+        ActionConfig overriddenViewConf = configuration
+                .getRuntimeConfiguration().getActionConfig(
+                        "/correctFlowOverride", "savePhoneViewOverride");
+
+        Assert.assertNotNull(overriddenViewConf);
+        Assert.assertEquals("phone", overriddenViewConf.getMethodName());
+        Assert.assertEquals("anotherPhone",
+                overriddenViewConf.getResults().get(Action.SUCCESS).getParams()
+                        .get(ServletDispatcherResult.DEFAULT_PARAM));
+
+        ActionConfig actionConfig = configuration
+                .getRuntimeConfiguration()
+                .getActionConfig("/correctFlowOverride", "saveNameViewOverride");
 
         Assert.assertNotNull(actionConfig);
-        Assert.assertEquals("phone", actionConfig.getMethodName());
+        Assert.assertEquals("executeOverride", actionConfig.getMethodName());
         Assert.assertEquals(
-                "anotherPhone",
+                "name",
                 actionConfig.getResults().get(Action.SUCCESS).getParams()
                         .get(ServletDispatcherResult.DEFAULT_PARAM));
     }
