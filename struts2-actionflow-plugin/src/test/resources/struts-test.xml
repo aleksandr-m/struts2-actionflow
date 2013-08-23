@@ -79,6 +79,9 @@
 					<param name="nextActionName">nextOverride</param>
 					<param name="prevActionName">prevOverride</param>
 					<param name="forceFlowStepsOrder">false</param>
+					<param name="viewActionPostfix">ViewOverride</param>
+					<param name="viewActionMethod">executeOverride</param>
+					<param name="stepParameterName">stepOverride</param>
 				</interceptor-ref> 
 				<interceptor-ref name="defaultStack"/>
 			</interceptor-stack>
@@ -111,7 +114,7 @@
 			<result type="redirectAction">view</result>
 		</action>
 		<!-- view action override -->
-		<action name="savePhoneView" method="phone">
+		<action name="savePhoneViewOverride" method="phone">
 			<result>anotherPhone</result>
 		</action>
 		<action name="saveEmail">
