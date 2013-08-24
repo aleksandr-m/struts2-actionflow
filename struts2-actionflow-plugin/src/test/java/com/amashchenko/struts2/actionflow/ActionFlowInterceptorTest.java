@@ -76,7 +76,11 @@ public class ActionFlowInterceptorTest extends
         }
     }
 
-    /** Parameters to use. */
+    /**
+     * Parameters to use.
+     * 
+     * @return Parameters as collection.
+     */
     @Parameters(name = "{0}")
     public static Collection<Object[]> data() {
         Object[][] data = new Object[][] { { "", "saveName", "savePhoneView" },

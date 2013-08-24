@@ -36,6 +36,12 @@ import com.opensymphony.xwork2.inject.Inject;
 import com.opensymphony.xwork2.util.logging.Logger;
 import com.opensymphony.xwork2.util.logging.LoggerFactory;
 
+/**
+ * Action flow configuration parser.
+ * 
+ * @author Aleksandr Mashchenko
+ * 
+ */
 public class ActionFlowConfigParser {
 
     /** Logger. */

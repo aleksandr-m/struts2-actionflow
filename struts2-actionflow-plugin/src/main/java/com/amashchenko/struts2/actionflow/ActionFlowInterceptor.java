@@ -79,7 +79,7 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
  * <!-- START SNIPPET: example-configuration -->
  * &lt;action name="saveName" method="saveName" class="com.example.FlowAction"&gt;
  *     &lt;param name="actionFlowStep"&gt;1&lt;/param&gt;
- *     
+ * 
  *     &lt;result name="input"&gt;input_result.jsp&lt;/result&gt;
  *     &lt;result name="success"&gt;success_result.jsp&lt;/result&gt;
  * &lt;/action&gt;
@@ -303,7 +303,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     }
 
     /**
-     * @param forceFlowStepsOrder
+     * @param value
      *            the forceFlowStepsOrder to set
      */
     public void setForceFlowStepsOrder(String value) {
