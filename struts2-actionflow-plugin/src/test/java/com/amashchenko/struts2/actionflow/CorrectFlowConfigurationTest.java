@@ -49,13 +49,13 @@ public class CorrectFlowConfigurationTest extends StrutsJUnit4TestCase<Object> {
      */
     @Test
     public void testCreateFlowMap() throws Exception {
-        ActionFlowInterceptor interceptor = new ActionFlowInterceptor();
+        ActionFlowConfigParser interceptor = new ActionFlowConfigParser();
         injectStrutsDependencies(interceptor);
 
         Assert.assertNotNull(interceptor);
 
-        Map<String, Map<String, String>> map = interceptor
-                .createFlowMap("correctFlow");
+        Map<String, Map<String, String>> map = interceptor.createFlowMap(
+                "correctFlow", "next", "prev", "View", "execute");
 
         Assert.assertNotNull(map);
 
