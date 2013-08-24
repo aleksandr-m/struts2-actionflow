@@ -26,7 +26,7 @@
     <packaging>war</packaging>
     <name>struts2-actionflow-showcase</name>
  	
-    <description>Struts2 ActionFlow Plug-in Showcase</description>
+    <description>Struts2 ActionFlow Plug-in Showcase.</description>
  
     <inceptionYear>2013</inceptionYear>
 
@@ -34,6 +34,7 @@
         <license>
             <name>The Apache Software License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
         </license>
     </licenses> 
  
