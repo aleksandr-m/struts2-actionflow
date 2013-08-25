@@ -19,422 +19,422 @@
 <!DOCTYPE struts PUBLIC
     "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
     "http://struts.apache.org/dtds/struts-2.3.dtd">
-    
+
 <struts>
 
-	<package name="noFlow" namespace="/noFlow" extends="actionflow-default">
-		<action name="noFlow">
-			<result>homepage</result>
-		</action>
-		<action name="saveName" method="saveName">
-			<result name="input">name</result>
-			<result name="error">name</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="savePhone" method="savePhone">
-			<result name="input">phone</result>
-			<result name="error">phone</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="saveEmail" method="saveEmail">
-			<result name="input">email</result>
-			<result name="error">email</result>
-			<result>finish</result>
-		</action>
-	</package>
+    <package name="noFlow" namespace="/noFlow" extends="actionflow-default">
+        <action name="noFlow">
+            <result>homepage</result>
+        </action>
+        <action name="saveName" method="saveName">
+            <result name="input">name</result>
+            <result name="error">name</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="savePhone" method="savePhone">
+            <result name="input">phone</result>
+            <result name="error">phone</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="saveEmail" method="saveEmail">
+            <result name="input">email</result>
+            <result name="error">email</result>
+            <result>finish</result>
+        </action>
+    </package>
 
-	<package name="correctFlow" namespace="/correctFlow" extends="actionflow-default">
-		<action name="correctFlow">
-			<result>homepage</result>
-		</action>
-		<action name="saveName">
-			<param name="actionFlowStep">1</param>
-			
-			<result name="input">name</result>
-			<result name="error">name</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="savePhone">
-			<param name="actionFlowStep">2</param>
-		
-			<result name="input">phone</result>
-			<result name="error">phone</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="saveEmail">
-			<param name="actionFlowStep">3</param>
-		
-			<result name="input">email</result>
-			<result name="error">email</result>
-			<result>finish</result>
-		</action>
-	</package>
-	
-	<package name="correctFlowOverride" namespace="/correctFlowOverride" extends="actionflow-default">
-		<interceptors>
-			<interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
-			
-			<interceptor-stack name="actionFlowDefaultStack">
-				<interceptor-ref name="actionFlow">
-					<param name="nextActionName">nextOverride</param>
-					<param name="prevActionName">prevOverride</param>
-					<param name="forceFlowStepsOrder">false</param>
-					<param name="viewActionPostfix">ViewOverride</param>
-					<param name="viewActionMethod">executeOverride</param>
-					<param name="stepParameterName">stepOverride</param>
-				</interceptor-ref> 
-				<interceptor-ref name="defaultStack"/>
-			</interceptor-stack>
-		</interceptors>	
-				
-		<default-interceptor-ref name="actionFlowDefaultStack" />
-		
-		<action name="nextOverride">
-			<result type="chain">${nextAction}</result>
-		</action>
-		<action name="prevOverride">
-			<result type="redirectAction">${prevAction}</result>
-		</action>
-		
-		<action name="correctFlowOverride">
-			<result>homepage</result>
-		</action>
-		<action name="saveName">
-			<param name="actionFlowStep">1</param>
-			
-			<result name="input">name</result>
-			<result name="error">name</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="savePhone">
-			<param name="actionFlowStep">2</param>
-		
-			<result name="input">phone</result>
-			<result name="error">phone</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<!-- view action override -->
-		<action name="savePhoneViewOverride" method="phone">
-			<result>anotherPhone</result>
-		</action>
-		<action name="saveEmail">
-			<param name="actionFlowStep">3</param>
-		
-			<result name="input">email</result>
-			<result name="error">email</result>
-			<result>finish</result>
-		</action>
-	</package>
-
-
-	<package name="noInputResult" namespace="/noInputResult" extends="actionflow-default">
-		<action name="noInputResult">
-			<result>homepage</result>
-		</action>
-		<action name="saveName" method="saveName">
-			<param name="actionFlowStep">1</param>
-			<result name="input">name</result>
-			<result name="error">name</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<!-- no input result -->
-		<action name="savePhone" method="savePhone">
-			<param name="actionFlowStep">2</param>
-			<result name="error">phone</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="saveEmail" method="saveEmail">
-			<param name="actionFlowStep">3</param>
-			<result name="input">email</result>
-			<result name="error">email</result>
-			<result type="redirectAction">view</result>
-		</action>
-	</package>
-	
-	<package name="sameFlowSteps" namespace="/sameFlowSteps" extends="actionflow-default">
-		<action name="sameFlowSteps">
-			<result>homepage</result>
-		</action>
-		<action name="saveName" method="saveName">
-			<param name="actionFlowStep">1</param>
-			<result name="input">name</result>
-			<result name="error">name</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<!-- same actionFlowStep step as in saveEmail action -->
-		<action name="savePhone" method="savePhone">
-			<param name="actionFlowStep">2</param>
-			<result name="input">phone</result>
-			<result name="error">phone</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<!-- same actionFlowStep step as in savePhone action -->
-		<action name="saveEmail" method="saveEmail">
-			<param name="actionFlowStep">2</param>
-			<result name="input">email</result>
-			<result name="error">email</result>
-			<result type="redirectAction">view</result>
-		</action>
-	</package>
-
-	<package name="wrongTypeNextAction" namespace="/wrongTypeNextAction" extends="struts-default">
-		<interceptors>
-			<interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
-			
-			<interceptor-stack name="actionFlowDefaultStack">
-				<interceptor-ref name="actionFlow"/> 
-				<interceptor-ref name="defaultStack"/>
-			</interceptor-stack>
-		</interceptors>	
-				
-		<default-interceptor-ref name="actionFlowDefaultStack" />
-		
-		<global-results>
-			<result name="actionFlowViewResult" type="redirectAction">${viewAction}</result>
-		</global-results>
-		
-		<action name="wrongTypeNextAction">
-			<result>homepage</result>
-		</action>
-		<!-- wrong next result type -->
-		<action name="next">
-			<result type="redirectAction">${nextAction}</result>
-		</action>
-		<action name="saveName" method="saveName">
-			<param name="actionFlowStep">1</param>
-			<result name="input">name</result>
-			<result name="error">name</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="savePhone" method="savePhone">
-			<param name="actionFlowStep">2</param>
-			<result name="input">phone</result>
-			<result name="error">phone</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="saveEmail" method="saveEmail">
-			<param name="actionFlowStep">3</param>
-			<result name="input">email</result>
-			<result name="error">email</result>
-			<result type="redirectAction">view</result>
-		</action>
-	</package>
-
-	<package name="wrongNextParam" namespace="/wrongNextParam" extends="struts-default">
-		<interceptors>
-			<interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
-			
-			<interceptor-stack name="actionFlowDefaultStack">
-				<interceptor-ref name="actionFlow"/> 
-				<interceptor-ref name="defaultStack"/>
-			</interceptor-stack>
-		</interceptors>	
-				
-		<default-interceptor-ref name="actionFlowDefaultStack" />
-		
-		<global-results>
-			<result name="actionFlowViewResult" type="redirectAction">${viewAction}</result>
-		</global-results>
-		
-		<action name="wrongNextParam">
-			<result>homepage</result>
-		</action>
-		<!-- wrong next param -->
-		<action name="next">
-			<result type="chain">${nextActionWrong}</result>
-		</action>
-		<action name="saveName" method="saveName">
-			<param name="actionFlowStep">1</param>
-			<result name="input">name</result>
-			<result name="error">name</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="savePhone" method="savePhone">
-			<param name="actionFlowStep">2</param>
-			<result name="input">phone</result>
-			<result name="error">phone</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="saveEmail" method="saveEmail">
-			<param name="actionFlowStep">3</param>
-			<result name="input">email</result>
-			<result name="error">email</result>
-			<result type="redirectAction">view</result>
-		</action>
-	</package>
+    <package name="correctFlow" namespace="/correctFlow" extends="actionflow-default">
+        <action name="correctFlow">
+            <result>homepage</result>
+        </action>
+        <action name="saveName">
+            <param name="actionFlowStep">1</param>
+            
+            <result name="input">name</result>
+            <result name="error">name</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="savePhone">
+            <param name="actionFlowStep">2</param>
+        
+            <result name="input">phone</result>
+            <result name="error">phone</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="saveEmail">
+            <param name="actionFlowStep">3</param>
+        
+            <result name="input">email</result>
+            <result name="error">email</result>
+            <result>finish</result>
+        </action>
+    </package>
+    
+    <package name="correctFlowOverride" namespace="/correctFlowOverride" extends="actionflow-default">
+        <interceptors>
+            <interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
+            
+            <interceptor-stack name="actionFlowDefaultStack">
+                <interceptor-ref name="actionFlow">
+                    <param name="nextActionName">nextOverride</param>
+                    <param name="prevActionName">prevOverride</param>
+                    <param name="forceFlowStepsOrder">false</param>
+                    <param name="viewActionPostfix">ViewOverride</param>
+                    <param name="viewActionMethod">executeOverride</param>
+                    <param name="stepParameterName">stepOverride</param>
+                </interceptor-ref> 
+                <interceptor-ref name="defaultStack"/>
+            </interceptor-stack>
+        </interceptors>    
+                
+        <default-interceptor-ref name="actionFlowDefaultStack" />
+        
+        <action name="nextOverride">
+            <result type="chain">${nextAction}</result>
+        </action>
+        <action name="prevOverride">
+            <result type="redirectAction">${prevAction}</result>
+        </action>
+        
+        <action name="correctFlowOverride">
+            <result>homepage</result>
+        </action>
+        <action name="saveName">
+            <param name="actionFlowStep">1</param>
+            
+            <result name="input">name</result>
+            <result name="error">name</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="savePhone">
+            <param name="actionFlowStep">2</param>
+        
+            <result name="input">phone</result>
+            <result name="error">phone</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <!-- view action override -->
+        <action name="savePhoneViewOverride" method="phone">
+            <result>anotherPhone</result>
+        </action>
+        <action name="saveEmail">
+            <param name="actionFlowStep">3</param>
+        
+            <result name="input">email</result>
+            <result name="error">email</result>
+            <result>finish</result>
+        </action>
+    </package>
 
 
-	<package name="wrongPrevParam" namespace="/wrongPrevParam" extends="actionflow-default">
-		<action name="wrongPrevParam">
-			<result>homepage</result>
-		</action>
-		<!-- wrong prev param -->
-		<action name="prev">
-			<result type="redirectAction">${prevActionWrong}</result>
-		</action>
-		<action name="saveName" method="saveName">
-			<param name="actionFlowStep">1</param>
-			<result name="input">name</result>
-			<result name="error">name</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="savePhone" method="savePhone">
-			<param name="actionFlowStep">2</param>
-			<result name="input">phone</result>
-			<result name="error">phone</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="saveEmail" method="saveEmail">
-			<param name="actionFlowStep">3</param>
-			<result name="input">email</result>
-			<result name="error">email</result>
-			<result type="redirectAction">view</result>
-		</action>
-	</package>
-	
-	<package name="prevNoSuccess" namespace="/prevNoSuccess" extends="actionflow-default">
-		<action name="prevNoSuccess">
-			<result>homepage</result>
-		</action>
-		<!-- prev no success result -->
-		<action name="prev">
-			<result name="input">${prevAction}</result>
-		</action>
-		<action name="saveName" method="saveName">
-			<param name="actionFlowStep">1</param>
-			<result name="input">name</result>
-			<result name="error">name</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="savePhone" method="savePhone">
-			<param name="actionFlowStep">2</param>
-			<result name="input">phone</result>
-			<result name="error">phone</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="saveEmail" method="saveEmail">
-			<param name="actionFlowStep">3</param>
-			<result name="input">email</result>
-			<result name="error">email</result>
-			<result type="redirectAction">view</result>
-		</action>
-	</package>
-	
-	<package name="noViewResult" namespace="/noViewResult" extends="struts-default">
-		<interceptors>
-			<interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
-			
-			<interceptor-stack name="actionFlowDefaultStack">
-				<interceptor-ref name="actionFlow"/> 
-				<interceptor-ref name="defaultStack"/>
-			</interceptor-stack>
-		</interceptors>	
-				
-		<default-interceptor-ref name="actionFlowDefaultStack" />
-		
-		<!-- no global view result -->
-		
-		<action name="noViewResult">
-			<result>homepage</result>
-		</action>
-		<action name="saveName" method="saveName">
-			<param name="actionFlowStep">1</param>
-			<result name="input">name</result>
-			<result name="error">name</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="savePhone" method="savePhone">
-			<param name="actionFlowStep">2</param>
-			<result name="input">phone</result>
-			<result name="error">phone</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="saveEmail" method="saveEmail">
-			<param name="actionFlowStep">3</param>
-			<result name="input">email</result>
-			<result name="error">email</result>
-			<result type="redirectAction">view</result>
-		</action>
-	</package>
-	
-	<package name="wrongViewResultType" namespace="/wrongViewResultType" extends="struts-default">
-		<interceptors>
-			<interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
-			
-			<interceptor-stack name="actionFlowDefaultStack">
-				<interceptor-ref name="actionFlow"/> 
-				<interceptor-ref name="defaultStack"/>
-			</interceptor-stack>
-		</interceptors>	
-				
-		<default-interceptor-ref name="actionFlowDefaultStack" />
-		
-		<global-results>
-			<!-- wrong view result type -->
-			<result name="actionFlowViewResult">${viewAction}</result>
-		</global-results>
-		
-		<action name="wrongViewResultType">
-			<result>homepage</result>
-		</action>
-		<action name="saveName" method="saveName">
-			<param name="actionFlowStep">1</param>
-			<result name="input">name</result>
-			<result name="error">name</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="savePhone" method="savePhone">
-			<param name="actionFlowStep">2</param>
-			<result name="input">phone</result>
-			<result name="error">phone</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="saveEmail" method="saveEmail">
-			<param name="actionFlowStep">3</param>
-			<result name="input">email</result>
-			<result name="error">email</result>
-			<result type="redirectAction">view</result>
-		</action>
-	</package>
-	
-	<package name="wrongViewResultParam" namespace="/wrongViewResultParam" extends="struts-default">
-		<interceptors>
-			<interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
-			
-			<interceptor-stack name="actionFlowDefaultStack">
-				<interceptor-ref name="actionFlow"/> 
-				<interceptor-ref name="defaultStack"/>
-			</interceptor-stack>
-		</interceptors>	
-				
-		<default-interceptor-ref name="actionFlowDefaultStack" />
-		
-		<global-results>
-			<!-- wrong view result type -->
-			<result name="actionFlowViewResult" type="redirectAction">${viewActionWrong}</result>
-		</global-results>
-		
-		<action name="wrongViewResultParam">
-			<result>homepage</result>
-		</action>
-		<action name="saveName" method="saveName">
-			<param name="actionFlowStep">1</param>
-			<result name="input">name</result>
-			<result name="error">name</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="savePhone" method="savePhone">
-			<param name="actionFlowStep">2</param>
-			<result name="input">phone</result>
-			<result name="error">phone</result>
-			<result type="redirectAction">view</result>
-		</action>
-		<action name="saveEmail" method="saveEmail">
-			<param name="actionFlowStep">3</param>
-			<result name="input">email</result>
-			<result name="error">email</result>
-			<result type="redirectAction">view</result>
-		</action>
-	</package>
-	
+    <package name="noInputResult" namespace="/noInputResult" extends="actionflow-default">
+        <action name="noInputResult">
+            <result>homepage</result>
+        </action>
+        <action name="saveName" method="saveName">
+            <param name="actionFlowStep">1</param>
+            <result name="input">name</result>
+            <result name="error">name</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <!-- no input result -->
+        <action name="savePhone" method="savePhone">
+            <param name="actionFlowStep">2</param>
+            <result name="error">phone</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="saveEmail" method="saveEmail">
+            <param name="actionFlowStep">3</param>
+            <result name="input">email</result>
+            <result name="error">email</result>
+            <result type="redirectAction">view</result>
+        </action>
+    </package>
+    
+    <package name="sameFlowSteps" namespace="/sameFlowSteps" extends="actionflow-default">
+        <action name="sameFlowSteps">
+            <result>homepage</result>
+        </action>
+        <action name="saveName" method="saveName">
+            <param name="actionFlowStep">1</param>
+            <result name="input">name</result>
+            <result name="error">name</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <!-- same actionFlowStep step as in saveEmail action -->
+        <action name="savePhone" method="savePhone">
+            <param name="actionFlowStep">2</param>
+            <result name="input">phone</result>
+            <result name="error">phone</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <!-- same actionFlowStep step as in savePhone action -->
+        <action name="saveEmail" method="saveEmail">
+            <param name="actionFlowStep">2</param>
+            <result name="input">email</result>
+            <result name="error">email</result>
+            <result type="redirectAction">view</result>
+        </action>
+    </package>
+
+    <package name="wrongTypeNextAction" namespace="/wrongTypeNextAction" extends="struts-default">
+        <interceptors>
+            <interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
+            
+            <interceptor-stack name="actionFlowDefaultStack">
+                <interceptor-ref name="actionFlow"/> 
+                <interceptor-ref name="defaultStack"/>
+            </interceptor-stack>
+        </interceptors>    
+                
+        <default-interceptor-ref name="actionFlowDefaultStack" />
+        
+        <global-results>
+            <result name="actionFlowViewResult" type="redirectAction">${viewAction}</result>
+        </global-results>
+        
+        <action name="wrongTypeNextAction">
+            <result>homepage</result>
+        </action>
+        <!-- wrong next result type -->
+        <action name="next">
+            <result type="redirectAction">${nextAction}</result>
+        </action>
+        <action name="saveName" method="saveName">
+            <param name="actionFlowStep">1</param>
+            <result name="input">name</result>
+            <result name="error">name</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="savePhone" method="savePhone">
+            <param name="actionFlowStep">2</param>
+            <result name="input">phone</result>
+            <result name="error">phone</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="saveEmail" method="saveEmail">
+            <param name="actionFlowStep">3</param>
+            <result name="input">email</result>
+            <result name="error">email</result>
+            <result type="redirectAction">view</result>
+        </action>
+    </package>
+
+    <package name="wrongNextParam" namespace="/wrongNextParam" extends="struts-default">
+        <interceptors>
+            <interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
+            
+            <interceptor-stack name="actionFlowDefaultStack">
+                <interceptor-ref name="actionFlow"/> 
+                <interceptor-ref name="defaultStack"/>
+            </interceptor-stack>
+        </interceptors>    
+                
+        <default-interceptor-ref name="actionFlowDefaultStack" />
+        
+        <global-results>
+            <result name="actionFlowViewResult" type="redirectAction">${viewAction}</result>
+        </global-results>
+        
+        <action name="wrongNextParam">
+            <result>homepage</result>
+        </action>
+        <!-- wrong next param -->
+        <action name="next">
+            <result type="chain">${nextActionWrong}</result>
+        </action>
+        <action name="saveName" method="saveName">
+            <param name="actionFlowStep">1</param>
+            <result name="input">name</result>
+            <result name="error">name</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="savePhone" method="savePhone">
+            <param name="actionFlowStep">2</param>
+            <result name="input">phone</result>
+            <result name="error">phone</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="saveEmail" method="saveEmail">
+            <param name="actionFlowStep">3</param>
+            <result name="input">email</result>
+            <result name="error">email</result>
+            <result type="redirectAction">view</result>
+        </action>
+    </package>
+
+
+    <package name="wrongPrevParam" namespace="/wrongPrevParam" extends="actionflow-default">
+        <action name="wrongPrevParam">
+            <result>homepage</result>
+        </action>
+        <!-- wrong prev param -->
+        <action name="prev">
+            <result type="redirectAction">${prevActionWrong}</result>
+        </action>
+        <action name="saveName" method="saveName">
+            <param name="actionFlowStep">1</param>
+            <result name="input">name</result>
+            <result name="error">name</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="savePhone" method="savePhone">
+            <param name="actionFlowStep">2</param>
+            <result name="input">phone</result>
+            <result name="error">phone</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="saveEmail" method="saveEmail">
+            <param name="actionFlowStep">3</param>
+            <result name="input">email</result>
+            <result name="error">email</result>
+            <result type="redirectAction">view</result>
+        </action>
+    </package>
+    
+    <package name="prevNoSuccess" namespace="/prevNoSuccess" extends="actionflow-default">
+        <action name="prevNoSuccess">
+            <result>homepage</result>
+        </action>
+        <!-- prev no success result -->
+        <action name="prev">
+            <result name="input">${prevAction}</result>
+        </action>
+        <action name="saveName" method="saveName">
+            <param name="actionFlowStep">1</param>
+            <result name="input">name</result>
+            <result name="error">name</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="savePhone" method="savePhone">
+            <param name="actionFlowStep">2</param>
+            <result name="input">phone</result>
+            <result name="error">phone</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="saveEmail" method="saveEmail">
+            <param name="actionFlowStep">3</param>
+            <result name="input">email</result>
+            <result name="error">email</result>
+            <result type="redirectAction">view</result>
+        </action>
+    </package>
+    
+    <package name="noViewResult" namespace="/noViewResult" extends="struts-default">
+        <interceptors>
+            <interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
+            
+            <interceptor-stack name="actionFlowDefaultStack">
+                <interceptor-ref name="actionFlow"/> 
+                <interceptor-ref name="defaultStack"/>
+            </interceptor-stack>
+        </interceptors>    
+                
+        <default-interceptor-ref name="actionFlowDefaultStack" />
+        
+        <!-- no global view result -->
+        
+        <action name="noViewResult">
+            <result>homepage</result>
+        </action>
+        <action name="saveName" method="saveName">
+            <param name="actionFlowStep">1</param>
+            <result name="input">name</result>
+            <result name="error">name</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="savePhone" method="savePhone">
+            <param name="actionFlowStep">2</param>
+            <result name="input">phone</result>
+            <result name="error">phone</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="saveEmail" method="saveEmail">
+            <param name="actionFlowStep">3</param>
+            <result name="input">email</result>
+            <result name="error">email</result>
+            <result type="redirectAction">view</result>
+        </action>
+    </package>
+    
+    <package name="wrongViewResultType" namespace="/wrongViewResultType" extends="struts-default">
+        <interceptors>
+            <interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
+            
+            <interceptor-stack name="actionFlowDefaultStack">
+                <interceptor-ref name="actionFlow"/> 
+                <interceptor-ref name="defaultStack"/>
+            </interceptor-stack>
+        </interceptors>    
+                
+        <default-interceptor-ref name="actionFlowDefaultStack" />
+        
+        <global-results>
+            <!-- wrong view result type -->
+            <result name="actionFlowViewResult">${viewAction}</result>
+        </global-results>
+        
+        <action name="wrongViewResultType">
+            <result>homepage</result>
+        </action>
+        <action name="saveName" method="saveName">
+            <param name="actionFlowStep">1</param>
+            <result name="input">name</result>
+            <result name="error">name</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="savePhone" method="savePhone">
+            <param name="actionFlowStep">2</param>
+            <result name="input">phone</result>
+            <result name="error">phone</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="saveEmail" method="saveEmail">
+            <param name="actionFlowStep">3</param>
+            <result name="input">email</result>
+            <result name="error">email</result>
+            <result type="redirectAction">view</result>
+        </action>
+    </package>
+    
+    <package name="wrongViewResultParam" namespace="/wrongViewResultParam" extends="struts-default">
+        <interceptors>
+            <interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
+            
+            <interceptor-stack name="actionFlowDefaultStack">
+                <interceptor-ref name="actionFlow"/> 
+                <interceptor-ref name="defaultStack"/>
+            </interceptor-stack>
+        </interceptors>    
+                
+        <default-interceptor-ref name="actionFlowDefaultStack" />
+        
+        <global-results>
+            <!-- wrong view result type -->
+            <result name="actionFlowViewResult" type="redirectAction">${viewActionWrong}</result>
+        </global-results>
+        
+        <action name="wrongViewResultParam">
+            <result>homepage</result>
+        </action>
+        <action name="saveName" method="saveName">
+            <param name="actionFlowStep">1</param>
+            <result name="input">name</result>
+            <result name="error">name</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="savePhone" method="savePhone">
+            <param name="actionFlowStep">2</param>
+            <result name="input">phone</result>
+            <result name="error">phone</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="saveEmail" method="saveEmail">
+            <param name="actionFlowStep">3</param>
+            <result name="input">email</result>
+            <result name="error">email</result>
+            <result type="redirectAction">view</result>
+        </action>
+    </package>
+    
 </struts>

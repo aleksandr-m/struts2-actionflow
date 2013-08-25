@@ -22,6 +22,8 @@
     
 <struts>
 
+    <bean class="com.amashchenko.struts2.actionflow.ActionFlowConfigBuilder" />
+
     <package name="actionflow-default" extends="struts-default">
         <interceptors>
             <interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />

@@ -47,7 +47,11 @@ public class WrongFlowConfigurationTest extends StrutsJUnit4TestCase<Object> {
         return "struts-plugin.xml, struts-test.xml";
     }
 
-    /** Parameters to use. */
+    /**
+     * Parameters to use.
+     * 
+     * @return Parameters as collection.
+     */
     @Parameters(name = "{0}")
     public static Collection<Object[]> data() {
         Object[][] data = new Object[][] { { "/noInputResult/noInputResult" },

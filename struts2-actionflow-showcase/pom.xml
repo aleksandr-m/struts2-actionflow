@@ -20,13 +20,13 @@
     <parent>
         <groupId>com.amashchenko.struts2.actionflow</groupId>
         <artifactId>struts2-actionflow-parent</artifactId>
-        <version>1.5.2</version>
+        <version>1.5.3</version>
     </parent>
     <artifactId>struts2-actionflow-showcase</artifactId>
     <packaging>war</packaging>
     <name>struts2-actionflow-showcase</name>
  	
-    <description>Struts2 ActionFlow Plug-in Showcase</description>
+    <description>Struts2 ActionFlow Plug-in Showcase.</description>
  
     <inceptionYear>2013</inceptionYear>
 
@@ -34,6 +34,7 @@
         <license>
             <name>The Apache Software License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
         </license>
     </licenses> 
  
