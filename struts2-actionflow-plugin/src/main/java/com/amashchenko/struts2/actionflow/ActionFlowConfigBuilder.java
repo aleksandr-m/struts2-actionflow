@@ -16,6 +16,7 @@
 package com.amashchenko.struts2.actionflow;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -37,17 +38,18 @@ import com.opensymphony.xwork2.util.logging.Logger;
 import com.opensymphony.xwork2.util.logging.LoggerFactory;
 
 /**
- * Action flow configuration parser.
+ * Action flow configuration builder. Creates action flow configuration map.
  * 
  * @author Aleksandr Mashchenko
  * 
  */
-public class ActionFlowConfigParser {
+public class ActionFlowConfigBuilder {
 
     /** Logger. */
     public static final Logger LOG = LoggerFactory
-            .getLogger(ActionFlowConfigParser.class);
+            .getLogger(ActionFlowConfigBuilder.class);
 
+    /** Parameter indicating that this action belongs to action flow. */
     private static final String PARAM_ACTION_FLOW_STEP = "actionFlowStep";
 
     /** XWork configuration. */
@@ -216,8 +218,8 @@ public class ActionFlowConfigParser {
                         actionConfig.getName());
                 v.put(ActionFlowInterceptor.PREV_ACTION_PARAM,
                         ActionFlowInterceptor.FIRST_FLOW_ACTION_NAME);
-                actionFlows
-                        .put(ActionFlowInterceptor.FIRST_FLOW_ACTION_NAME, v);
+                actionFlows.put(ActionFlowInterceptor.FIRST_FLOW_ACTION_NAME,
+                        Collections.unmodifiableMap(v));
             } else {
                 prevActionVal = actionsStepMap.get(prevKey).getName();
             }
@@ -226,7 +228,8 @@ public class ActionFlowConfigParser {
             v.put(ActionFlowInterceptor.NEXT_ACTION_PARAM, nextActionVal);
             v.put(ActionFlowInterceptor.PREV_ACTION_PARAM, prevActionVal);
 
-            actionFlows.put(actionConfig.getName(), v);
+            actionFlows.put(actionConfig.getName(),
+                    Collections.unmodifiableMap(v));
 
             prevKey = key;
         }
@@ -364,6 +367,6 @@ public class ActionFlowConfigParser {
             configuration.addPackageConfig(packageName, pconf);
             configuration.rebuildRuntimeConfiguration();
         }
-        return actionFlows;
+        return Collections.unmodifiableMap(actionFlows);
     }
 }

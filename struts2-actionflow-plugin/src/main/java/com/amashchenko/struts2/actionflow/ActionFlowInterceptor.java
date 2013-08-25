@@ -141,9 +141,9 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     /** Holds action flows. */
     private Map<String, Map<String, String>> flowMap;
 
-    /** Action flow configuration parser. */
+    /** Action flow configuration builder. */
     @Inject
-    private ActionFlowConfigParser flowConfigParser;
+    private ActionFlowConfigBuilder flowConfigBuilder;
 
     /** {@inheritDoc} */
     @Override
@@ -153,7 +153,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         if (flowMap == null) {
             String packageName = invocation.getProxy().getConfig()
                     .getPackageName();
-            flowMap = flowConfigParser.createFlowMap(packageName,
+            flowMap = flowConfigBuilder.createFlowMap(packageName,
                     nextActionName, prevActionName, viewActionPostfix,
                     viewActionMethod);
         }
