@@ -199,13 +199,12 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                 // greater than previousFlowAction index
                 if (flowMap.containsKey(previousFlowAction)
                         && flowMap.containsKey(step)) {
-                    String pfai = flowMap.get(previousFlowAction).get(
+                    String indexStrPrev = flowMap.get(previousFlowAction).get(
                             ACTION_FLOW_INDEX);
-                    String stepi = flowMap.get(step).get(ACTION_FLOW_INDEX);
-                    int indexPrev = 0;
-                    int indexStep = 0;
-                    indexPrev = Integer.parseInt(pfai);
-                    indexStep = Integer.parseInt(stepi);
+                    String indexStrStep = flowMap.get(step).get(
+                            ACTION_FLOW_INDEX);
+                    int indexPrev = Integer.parseInt(indexStrPrev);
+                    int indexStep = Integer.parseInt(indexStrStep);
                     if (indexStep < indexPrev) {
                         if (LOG.isDebugEnabled()) {
                             LOG.debug("The 'previousFlowAction' value from session is '"
