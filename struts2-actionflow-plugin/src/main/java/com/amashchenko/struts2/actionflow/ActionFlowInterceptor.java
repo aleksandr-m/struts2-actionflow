@@ -40,22 +40,22 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
  * <ul>
  * <p/>
  * <li>nextActionName (optional) - Name of the 'next' action. If none is
- * specified the default name {@value #DEFAULT_NEXT_ACTION_NAME} will be used.</li>
+ * specified the default name <code>next</code> will be used.</li>
  * <p/>
  * <li>prevActionName (optional) - Name of the 'previous' action. If none is
- * specified the default name {@value #DEFAULT_PREV_ACTION_NAME} will be used.</li>
+ * specified the default name <code>prev</code> will be used.</li>
  * <p/>
  * <li>forceFlowStepsOrder (optional) - To force the order of flow action
  * executions. The default is <code>true</code>.</li>
  * <p/>
  * <li>viewActionPostfix (optional) - String to append to generated view action
- * name. The default is {@value #DEFAULT_VIEW_ACTION_POSTFIX}.</li>
+ * name. The default is <code>View</code>.</li>
  * <p/>
  * <li>viewActionMethod (optional) - Action method to execute in generated view
- * actions. The default is {@value #DEFAULT_VIEW_ACTION_METHOD}.</li>
+ * actions. The default is <code>execute</code>.</li>
  * <p/>
  * <li>stepParameterName (optional) - Name of the form parameter holding
- * previous action value. The default is {@value #DEFAULT_STEP_PARAM_NAME}.</li>
+ * previous action value. The default is <code>step</code>.</li>
  * <p/>
  * </ul>
  * <p/>
