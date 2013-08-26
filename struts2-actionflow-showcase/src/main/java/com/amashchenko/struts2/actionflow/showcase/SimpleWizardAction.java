@@ -21,32 +21,58 @@ import org.apache.struts2.interceptor.SessionAware;
 
 import com.opensymphony.xwork2.ActionSupport;
 
+/**
+ * Simple wizard action.
+ * 
+ * @author Aleksandr Mashchenko
+ * 
+ */
 public class SimpleWizardAction extends ActionSupport implements SessionAware {
 
     /** Serial version uid. */
     private static final long serialVersionUID = 1023310153547766887L;
 
+    /** HTTP session. */
     private Map<String, Object> session;
 
+    /** {@inheritDoc} */
     @Override
     public void setSession(Map<String, Object> session) {
         this.session = session;
     }
 
+    /** Name input. */
     private String name;
+    /** Phone input. */
     private String phone;
+    /** Email input. */
     private String email;
 
+    /**
+     * Saves name.
+     * 
+     * @return action result.
+     */
     public String saveName() {
         session.put("names", name);
         return SUCCESS;
     }
 
+    /**
+     * Saves phone.
+     * 
+     * @return action result.
+     */
     public String savePhone() {
         session.put("phones", phone);
         return SUCCESS;
     }
 
+    /**
+     * Saves email.
+     * 
+     * @return action result.
+     */
     public String saveEmail() {
         session.put("emails", email);
         return SUCCESS;

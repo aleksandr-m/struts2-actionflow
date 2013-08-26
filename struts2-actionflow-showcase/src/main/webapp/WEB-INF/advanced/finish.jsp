@@ -9,9 +9,9 @@
 		<h4>advanced example</h4>
 		finish<br/><br/>
 		
-		<s:property value="#session.names"/><br/>
-		<s:property value="#session.phones"/><br/>
-		<s:property value="#session.emails"/><br/>
+		Name: <s:property value="#session.names"/><br/>
+		Phone: <s:property value="#session.phones"/><br/>
+		Email: <s:property value="#session.emails"/><br/>
 		
 		<br/>
 		<s:url var="m1Url" action="start" namespace="/"/>
