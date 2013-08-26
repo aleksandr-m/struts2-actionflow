@@ -210,13 +210,13 @@ public class ActionFlowInterceptorTest extends
     }
 
     /**
-     * Tests step parameter mismatch.
+     * Tests step parameter is a previous action.
      * 
      * @throws Exception
      *             when something goes wrong.
      */
     @Test
-    public void testStepParameterMismatch() throws Exception {
+    public void testStepParameterPrevAction() throws Exception {
         executeAction(startingAction);
         initServletMockObjects();
         request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "savePhone");
@@ -233,6 +233,32 @@ public class ActionFlowInterceptorTest extends
 
         String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
         Assert.assertEquals("savePhoneView" + suffix, viewActionParam);
+    }
+
+    /**
+     * Tests step parameter is a next action.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
+    @Test
+    public void testStepParameterNextAction() throws Exception {
+        executeAction(startingAction);
+        initServletMockObjects();
+        request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "saveName");
+        request.setParameter("step" + suffix, "savePhone");
+        executeAction(nextAction);
+        String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
+        Assert.assertEquals("savePhone", previousAction);
+
+        String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
+        Assert.assertEquals("savePhone", nextActionParam);
+
+        String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
+        Assert.assertEquals(null, prevActionParam);
+
+        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
+        Assert.assertEquals("saveEmailView" + suffix, viewActionParam);
     }
 
     /**

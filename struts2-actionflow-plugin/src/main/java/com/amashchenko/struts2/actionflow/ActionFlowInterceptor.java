@@ -129,6 +129,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     protected static final String NEXT_ACTION_PARAM = "nextAction";
     protected static final String PREV_ACTION_PARAM = "prevAction";
     protected static final String VIEW_ACTION_PARAM = "viewAction";
+    protected static final String ACTION_FLOW_INDEX = "index";
 
     // interceptor parameters
     private String nextActionName = DEFAULT_NEXT_ACTION_NAME;
@@ -194,18 +195,33 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             }
 
             if (step != null && !step.equals(previousFlowAction)) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("The 'previousFlowAction' value from session is '"
-                            + previousFlowAction
-                            + "', but '"
-                            + stepParameterName
-                            + "' parameter value is '"
-                            + step
-                            + "' The '"
-                            + stepParameterName
-                            + "' parameter value will be used for 'previousFlowAction'.");
+                // check indexes, step parameter action flow index cannot be
+                // greater than previousFlowAction index
+                if (flowMap.containsKey(previousFlowAction)
+                        && flowMap.containsKey(step)) {
+                    String pfai = flowMap.get(previousFlowAction).get(
+                            ACTION_FLOW_INDEX);
+                    String stepi = flowMap.get(step).get(ACTION_FLOW_INDEX);
+                    int indexPrev = 0;
+                    int indexStep = 0;
+                    indexPrev = Integer.parseInt(pfai);
+                    indexStep = Integer.parseInt(stepi);
+                    if (indexStep < indexPrev) {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("The 'previousFlowAction' value from session is '"
+                                    + previousFlowAction
+                                    + "', but '"
+                                    + stepParameterName
+                                    + "' parameter value is '"
+                                    + step
+                                    + "' The '"
+                                    + stepParameterName
+                                    + "' parameter value will be used for 'previousFlowAction'.");
+                        }
+
+                        previousFlowAction = step;
+                    }
                 }
-                previousFlowAction = step;
             }
         }
 
