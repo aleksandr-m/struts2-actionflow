@@ -59,18 +59,39 @@ public class CorrectFlowConfigurationTest extends StrutsJUnit4TestCase<Object> {
 
         Assert.assertNotNull(map);
 
-        // check saveName
-        String action = "saveName";
+        // check firstFlowAction
+        String action = "firstFlowAction";
 
         Assert.assertTrue(map.containsKey(action));
         Assert.assertTrue(map.get(action).containsKey(
                 ActionFlowInterceptor.NEXT_ACTION_PARAM));
         Assert.assertTrue(map.get(action).containsKey(
                 ActionFlowInterceptor.PREV_ACTION_PARAM));
+        Assert.assertTrue(map.get(action).containsKey(
+                ActionFlowInterceptor.ACTION_FLOW_INDEX));
+        Assert.assertEquals("saveName",
+                map.get(action).get(ActionFlowInterceptor.NEXT_ACTION_PARAM));
+        Assert.assertEquals("firstFlowAction",
+                map.get(action).get(ActionFlowInterceptor.PREV_ACTION_PARAM));
+        Assert.assertEquals("0",
+                map.get(action).get(ActionFlowInterceptor.ACTION_FLOW_INDEX));
+
+        // check saveName
+        action = "saveName";
+
+        Assert.assertTrue(map.containsKey(action));
+        Assert.assertTrue(map.get(action).containsKey(
+                ActionFlowInterceptor.NEXT_ACTION_PARAM));
+        Assert.assertTrue(map.get(action).containsKey(
+                ActionFlowInterceptor.PREV_ACTION_PARAM));
+        Assert.assertTrue(map.get(action).containsKey(
+                ActionFlowInterceptor.ACTION_FLOW_INDEX));
         Assert.assertEquals("savePhone",
                 map.get(action).get(ActionFlowInterceptor.NEXT_ACTION_PARAM));
         Assert.assertEquals("firstFlowAction",
                 map.get(action).get(ActionFlowInterceptor.PREV_ACTION_PARAM));
+        Assert.assertEquals("1",
+                map.get(action).get(ActionFlowInterceptor.ACTION_FLOW_INDEX));
 
         // check savePhone
         action = "savePhone";
@@ -80,10 +101,14 @@ public class CorrectFlowConfigurationTest extends StrutsJUnit4TestCase<Object> {
                 ActionFlowInterceptor.NEXT_ACTION_PARAM));
         Assert.assertTrue(map.get(action).containsKey(
                 ActionFlowInterceptor.PREV_ACTION_PARAM));
+        Assert.assertTrue(map.get(action).containsKey(
+                ActionFlowInterceptor.ACTION_FLOW_INDEX));
         Assert.assertEquals("saveEmail",
                 map.get(action).get(ActionFlowInterceptor.NEXT_ACTION_PARAM));
         Assert.assertEquals("saveName",
                 map.get(action).get(ActionFlowInterceptor.PREV_ACTION_PARAM));
+        Assert.assertEquals("2",
+                map.get(action).get(ActionFlowInterceptor.ACTION_FLOW_INDEX));
 
         // check saveEmail
         action = "saveEmail";
@@ -93,10 +118,14 @@ public class CorrectFlowConfigurationTest extends StrutsJUnit4TestCase<Object> {
                 ActionFlowInterceptor.NEXT_ACTION_PARAM));
         Assert.assertTrue(map.get(action).containsKey(
                 ActionFlowInterceptor.PREV_ACTION_PARAM));
+        Assert.assertTrue(map.get(action).containsKey(
+                ActionFlowInterceptor.ACTION_FLOW_INDEX));
         Assert.assertEquals(null,
                 map.get(action).get(ActionFlowInterceptor.NEXT_ACTION_PARAM));
         Assert.assertEquals("savePhone",
                 map.get(action).get(ActionFlowInterceptor.PREV_ACTION_PARAM));
+        Assert.assertEquals("3",
+                map.get(action).get(ActionFlowInterceptor.ACTION_FLOW_INDEX));
     }
 
     /**

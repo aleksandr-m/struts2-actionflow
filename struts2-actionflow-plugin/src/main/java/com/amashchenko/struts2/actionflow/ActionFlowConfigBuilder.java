@@ -148,7 +148,7 @@ public class ActionFlowConfigBuilder {
             }
         }
 
-        // holds action flows: {1:{nextAction:2,prevAction:0}}
+        // holds action flows: {1:{nextAction:2,prevAction:0,index:1}}
         Map<String, Map<String, String>> actionFlows = new HashMap<String, Map<String, String>>();
 
         List<ActionConfig> viewActionConfigs = new ArrayList<ActionConfig>();
@@ -157,6 +157,8 @@ public class ActionFlowConfigBuilder {
         ListIterator<String> mapkeyitr = keys.listIterator();
 
         String prevKey = null;
+        // starting from 1 because of the FIRST_FLOW_ACTION_NAME
+        int index = 1;
         while (mapkeyitr.hasNext()) {
             String key = mapkeyitr.next();
 
@@ -218,6 +220,7 @@ public class ActionFlowConfigBuilder {
                         actionConfig.getName());
                 v.put(ActionFlowInterceptor.PREV_ACTION_PARAM,
                         ActionFlowInterceptor.FIRST_FLOW_ACTION_NAME);
+                v.put(ActionFlowInterceptor.ACTION_FLOW_INDEX, "0");
                 actionFlows.put(ActionFlowInterceptor.FIRST_FLOW_ACTION_NAME,
                         Collections.unmodifiableMap(v));
             } else {
@@ -227,11 +230,13 @@ public class ActionFlowConfigBuilder {
             Map<String, String> v = new HashMap<String, String>();
             v.put(ActionFlowInterceptor.NEXT_ACTION_PARAM, nextActionVal);
             v.put(ActionFlowInterceptor.PREV_ACTION_PARAM, prevActionVal);
+            v.put(ActionFlowInterceptor.ACTION_FLOW_INDEX, "" + index);
 
             actionFlows.put(actionConfig.getName(),
                     Collections.unmodifiableMap(v));
 
             prevKey = key;
+            index++;
         }
 
         if (LOG.isDebugEnabled()) {
