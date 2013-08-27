@@ -17,6 +17,7 @@ package com.amashchenko.struts2.actionflow;
 
 import java.util.Map;
 
+import com.amashchenko.struts2.actionflow.entities.ActionFlowStepConfig;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.inject.Inject;
@@ -129,7 +130,6 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     protected static final String NEXT_ACTION_PARAM = "nextAction";
     protected static final String PREV_ACTION_PARAM = "prevAction";
     protected static final String VIEW_ACTION_PARAM = "viewAction";
-    protected static final String ACTION_FLOW_INDEX = "index";
 
     // interceptor parameters
     private String nextActionName = DEFAULT_NEXT_ACTION_NAME;
@@ -139,8 +139,8 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     private String viewActionMethod = DEFAULT_VIEW_ACTION_METHOD;
     private String stepParameterName = DEFAULT_STEP_PARAM_NAME;
 
-    /** Holds action flows. */
-    private Map<String, Map<String, String>> flowMap;
+    /** Holds action flow steps. */
+    private Map<String, ActionFlowStepConfig> flowMap;
 
     /** Action flow configuration builder. */
     @Inject
@@ -164,7 +164,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         if (flowMap.containsKey(actionName)) {
             flowAction = true;
-            if (flowMap.get(actionName).get(NEXT_ACTION_PARAM) == null) {
+            if (flowMap.get(actionName).getNextAction() == null) {
                 lastAction = true;
             }
         }
@@ -199,12 +199,8 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                 // greater than previousFlowAction index
                 if (flowMap.containsKey(previousFlowAction)
                         && flowMap.containsKey(step)) {
-                    String indexStrPrev = flowMap.get(previousFlowAction).get(
-                            ACTION_FLOW_INDEX);
-                    String indexStrStep = flowMap.get(step).get(
-                            ACTION_FLOW_INDEX);
-                    int indexPrev = Integer.parseInt(indexStrPrev);
-                    int indexStep = Integer.parseInt(indexStrStep);
+                    int indexPrev = flowMap.get(previousFlowAction).getIndex();
+                    int indexStep = flowMap.get(step).getIndex();
                     if (indexStep < indexPrev) {
                         if (LOG.isDebugEnabled()) {
                             LOG.debug("The 'previousFlowAction' value from session is '"
@@ -228,8 +224,8 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         String prevAction = null;
 
         if (flowMap.containsKey(previousFlowAction)) {
-            nextAction = flowMap.get(previousFlowAction).get(NEXT_ACTION_PARAM);
-            prevAction = flowMap.get(previousFlowAction).get(PREV_ACTION_PARAM);
+            nextAction = flowMap.get(previousFlowAction).getNextAction();
+            prevAction = flowMap.get(previousFlowAction).getPrevAction();
         }
 
         if (LOG.isDebugEnabled()) {
@@ -270,8 +266,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         // execute global view result on not last flow action
         if (flowAction && nextAction.equals(actionName) && !lastAction) {
-            final String nextAct = flowMap.get(actionName).get(
-                    NEXT_ACTION_PARAM);
+            final String nextAct = flowMap.get(actionName).getNextAction();
             invocation.addPreResultListener(new PreResultListener() {
                 public void beforeResult(ActionInvocation invocation,
                         String resultCode) {
