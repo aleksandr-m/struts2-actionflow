@@ -60,12 +60,12 @@ public class ActionFlowStepConfig {
         return prevAction;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-
         if (!(o instanceof ActionFlowStepConfig)) {
             return false;
         }
@@ -75,20 +75,46 @@ public class ActionFlowStepConfig {
         if (index != stepConfig.index) {
             return false;
         }
-
         if ((nextAction != null) ? (!nextAction.equals(stepConfig.nextAction))
                 : (stepConfig.nextAction != null)) {
             return false;
         }
-
         if ((prevAction != null) ? (!prevAction.equals(stepConfig.prevAction))
                 : (stepConfig.prevAction != null)) {
             return false;
         }
-
         return true;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + index;
+        result = prime * result
+                + ((nextAction == null) ? 0 : nextAction.hashCode());
+        result = prime * result
+                + ((prevAction == null) ? 0 : prevAction.hashCode());
+        return result;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{ActionFlowStepConfig ");
+        sb.append("index:").append(index).append(", ");
+        sb.append("nextAction:").append(nextAction).append(", ");
+        sb.append("prevAction:").append(prevAction);
+        sb.append("}");
+        return sb.toString();
+    }
+
+    /**
+     * Action flow step configuration builder.
+     * 
+     */
     public static class Builder {
         private ActionFlowStepConfig target;
 

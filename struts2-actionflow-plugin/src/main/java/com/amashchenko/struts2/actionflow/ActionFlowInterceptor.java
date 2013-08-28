@@ -139,7 +139,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     private String viewActionMethod = DEFAULT_VIEW_ACTION_METHOD;
     private String stepParameterName = DEFAULT_STEP_PARAM_NAME;
 
-    /** Holds action flow steps. */
+    /** Holds action flow. */
     private Map<String, ActionFlowStepConfig> flowMap;
 
     /** Action flow configuration builder. */

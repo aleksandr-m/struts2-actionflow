@@ -19,6 +19,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class ActionFlowStepConfigTest {
+    /**
+     * Tests building action flow step configurations from the same builder.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
     @Test
     public void testBuildingFromSameBuilder() throws Exception {
         ActionFlowStepConfig.Builder stepConfigBuilder = new ActionFlowStepConfig.Builder(
@@ -41,6 +47,12 @@ public class ActionFlowStepConfigTest {
                 stepConfig2.getPrevAction());
     }
 
+    /**
+     * Tests cloning action flow step configurations.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
     @Test
     public void testClone() throws Exception {
         ActionFlowStepConfig.Builder stepConfigBuilder = new ActionFlowStepConfig.Builder(
@@ -59,6 +71,12 @@ public class ActionFlowStepConfigTest {
         Assert.assertEquals(stepConfig, stepConfig2);
     }
 
+    /**
+     * Tests cloning and changing action flow step configurations.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
     @Test
     public void testCloneAndSet() throws Exception {
         ActionFlowStepConfig.Builder stepConfigBuilder = new ActionFlowStepConfig.Builder(
@@ -79,6 +97,56 @@ public class ActionFlowStepConfigTest {
         Assert.assertEquals(stepConfig, stepConfig2);
     }
 
+    /**
+     * Tests toString method of action flow step configuration.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
+    @Test
+    public void testToString() throws Exception {
+        ActionFlowStepConfig.Builder stepConfigBuilder = new ActionFlowStepConfig.Builder(
+                0, "next", "prev");
+        ActionFlowStepConfig stepConfig = stepConfigBuilder.build();
+
+        Assert.assertEquals(
+                "{ActionFlowStepConfig index:0, nextAction:next, prevAction:prev}",
+                stepConfig.toString());
+    }
+
+    /**
+     * Tests hashCode method of action flow step configuration.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
+    @Test
+    public void testHashCode() throws Exception {
+        ActionFlowStepConfig.Builder stepConfigBuilder = new ActionFlowStepConfig.Builder(
+                0, null, null);
+        ActionFlowStepConfig stepConfig = stepConfigBuilder.build();
+        ActionFlowStepConfig stepConfig2 = stepConfigBuilder.build();
+
+        Assert.assertEquals(stepConfig.hashCode(), stepConfig2.hashCode());
+
+        stepConfig = stepConfigBuilder.prevAction("prev").build();
+        stepConfig2 = stepConfigBuilder.build();
+
+        Assert.assertEquals(stepConfig.hashCode(), stepConfig2.hashCode());
+
+        stepConfig = stepConfigBuilder.nextAction("next").prevAction(null)
+                .build();
+        stepConfig2 = stepConfigBuilder.build();
+
+        Assert.assertEquals(stepConfig.hashCode(), stepConfig2.hashCode());
+    }
+
+    /**
+     * Tests equals method of action flow step configuration.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
     @Test
     public void testEquals() throws Exception {
         ActionFlowStepConfig.Builder stepConfigBuilder = new ActionFlowStepConfig.Builder(
@@ -97,26 +165,22 @@ public class ActionFlowStepConfigTest {
 
         ActionFlowStepConfig.Builder stepConfigBuilder3 = new ActionFlowStepConfig.Builder(
                 stepConfig);
-        ActionFlowStepConfig stepConfig3 = stepConfigBuilder3.nextAction(
-                "notNext").build();
-        Assert.assertNotEquals(stepConfig, stepConfig3);
+        stepConfig2 = stepConfigBuilder3.nextAction("notNext").build();
+        Assert.assertNotEquals(stepConfig, stepConfig2);
 
         ActionFlowStepConfig.Builder stepConfigBuilder4 = new ActionFlowStepConfig.Builder(
                 stepConfig);
-        ActionFlowStepConfig stepConfig4 = stepConfigBuilder4.prevAction(
-                "notPrev").build();
-        Assert.assertNotEquals(stepConfig, stepConfig4);
+        stepConfig2 = stepConfigBuilder4.prevAction("notPrev").build();
+        Assert.assertNotEquals(stepConfig, stepConfig2);
 
         ActionFlowStepConfig.Builder stepConfigBuilder5 = new ActionFlowStepConfig.Builder(
                 stepConfig);
-        ActionFlowStepConfig stepConfig5 = stepConfigBuilder5.prevAction(null)
-                .build();
-        Assert.assertNotEquals(stepConfig5, stepConfig);
+        stepConfig2 = stepConfigBuilder5.prevAction(null).build();
+        Assert.assertNotEquals(stepConfig2, stepConfig);
 
         ActionFlowStepConfig.Builder stepConfigBuilder6 = new ActionFlowStepConfig.Builder(
                 stepConfig);
-        ActionFlowStepConfig stepConfig6 = stepConfigBuilder6.nextAction(null)
-                .build();
-        Assert.assertNotEquals(stepConfig6, stepConfig);
+        stepConfig2 = stepConfigBuilder6.nextAction(null).build();
+        Assert.assertNotEquals(stepConfig2, stepConfig);
     }
 }
