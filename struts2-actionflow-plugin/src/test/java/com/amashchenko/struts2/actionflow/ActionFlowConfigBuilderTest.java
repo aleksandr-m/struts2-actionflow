@@ -16,12 +16,12 @@
 package com.amashchenko.struts2.actionflow;
 
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.struts2.StrutsJUnit4TestCase;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.amashchenko.struts2.actionflow.entities.ActionFlowStepConfig;
 import com.opensymphony.xwork2.inject.Inject;
 
 public class ActionFlowConfigBuilderTest extends
@@ -48,8 +48,8 @@ public class ActionFlowConfigBuilderTest extends
         injectStrutsDependencies(this);
         Assert.assertNotNull(flowConfigBuilder);
 
-        Map<String, Map<String, String>> map = flowConfigBuilder.createFlowMap(
-                "correctFlow", "next", "prev", "View", "execute");
+        Map<String, ActionFlowStepConfig> map = flowConfigBuilder
+                .createFlowMap("correctFlow", "next", "prev", "View", "execute");
 
         Assert.assertNotNull(map);
 
@@ -69,47 +69,6 @@ public class ActionFlowConfigBuilderTest extends
             Assert.assertTrue(
                     "The map must be unmodifiable. Should throw UnsupportedOperationException.",
                     e instanceof UnsupportedOperationException);
-        }
-
-        try {
-            map.get("saveName").put("key", "value");
-            Assert.fail("The map must be unmodifiable. Should throw UnsupportedOperationException.");
-        } catch (Exception e) {
-            Assert.assertTrue(
-                    "The map must be unmodifiable. Should throw UnsupportedOperationException.",
-                    e instanceof UnsupportedOperationException);
-        }
-
-        try {
-            map.get("saveName").put("key", "value");
-            Assert.fail("The map must be unmodifiable. Should throw UnsupportedOperationException.");
-        } catch (Exception e) {
-            Assert.assertTrue(
-                    "The map must be unmodifiable. Should throw UnsupportedOperationException.",
-                    e instanceof UnsupportedOperationException);
-        }
-    }
-
-    /**
-     * Tests that action flow index is integer.
-     * 
-     * @throws Exception
-     *             when something goes wrong.
-     */
-    @Test
-    public void testIndexIsInteger() throws Exception {
-        injectStrutsDependencies(this);
-        Assert.assertNotNull(flowConfigBuilder);
-
-        Map<String, Map<String, String>> map = flowConfigBuilder.createFlowMap(
-                "correctFlow", "next", "prev", "View", "execute");
-
-        Assert.assertNotNull(map);
-
-        for (Entry<String, Map<String, String>> entry : map.entrySet()) {
-            String indexStr = entry.getValue().get(
-                    ActionFlowInterceptor.ACTION_FLOW_INDEX);
-            Assert.assertNotNull(Integer.parseInt(indexStr));
         }
     }
 }
