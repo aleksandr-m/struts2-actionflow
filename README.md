@@ -12,7 +12,7 @@ If you are using Maven, add this to your project POM:
         ...
         <dependency>
             <groupId>com.amashchenko.struts2.actionflow</groupId>
-            <artifactId>struts2-actionflow-parent</artifactId>
+            <artifactId>struts2-actionflow-plugin</artifactId>
             <version>1.5.5</version>
         </dependency>
         ...
