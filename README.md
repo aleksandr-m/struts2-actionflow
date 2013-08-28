@@ -6,6 +6,18 @@ A Struts2 plug-in for creating wizards (action flows).
 
 Copy struts2-actionflow-plugin-x.x.x.jar into your classpath (WEB-INF/lib). No other files need to be copied or created.
 
+If you are using Maven, add this to your project POM:
+
+    <dependencies>
+        ...
+        <dependency>
+            <groupId>com.amashchenko.struts2.actionflow</groupId>
+            <artifactId>struts2-actionflow-parent</artifactId>
+            <version>1.5.5</version>
+        </dependency>
+        ...
+    </dependencies>
+
 ## Example Usage
 
 The most simple setup to use this plug-in is:
