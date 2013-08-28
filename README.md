@@ -22,7 +22,7 @@ If you are using Maven, add this to your project POM:
 
 The most simple setup to use this plug-in is:
 
-1. Install it by copying jar into /WEB-INF/lib directory.
+1. Install it by adding this plug-in dependency to your POM or by copying jar into /WEB-INF/lib directory.
 2. Make your action package extend `actionflow-default` package.
 3. Add `<param name="actionFlowStep">1</param>` parameters to actions you want to include in action flows. (NOTE: the action must have input result!)
 4. Use next and prev actions in JSP to move between flow steps.
