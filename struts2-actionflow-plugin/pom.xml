@@ -20,7 +20,7 @@
     <parent>
         <groupId>com.amashchenko.struts2.actionflow</groupId>
         <artifactId>struts2-actionflow-parent</artifactId>
-        <version>1.5.4-config_bean-SNAPSHOT</version>
+        <version>1.5.4-SNAPSHOT</version>
     </parent>
     <artifactId>struts2-actionflow-plugin</artifactId>
     <packaging>jar</packaging>
