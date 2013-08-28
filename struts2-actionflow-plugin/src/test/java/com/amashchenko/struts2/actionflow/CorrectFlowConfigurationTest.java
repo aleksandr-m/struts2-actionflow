@@ -23,6 +23,7 @@ import org.apache.struts2.dispatcher.ServletDispatcherResult;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.amashchenko.struts2.actionflow.entities.ActionFlowStepConfig;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionProxy;
 import com.opensymphony.xwork2.config.entities.ActionConfig;
@@ -54,49 +55,42 @@ public class CorrectFlowConfigurationTest extends StrutsJUnit4TestCase<Object> {
 
         Assert.assertNotNull(flowConfigBuilder);
 
-        Map<String, Map<String, String>> map = flowConfigBuilder.createFlowMap(
-                "correctFlow", "next", "prev", "View", "execute");
+        Map<String, ActionFlowStepConfig> map = flowConfigBuilder
+                .createFlowMap("correctFlow", "next", "prev", "View", "execute");
 
         Assert.assertNotNull(map);
 
-        // check saveName
-        String action = "saveName";
+        // check firstFlowAction
+        String action = "firstFlowAction";
 
         Assert.assertTrue(map.containsKey(action));
-        Assert.assertTrue(map.get(action).containsKey(
-                ActionFlowInterceptor.NEXT_ACTION_PARAM));
-        Assert.assertTrue(map.get(action).containsKey(
-                ActionFlowInterceptor.PREV_ACTION_PARAM));
-        Assert.assertEquals("savePhone",
-                map.get(action).get(ActionFlowInterceptor.NEXT_ACTION_PARAM));
-        Assert.assertEquals("firstFlowAction",
-                map.get(action).get(ActionFlowInterceptor.PREV_ACTION_PARAM));
+        Assert.assertEquals("saveName", map.get(action).getNextAction());
+        Assert.assertEquals("firstFlowAction", map.get(action).getPrevAction());
+        Assert.assertEquals(0, map.get(action).getIndex());
+
+        // check saveName
+        action = "saveName";
+
+        Assert.assertTrue(map.containsKey(action));
+        Assert.assertEquals("savePhone", map.get(action).getNextAction());
+        Assert.assertEquals("firstFlowAction", map.get(action).getPrevAction());
+        Assert.assertEquals(1, map.get(action).getIndex());
 
         // check savePhone
         action = "savePhone";
 
         Assert.assertTrue(map.containsKey(action));
-        Assert.assertTrue(map.get(action).containsKey(
-                ActionFlowInterceptor.NEXT_ACTION_PARAM));
-        Assert.assertTrue(map.get(action).containsKey(
-                ActionFlowInterceptor.PREV_ACTION_PARAM));
-        Assert.assertEquals("saveEmail",
-                map.get(action).get(ActionFlowInterceptor.NEXT_ACTION_PARAM));
-        Assert.assertEquals("saveName",
-                map.get(action).get(ActionFlowInterceptor.PREV_ACTION_PARAM));
+        Assert.assertEquals("saveEmail", map.get(action).getNextAction());
+        Assert.assertEquals("saveName", map.get(action).getPrevAction());
+        Assert.assertEquals(2, map.get(action).getIndex());
 
         // check saveEmail
         action = "saveEmail";
 
         Assert.assertTrue(map.containsKey(action));
-        Assert.assertTrue(map.get(action).containsKey(
-                ActionFlowInterceptor.NEXT_ACTION_PARAM));
-        Assert.assertTrue(map.get(action).containsKey(
-                ActionFlowInterceptor.PREV_ACTION_PARAM));
-        Assert.assertEquals(null,
-                map.get(action).get(ActionFlowInterceptor.NEXT_ACTION_PARAM));
-        Assert.assertEquals("savePhone",
-                map.get(action).get(ActionFlowInterceptor.PREV_ACTION_PARAM));
+        Assert.assertEquals(null, map.get(action).getNextAction());
+        Assert.assertEquals("savePhone", map.get(action).getPrevAction());
+        Assert.assertEquals(3, map.get(action).getIndex());
     }
 
     /**

@@ -26,6 +26,7 @@ import java.util.TreeMap;
 
 import org.apache.struts2.dispatcher.ServletActionRedirectResult;
 
+import com.amashchenko.struts2.actionflow.entities.ActionFlowStepConfig;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionChainResult;
 import com.opensymphony.xwork2.config.Configuration;
@@ -71,7 +72,7 @@ public class ActionFlowConfigBuilder {
      *            View action method.
      * @return Map of the action flow.
      */
-    protected Map<String, Map<String, String>> createFlowMap(
+    protected Map<String, ActionFlowStepConfig> createFlowMap(
             final String packageName, final String nextActionName,
             final String prevActionName, final String viewActionPostfix,
             final String viewActionMethod) {
@@ -148,8 +149,8 @@ public class ActionFlowConfigBuilder {
             }
         }
 
-        // holds action flows: {1:{nextAction:2,prevAction:0}}
-        Map<String, Map<String, String>> actionFlows = new HashMap<String, Map<String, String>>();
+        // holds action flows: {1:{nextAction:2,prevAction:0,index:1}}
+        Map<String, ActionFlowStepConfig> actionFlows = new HashMap<String, ActionFlowStepConfig>();
 
         List<ActionConfig> viewActionConfigs = new ArrayList<ActionConfig>();
 
@@ -157,6 +158,8 @@ public class ActionFlowConfigBuilder {
         ListIterator<String> mapkeyitr = keys.listIterator();
 
         String prevKey = null;
+        // starting from 1 because of the FIRST_FLOW_ACTION_NAME
+        int index = 1;
         while (mapkeyitr.hasNext()) {
             String key = mapkeyitr.next();
 
@@ -213,25 +216,23 @@ public class ActionFlowConfigBuilder {
                 prevActionVal = ActionFlowInterceptor.FIRST_FLOW_ACTION_NAME;
 
                 // first action
-                Map<String, String> v = new HashMap<String, String>();
-                v.put(ActionFlowInterceptor.NEXT_ACTION_PARAM,
-                        actionConfig.getName());
-                v.put(ActionFlowInterceptor.PREV_ACTION_PARAM,
+                ActionFlowStepConfig.Builder stepConfigBuilder = new ActionFlowStepConfig.Builder(
+                        0, actionConfig.getName(),
                         ActionFlowInterceptor.FIRST_FLOW_ACTION_NAME);
+                ActionFlowStepConfig stepConfig = stepConfigBuilder.build();
                 actionFlows.put(ActionFlowInterceptor.FIRST_FLOW_ACTION_NAME,
-                        Collections.unmodifiableMap(v));
+                        stepConfig);
             } else {
                 prevActionVal = actionsStepMap.get(prevKey).getName();
             }
 
-            Map<String, String> v = new HashMap<String, String>();
-            v.put(ActionFlowInterceptor.NEXT_ACTION_PARAM, nextActionVal);
-            v.put(ActionFlowInterceptor.PREV_ACTION_PARAM, prevActionVal);
-
-            actionFlows.put(actionConfig.getName(),
-                    Collections.unmodifiableMap(v));
+            ActionFlowStepConfig.Builder stepConfigBuilder = new ActionFlowStepConfig.Builder(
+                    index, nextActionVal, prevActionVal);
+            ActionFlowStepConfig stepConfig = stepConfigBuilder.build();
+            actionFlows.put(actionConfig.getName(), stepConfig);
 
             prevKey = key;
+            index++;
         }
 
         if (LOG.isDebugEnabled()) {

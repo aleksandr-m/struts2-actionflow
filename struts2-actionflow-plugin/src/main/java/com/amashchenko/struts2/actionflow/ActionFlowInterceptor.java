@@ -17,6 +17,7 @@ package com.amashchenko.struts2.actionflow;
 
 import java.util.Map;
 
+import com.amashchenko.struts2.actionflow.entities.ActionFlowStepConfig;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.inject.Inject;
@@ -40,22 +41,22 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
  * <ul>
  * <p/>
  * <li>nextActionName (optional) - Name of the 'next' action. If none is
- * specified the default name {@value #DEFAULT_NEXT_ACTION_NAME} will be used.</li>
+ * specified the default name <code>next</code> will be used.</li>
  * <p/>
  * <li>prevActionName (optional) - Name of the 'previous' action. If none is
- * specified the default name {@value #DEFAULT_PREV_ACTION_NAME} will be used.</li>
+ * specified the default name <code>prev</code> will be used.</li>
  * <p/>
  * <li>forceFlowStepsOrder (optional) - To force the order of flow action
  * executions. The default is <code>true</code>.</li>
  * <p/>
  * <li>viewActionPostfix (optional) - String to append to generated view action
- * name. The default is {@value #DEFAULT_VIEW_ACTION_POSTFIX}.</li>
+ * name. The default is <code>View</code>.</li>
  * <p/>
  * <li>viewActionMethod (optional) - Action method to execute in generated view
- * actions. The default is {@value #DEFAULT_VIEW_ACTION_METHOD}.</li>
+ * actions. The default is <code>execute</code>.</li>
  * <p/>
  * <li>stepParameterName (optional) - Name of the form parameter holding
- * previous action value. The default is {@value #DEFAULT_STEP_PARAM_NAME}.</li>
+ * previous action value. The default is <code>step</code>.</li>
  * <p/>
  * </ul>
  * <p/>
@@ -138,8 +139,8 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     private String viewActionMethod = DEFAULT_VIEW_ACTION_METHOD;
     private String stepParameterName = DEFAULT_STEP_PARAM_NAME;
 
-    /** Holds action flows. */
-    private Map<String, Map<String, String>> flowMap;
+    /** Holds action flow. */
+    private Map<String, ActionFlowStepConfig> flowMap;
 
     /** Action flow configuration builder. */
     @Inject
@@ -163,7 +164,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         if (flowMap.containsKey(actionName)) {
             flowAction = true;
-            if (flowMap.get(actionName).get(NEXT_ACTION_PARAM) == null) {
+            if (flowMap.get(actionName).getNextAction() == null) {
                 lastAction = true;
             }
         }
@@ -194,18 +195,28 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             }
 
             if (step != null && !step.equals(previousFlowAction)) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("The 'previousFlowAction' value from session is '"
-                            + previousFlowAction
-                            + "', but '"
-                            + stepParameterName
-                            + "' parameter value is '"
-                            + step
-                            + "' The '"
-                            + stepParameterName
-                            + "' parameter value will be used for 'previousFlowAction'.");
+                // check indexes, step parameter action flow index cannot be
+                // greater than previousFlowAction index
+                if (flowMap.containsKey(previousFlowAction)
+                        && flowMap.containsKey(step)) {
+                    int indexPrev = flowMap.get(previousFlowAction).getIndex();
+                    int indexStep = flowMap.get(step).getIndex();
+                    if (indexStep < indexPrev) {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("The 'previousFlowAction' value from session is '"
+                                    + previousFlowAction
+                                    + "', but '"
+                                    + stepParameterName
+                                    + "' parameter value is '"
+                                    + step
+                                    + "' The '"
+                                    + stepParameterName
+                                    + "' parameter value will be used for 'previousFlowAction'.");
+                        }
+
+                        previousFlowAction = step;
+                    }
                 }
-                previousFlowAction = step;
             }
         }
 
@@ -213,8 +224,8 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         String prevAction = null;
 
         if (flowMap.containsKey(previousFlowAction)) {
-            nextAction = flowMap.get(previousFlowAction).get(NEXT_ACTION_PARAM);
-            prevAction = flowMap.get(previousFlowAction).get(PREV_ACTION_PARAM);
+            nextAction = flowMap.get(previousFlowAction).getNextAction();
+            prevAction = flowMap.get(previousFlowAction).getPrevAction();
         }
 
         if (LOG.isDebugEnabled()) {
@@ -255,8 +266,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         // execute global view result on not last flow action
         if (flowAction && nextAction.equals(actionName) && !lastAction) {
-            final String nextAct = flowMap.get(actionName).get(
-                    NEXT_ACTION_PARAM);
+            final String nextAct = flowMap.get(actionName).getNextAction();
             invocation.addPreResultListener(new PreResultListener() {
                 public void beforeResult(ActionInvocation invocation,
                         String resultCode) {
