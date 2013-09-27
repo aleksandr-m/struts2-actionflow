@@ -15,6 +15,11 @@
  */
 package com.amashchenko.struts2.actionflow;
 
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.amashchenko.struts2.actionflow.entities.ActionFlowStepConfig;
@@ -131,6 +136,9 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     protected static final String PREV_ACTION_PARAM = "prevAction";
     protected static final String VIEW_ACTION_PARAM = "viewAction";
 
+    // TODO maybe map inside session
+    private static final String FLOW_SCOPE_PREFIX = "actionFlowScope.";
+
     // interceptor parameters
     private String nextActionName = DEFAULT_NEXT_ACTION_NAME;
     private String prevActionName = DEFAULT_PREV_ACTION_NAME;
@@ -160,13 +168,29 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         }
 
         boolean flowAction = false;
-        boolean lastAction = false;
-
+        boolean lastFlowAction = false;
         if (flowMap.containsKey(actionName)) {
             flowAction = true;
             if (flowMap.get(actionName).getNextAction() == null) {
-                lastAction = true;
+                lastFlowAction = true;
             }
+        }
+
+        boolean flowViewAction = false;
+        if (actionName.endsWith(viewActionPostfix)) {
+            String plainAction = actionName.substring(0,
+                    actionName.indexOf(viewActionPostfix));
+            if (flowMap.containsKey(plainAction)) {
+                flowViewAction = true;
+            }
+        }
+
+        Map<String, Object> session = invocation.getInvocationContext()
+                .getSession();
+
+        // scope
+        if (flowViewAction) {
+            handleFlowScope(invocation.getAction(), session, true);
         }
 
         // not a flow nor next nor previous action, just invoke
@@ -174,9 +198,6 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                 && !nextActionName.equals(actionName)) {
             return invocation.invoke();
         }
-
-        Map<String, Object> session = invocation.getInvocationContext()
-                .getSession();
 
         String previousFlowAction = (String) session.get(PREVIOUS_FLOW_ACTION);
 
@@ -265,7 +286,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         }
 
         // execute global view result on not last flow action
-        if (flowAction && nextAction.equals(actionName) && !lastAction) {
+        if (flowAction && nextAction.equals(actionName) && !lastFlowAction) {
             final String nextAct = flowMap.get(actionName).getNextAction();
             invocation.addPreResultListener(new PreResultListener() {
                 public void beforeResult(ActionInvocation invocation,
@@ -284,16 +305,83 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         String result = invocation.invoke();
 
+        if (flowAction) {
+            handleFlowScope(invocation.getAction(), session, false);
+        }
+
         if (GLOBAL_VIEW_RESULT.equals(result) && flowAction) {
             session.put(PREVIOUS_FLOW_ACTION, actionName);
         }
 
         // last flow action
-        if (Action.SUCCESS.equals(result) && flowAction && lastAction) {
+        if (Action.SUCCESS.equals(result) && flowAction && lastFlowAction) {
             session.put(PREVIOUS_FLOW_ACTION, null);
+            clearFlowScope(session);
         }
 
         return result;
+    }
+
+    private void handleFlowScope(final Object action,
+            final Map<String, Object> scopeSession, final boolean fromFlowScope) {
+        Class<?> clazz = action.getClass();
+        String classSessionKey = FLOW_SCOPE_PREFIX + clazz.getSimpleName()
+                + ".";
+
+        if (clazz.isAnnotationPresent(ActionFlowScope.class)) {
+            try {
+                for (PropertyDescriptor pd : Introspector.getBeanInfo(clazz)
+                        .getPropertyDescriptors()) {
+                    Field field = null;
+                    try {
+                        field = clazz.getDeclaredField(pd.getName());
+                    } catch (NoSuchFieldException nsfe) {
+                        if (LOG.isTraceEnabled()) {
+                            LOG.trace("In handleFlowScope", nsfe);
+                        }
+                    }
+
+                    if (field != null
+                            && field.isAnnotationPresent(ActionFlowScope.class)) {
+                        Method getter = pd.getReadMethod();
+                        if (getter != null) {
+                            Object val = getter.invoke(action);
+                            String sessionKey = classSessionKey + pd.getName();
+
+                            if (fromFlowScope) {
+                                if (val == null
+                                        && scopeSession.containsKey(sessionKey)) {
+                                    Method setter = pd.getWriteMethod();
+                                    if (setter != null) {
+                                        setter.invoke(action,
+                                                scopeSession.get(sessionKey));
+                                    }
+                                }
+                            } else {
+                                if (val != null) {
+                                    scopeSession.put(sessionKey, val);
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                LOG.warn("In handleFlowScope", e);
+            }
+        }
+    }
+
+    private void clearFlowScope(final Map<String, Object> scopeSession) {
+        if (scopeSession != null) {
+            Iterator<String> keyIterator = scopeSession.keySet().iterator();
+            while (keyIterator.hasNext()) {
+                String key = keyIterator.next();
+                if (key != null && key.startsWith(FLOW_SCOPE_PREFIX)) {
+                    // keyIterator.remove();
+                    scopeSession.remove(key);
+                }
+            }
+        }
     }
 
     /**
