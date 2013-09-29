@@ -15,11 +15,10 @@
  */
 package com.amashchenko.struts2.actionflow;
 
-import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.amashchenko.struts2.actionflow.entities.ActionFlowStepConfig;
@@ -114,7 +113,7 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
 public class ActionFlowInterceptor extends AbstractInterceptor {
 
     /** Serial version uid. */
-    private static final long serialVersionUID = 6161518595680043244L;
+    private static final long serialVersionUID = -7520779074852595667L;
 
     /** Logger. */
     public static final Logger LOG = LoggerFactory
@@ -137,7 +136,8 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     protected static final String VIEW_ACTION_PARAM = "viewAction";
 
     // TODO maybe map inside session
-    private static final String FLOW_SCOPE_PREFIX = "actionFlowScope.";
+    protected static final String FLOW_SCOPE_PREFIX = "actionFlowScope.";
+    private Map<String, List<PropertyDescriptor>> flowScopeFields;
 
     // interceptor parameters
     private String nextActionName = DEFAULT_NEXT_ACTION_NAME;
@@ -165,6 +165,9 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             flowMap = flowConfigBuilder.createFlowMap(packageName,
                     nextActionName, prevActionName, viewActionPostfix,
                     viewActionMethod);
+
+            flowScopeFields = flowConfigBuilder
+                    .createFlowScopeFields(packageName);
         }
 
         boolean flowAction = false;
@@ -324,25 +327,15 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
     private void handleFlowScope(final Object action,
             final Map<String, Object> scopeSession, final boolean fromFlowScope) {
-        Class<?> clazz = action.getClass();
-        String classSessionKey = FLOW_SCOPE_PREFIX + clazz.getSimpleName()
-                + ".";
+        if (action != null && flowScopeFields != null && scopeSession != null) {
+            String classSessionKey = FLOW_SCOPE_PREFIX
+                    + action.getClass().getSimpleName() + ".";
 
-        if (clazz.isAnnotationPresent(ActionFlowScope.class)) {
-            try {
-                for (PropertyDescriptor pd : Introspector.getBeanInfo(clazz)
-                        .getPropertyDescriptors()) {
-                    Field field = null;
+            if (flowScopeFields.containsKey(classSessionKey)
+                    && flowScopeFields.get(classSessionKey) != null) {
+                for (PropertyDescriptor pd : flowScopeFields
+                        .get(classSessionKey)) {
                     try {
-                        field = clazz.getDeclaredField(pd.getName());
-                    } catch (NoSuchFieldException nsfe) {
-                        if (LOG.isTraceEnabled()) {
-                            LOG.trace("In handleFlowScope", nsfe);
-                        }
-                    }
-
-                    if (field != null
-                            && field.isAnnotationPresent(ActionFlowScope.class)) {
                         Method getter = pd.getReadMethod();
                         if (getter != null) {
                             Object val = getter.invoke(action);
@@ -363,10 +356,10 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                                 }
                             }
                         }
+                    } catch (Exception e) {
+                        LOG.warn("In handleFlowScope", e);
                     }
                 }
-            } catch (Exception e) {
-                LOG.warn("In handleFlowScope", e);
             }
         }
     }

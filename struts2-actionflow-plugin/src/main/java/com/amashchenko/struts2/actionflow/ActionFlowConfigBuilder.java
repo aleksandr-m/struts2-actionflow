@@ -15,13 +15,19 @@
  */
 package com.amashchenko.struts2.actionflow;
 
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.struts2.dispatcher.ServletActionRedirectResult;
@@ -369,5 +375,77 @@ public class ActionFlowConfigBuilder {
             configuration.rebuildRuntimeConfiguration();
         }
         return Collections.unmodifiableMap(actionFlows);
+    }
+
+    /**
+     * Creates action flow scope fields map for given package name.
+     * 
+     * @param packageName
+     *            Name of the package.
+     * @return Map of the action flow scope fields.
+     */
+    protected Map<String, List<PropertyDescriptor>> createFlowScopeFields(
+            final String packageName) {
+        Map<String, List<PropertyDescriptor>> flowScopeFields = new HashMap<String, List<PropertyDescriptor>>();
+
+        Map<String, Map<String, ActionConfig>> runtimeActionConfigs = configuration
+                .getRuntimeConfiguration().getActionConfigs();
+
+        PackageConfig packageConfig = configuration
+                .getPackageConfig(packageName);
+
+        // Map<String, ActionConfig> actionConfigs = packageConfig
+        // .getAllActionConfigs();
+        Collection<ActionConfig> actionConfigs = runtimeActionConfigs.get(
+                packageConfig.getNamespace()).values();
+
+        // get all unique action class names
+        Set<String> classNames = new HashSet<String>();
+        for (ActionConfig ac : actionConfigs) {
+            classNames.add(ac.getClassName());
+        }
+
+        if (classNames != null && !classNames.isEmpty()) {
+            for (String className : classNames) {
+                try {
+                    Class<?> clazz = Class.forName(className);
+                    String classKey = ActionFlowInterceptor.FLOW_SCOPE_PREFIX
+                            + clazz.getSimpleName() + ".";
+
+                    if (clazz.isAnnotationPresent(ActionFlowScope.class)) {
+                        List<PropertyDescriptor> pds = new ArrayList<PropertyDescriptor>();
+                        for (PropertyDescriptor pd : Introspector.getBeanInfo(
+                                clazz).getPropertyDescriptors()) {
+                            try {
+                                Field field = null;
+                                try {
+                                    field = clazz
+                                            .getDeclaredField(pd.getName());
+                                } catch (NoSuchFieldException nsfe) {
+                                    if (LOG.isTraceEnabled()) {
+                                        LOG.trace("In createFlowScope", nsfe);
+                                    }
+                                }
+
+                                if (field != null
+                                        && field.isAnnotationPresent(ActionFlowScope.class)
+                                        && pd.getReadMethod() != null
+                                        && pd.getWriteMethod() != null) {
+                                    pds.add(pd);
+                                }
+                            } catch (Exception e) {
+                                LOG.warn("In createFlowScope pd:" + pd, e);
+                            }
+                        }
+                        if (pds != null && !pds.isEmpty()) {
+                            flowScopeFields.put(classKey, pds);
+                        }
+                    }
+                } catch (Exception e) {
+                    LOG.warn("In createFlowScope", e);
+                }
+            }
+        }
+        return flowScopeFields;
     }
 }
