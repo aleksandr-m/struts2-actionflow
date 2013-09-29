@@ -446,6 +446,12 @@ public class ActionFlowConfigBuilder {
                 }
             }
         }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("created action flow scope fields mapping: "
+                    + flowScopeFields);
+        }
+
         return flowScopeFields;
     }
 }

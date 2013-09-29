@@ -44,24 +44,24 @@
     </package>
 
     <package name="correctFlow" namespace="/correctFlow" extends="actionflow-default">
-        <action name="correctFlow">
+        <action name="correctFlow" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAction">
             <result>homepage</result>
         </action>
-        <action name="saveName">
+        <action name="saveName" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAction">
             <param name="actionFlowStep">1</param>
             
             <result name="input">name</result>
             <result name="error">name</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="savePhone">
+        <action name="savePhone" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAction">
             <param name="actionFlowStep">2</param>
         
             <result name="input">phone</result>
             <result name="error">phone</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="saveEmail">
+        <action name="saveEmail" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAction">
             <param name="actionFlowStep">3</param>
         
             <result name="input">email</result>

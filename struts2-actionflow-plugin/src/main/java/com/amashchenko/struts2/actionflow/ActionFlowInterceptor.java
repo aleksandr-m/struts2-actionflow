@@ -17,9 +17,10 @@ package com.amashchenko.struts2.actionflow;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.amashchenko.struts2.actionflow.entities.ActionFlowStepConfig;
 import com.opensymphony.xwork2.Action;
@@ -366,11 +367,15 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
     private void clearFlowScope(final Map<String, Object> scopeSession) {
         if (scopeSession != null) {
-            Iterator<String> keyIterator = scopeSession.keySet().iterator();
-            while (keyIterator.hasNext()) {
-                String key = keyIterator.next();
+            Set<String> removeKeys = new HashSet<String>();
+            for (String key : scopeSession.keySet()) {
                 if (key != null && key.startsWith(FLOW_SCOPE_PREFIX)) {
-                    // keyIterator.remove();
+                    removeKeys.add(key);
+                }
+            }
+
+            if (removeKeys != null && !removeKeys.isEmpty()) {
+                for (String key : removeKeys) {
                     scopeSession.remove(key);
                 }
             }
