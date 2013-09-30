@@ -137,7 +137,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     protected static final String VIEW_ACTION_PARAM = "viewAction";
 
     // TODO maybe map inside session
-    protected static final String FLOW_SCOPE_PREFIX = "actionFlowScope.";
+    private static final String FLOW_SCOPE_PREFIX = "actionFlowScope.";
     private Map<String, List<PropertyDescriptor>> flowScopeFields;
 
     // interceptor parameters
@@ -329,13 +329,14 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     private void handleFlowScope(final Object action,
             final Map<String, Object> scopeSession, final boolean fromFlowScope) {
         if (action != null && flowScopeFields != null && scopeSession != null) {
+            String actionClassName = action.getClass().getName();
             String classSessionKey = FLOW_SCOPE_PREFIX
-                    + action.getClass().getSimpleName() + ".";
+                    + action.getClass().getName() + ".";
 
-            if (flowScopeFields.containsKey(classSessionKey)
-                    && flowScopeFields.get(classSessionKey) != null) {
+            if (flowScopeFields.containsKey(actionClassName)
+                    && flowScopeFields.get(actionClassName) != null) {
                 for (PropertyDescriptor pd : flowScopeFields
-                        .get(classSessionKey)) {
+                        .get(actionClassName)) {
                     try {
                         Method getter = pd.getReadMethod();
                         if (getter != null) {

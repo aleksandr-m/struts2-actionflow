@@ -30,6 +30,7 @@ public class ActionFlowScopeTest extends
 
     /** Key for previous flow action. */
     private static final String PREVIOUS_FLOW_ACTION = "actionFlowPreviousAction";
+    private static final String FLOW_SCOPE_PREFIX = "actionFlowScope.";
 
     /** {@inheritDoc} */
     @Override
@@ -53,8 +54,8 @@ public class ActionFlowScopeTest extends
         MockActionFlowAction action = (MockActionFlowAction) ap.getAction();
 
         Map<String, Object> sessionMap = new HashMap<String, Object>();
-        sessionMap.put(ActionFlowInterceptor.FLOW_SCOPE_PREFIX
-                + action.getClass().getSimpleName() + ".phone", value);
+        sessionMap.put(FLOW_SCOPE_PREFIX + action.getClass().getName()
+                + ".phone", value);
         ap.getInvocation().getInvocationContext().setSession(sessionMap);
 
         ap.execute();
@@ -86,8 +87,8 @@ public class ActionFlowScopeTest extends
 
         Assert.assertEquals(
                 value,
-                sessionMap.get(ActionFlowInterceptor.FLOW_SCOPE_PREFIX
-                        + action.getClass().getSimpleName() + ".phone"));
+                sessionMap.get(FLOW_SCOPE_PREFIX + action.getClass().getName()
+                        + ".phone"));
     }
 
     @Test
@@ -115,8 +116,8 @@ public class ActionFlowScopeTest extends
 
         Assert.assertEquals(
                 null,
-                sessionMap.get(ActionFlowInterceptor.FLOW_SCOPE_PREFIX
-                        + action.getClass().getSimpleName() + ".phone"));
+                sessionMap.get(FLOW_SCOPE_PREFIX + action.getClass().getName()
+                        + ".phone"));
         Assert.assertEquals(immutableValue, sessionMap.get(immutableValue));
     }
 }

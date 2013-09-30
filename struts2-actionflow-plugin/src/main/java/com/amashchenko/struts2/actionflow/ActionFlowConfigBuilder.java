@@ -409,8 +409,7 @@ public class ActionFlowConfigBuilder {
             for (String className : classNames) {
                 try {
                     Class<?> clazz = Class.forName(className);
-                    String classKey = ActionFlowInterceptor.FLOW_SCOPE_PREFIX
-                            + clazz.getSimpleName() + ".";
+                    String classKey = clazz.getName();
 
                     if (clazz.isAnnotationPresent(ActionFlowScope.class)) {
                         List<PropertyDescriptor> pds = new ArrayList<PropertyDescriptor>();
