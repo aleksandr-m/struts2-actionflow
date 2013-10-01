@@ -140,6 +140,11 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     private static final String FLOW_SCOPE_PREFIX = "actionFlowScope.";
     private Map<String, List<PropertyDescriptor>> flowScopeFields;
 
+    /** Previous not special nor flow action. */
+    private String prevSimpleAction;
+    /** Action before first next. */
+    private String startAction;
+
     // interceptor parameters
     private String nextActionName = DEFAULT_NEXT_ACTION_NAME;
     private String prevActionName = DEFAULT_PREV_ACTION_NAME;
@@ -192,6 +197,12 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         Map<String, Object> session = invocation.getInvocationContext()
                 .getSession();
 
+        // start
+        if (startAction != null && startAction.equals(actionName)) {
+            session.put(PREVIOUS_FLOW_ACTION, null);
+            clearFlowScope(session);
+        }
+
         // scope
         if (flowViewAction) {
             handleFlowScope(invocation.getAction(), session, true);
@@ -200,6 +211,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         // not a flow nor next nor previous action, just invoke
         if (!flowAction && !prevActionName.equals(actionName)
                 && !nextActionName.equals(actionName)) {
+            prevSimpleAction = actionName;
             return invocation.invoke();
         }
 
@@ -273,6 +285,11 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         }
 
         if (nextActionName.equals(actionName)) {
+            // set start action
+            if (startAction == null) {
+                startAction = prevSimpleAction;
+            }
+
             invocation.getInvocationContext().getValueStack()
                     .set(NEXT_ACTION_PARAM, nextAction);
         } else if (prevActionName.equals(actionName)) {
@@ -309,6 +326,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         String result = invocation.invoke();
 
+        // scope
         if (flowAction) {
             handleFlowScope(invocation.getAction(), session, false);
         }

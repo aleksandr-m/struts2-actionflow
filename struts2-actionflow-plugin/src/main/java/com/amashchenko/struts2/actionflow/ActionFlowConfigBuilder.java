@@ -415,25 +415,20 @@ public class ActionFlowConfigBuilder {
                         List<PropertyDescriptor> pds = new ArrayList<PropertyDescriptor>();
                         for (PropertyDescriptor pd : Introspector.getBeanInfo(
                                 clazz).getPropertyDescriptors()) {
+                            Field field = null;
                             try {
-                                Field field = null;
-                                try {
-                                    field = clazz
-                                            .getDeclaredField(pd.getName());
-                                } catch (NoSuchFieldException nsfe) {
-                                    if (LOG.isTraceEnabled()) {
-                                        LOG.trace("In createFlowScope", nsfe);
-                                    }
+                                field = clazz.getDeclaredField(pd.getName());
+                            } catch (NoSuchFieldException nsfe) {
+                                if (LOG.isTraceEnabled()) {
+                                    LOG.trace("In createFlowScope", nsfe);
                                 }
+                            }
 
-                                if (field != null
-                                        && field.isAnnotationPresent(ActionFlowScope.class)
-                                        && pd.getReadMethod() != null
-                                        && pd.getWriteMethod() != null) {
-                                    pds.add(pd);
-                                }
-                            } catch (Exception e) {
-                                LOG.warn("In createFlowScope pd:" + pd, e);
+                            if (field != null
+                                    && field.isAnnotationPresent(ActionFlowScope.class)
+                                    && pd.getReadMethod() != null
+                                    && pd.getWriteMethod() != null) {
+                                pds.add(pd);
                             }
                         }
                         if (pds != null && !pds.isEmpty()) {

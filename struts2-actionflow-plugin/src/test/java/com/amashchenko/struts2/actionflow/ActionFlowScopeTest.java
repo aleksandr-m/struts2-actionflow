@@ -39,7 +39,7 @@ public class ActionFlowScopeTest extends
     }
 
     @Test
-    public void testGettingFormScope() throws Exception {
+    public void testGettingFromScope() throws Exception {
         executeAction("/correctFlow/correctFlow");
         initServletMockObjects();
 
@@ -92,7 +92,41 @@ public class ActionFlowScopeTest extends
     }
 
     @Test
-    public void testClearFlowScope() throws Exception {
+    public void testClearFlowScopeStart() throws Exception {
+        executeAction("/correctFlow/correctFlow");
+        initServletMockObjects();
+
+        executeAction("/correctFlow/next");
+        initServletMockObjects();
+
+        final String immutableValue = "immutableValue";
+
+        ActionProxy ap = getActionProxy("/correctFlow/correctFlow");
+
+        Assert.assertNotNull(ap);
+        Assert.assertNotNull(ap.getAction());
+        Assert.assertTrue(ap.getAction() instanceof MockActionFlowAction);
+
+        MockActionFlowAction action = (MockActionFlowAction) ap.getAction();
+        action.setPhone("someValue");
+
+        Map<String, Object> sessionMap = new HashMap<String, Object>();
+        sessionMap.put(immutableValue, immutableValue);
+        sessionMap.put(PREVIOUS_FLOW_ACTION, "savePhone");
+        ap.getInvocation().getInvocationContext().setSession(sessionMap);
+
+        ap.execute();
+
+        Assert.assertEquals(null, sessionMap.get(PREVIOUS_FLOW_ACTION));
+        Assert.assertEquals(
+                null,
+                sessionMap.get(FLOW_SCOPE_PREFIX + action.getClass().getName()
+                        + ".phone"));
+        Assert.assertEquals(immutableValue, sessionMap.get(immutableValue));
+    }
+
+    @Test
+    public void testClearFlowScopeLast() throws Exception {
         executeAction("/correctFlow/correctFlow");
         initServletMockObjects();
 
@@ -114,6 +148,7 @@ public class ActionFlowScopeTest extends
 
         ap.execute();
 
+        Assert.assertEquals(null, sessionMap.get(PREVIOUS_FLOW_ACTION));
         Assert.assertEquals(
                 null,
                 sessionMap.get(FLOW_SCOPE_PREFIX + action.getClass().getName()

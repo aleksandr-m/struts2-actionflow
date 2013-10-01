@@ -70,7 +70,7 @@ public class ActionFlowInterceptorTest extends
     @BeforeClass
     public static void init() {
         Logger logger = Logger.getLogger("");
-        logger.setLevel(Level.FINE);
+        logger.setLevel(Level.ALL);
         if (logger.getHandlers().length > 0) {
             logger.removeHandler(logger.getHandlers()[0]);
         }
