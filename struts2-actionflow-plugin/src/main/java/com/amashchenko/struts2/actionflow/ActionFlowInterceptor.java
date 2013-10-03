@@ -344,6 +344,16 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         return result;
     }
 
+    /**
+     * Handles action flow scope fields.
+     * 
+     * @param action
+     *            action object.
+     * @param scopeSession
+     *            session map.
+     * @param fromFlowScope
+     *            whether to store value into the session or retrieve it.
+     */
     private void handleFlowScope(final Object action,
             final Map<String, Object> scopeSession, final boolean fromFlowScope) {
         if (action != null && flowScopeFields != null && scopeSession != null) {
@@ -384,6 +394,12 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         }
     }
 
+    /**
+     * Clears action flow scope.
+     * 
+     * @param scopeSession
+     *            session map.
+     */
     private void clearFlowScope(final Map<String, Object> scopeSession) {
         if (scopeSession != null) {
             Set<String> removeKeys = new HashSet<String>();

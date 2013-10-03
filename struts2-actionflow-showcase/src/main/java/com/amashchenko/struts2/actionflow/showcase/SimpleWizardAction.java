@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.apache.struts2.interceptor.SessionAware;
 
+import com.amashchenko.struts2.actionflow.ActionFlowScope;
 import com.opensymphony.xwork2.ActionSupport;
 
 /**
@@ -27,6 +28,7 @@ import com.opensymphony.xwork2.ActionSupport;
  * @author Aleksandr Mashchenko
  * 
  */
+@ActionFlowScope
 public class SimpleWizardAction extends ActionSupport implements SessionAware {
 
     /** Serial version uid. */
@@ -42,10 +44,13 @@ public class SimpleWizardAction extends ActionSupport implements SessionAware {
     }
 
     /** Name input. */
+    @ActionFlowScope
     private String name;
     /** Phone input. */
+    @ActionFlowScope
     private String phone;
     /** Email input. */
+    @ActionFlowScope
     private String email;
 
     /**

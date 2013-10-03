@@ -28,25 +28,25 @@
     <div class="example-code">		
         <i>Form:</i>
         <pre>
-&lt;s:form action="next">
-    &lt;s:hidden name="step" value="%{#session['actionFlowPreviousAction']}" />
+&lt;s:form action="next"&gt;
+    &lt;s:hidden name="step" value="%{#session['actionFlowPreviousAction']}" /&gt;
 
-    &lt;s:textfield key="phone" label="Phone" />
+    &lt;s:textfield key="phone" label="Phone" /&gt;
 
-    &lt;s:submit value="previous" action="prev" />
-    &lt;s:submit value="next" action="next" />
-&lt;/s:form>
+    &lt;s:submit value="previous" action="prev" /&gt;
+    &lt;s:submit value="next" action="next" /&gt;
+&lt;/s:form&gt;
         </pre>
         
         <i>Action configuration:</i>
         <pre>
-&lt;action name="savePhone" method="savePhone" class="...">
-    &lt;param name="actionFlowStep">2&lt;/param>
+&lt;action name="savePhone" method="savePhone" class="..."&gt;
+    &lt;param name="actionFlowStep"&gt;2&lt;/param&gt;
 			
-    &lt;result name="input">/WEB-INF/pages/phone.jsp&lt;/result>
-    &lt;result name="error">/WEB-INF/pages/phone.jsp&lt;/result>
-    &lt;result type="redirectAction">finish&lt;/result>
-&lt;/action>
+    &lt;result name="input"&gt;/WEB-INF/pages/phone.jsp&lt;/result&gt;
+    &lt;result name="error"&gt;/WEB-INF/pages/phone.jsp&lt;/result&gt;
+    &lt;result type="redirectAction"&gt;finish&lt;/result&gt;
+&lt;/action&gt;
         </pre>
     </div>
   </body>

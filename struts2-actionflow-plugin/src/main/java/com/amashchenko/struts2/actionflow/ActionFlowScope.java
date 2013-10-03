@@ -20,6 +20,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotates fields which should have their values to be in action flow scope.
+ * Action class that holds annotated fields must be annotated as well.
+ * 
+ * @author Aleksandr Mashchenko
+ * 
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.FIELD })
 public @interface ActionFlowScope {
