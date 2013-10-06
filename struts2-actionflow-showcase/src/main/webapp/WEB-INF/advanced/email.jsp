@@ -28,33 +28,33 @@
     <div class="example-code">		
         <i>Form:</i>
         <pre>
-&lt;s:form action="nextAction">
-    &lt;s:hidden name="step" value="%{#session['actionFlowPreviousAction']}" />
+&lt;s:form action="nextAction"&gt;
+    &lt;s:hidden name="step" value="%{#session['actionFlowPreviousAction']}" /&gt;
 
-    &lt;s:textfield key="email" label="Email" />
+    &lt;s:textfield key="email" label="Email" /&gt;
 
-    &lt;s:submit value="previous" action="prevAction" />
-    &lt;s:submit value="next" action="nextAction" />
-&lt;/s:form>
+    &lt;s:submit value="previous" action="prevAction" /&gt;
+    &lt;s:submit value="next" action="nextAction" /&gt;
+&lt;/s:form&gt;
         </pre>
         
         <i>Interceptor configuration:</i>
         <pre>
-&lt;interceptor-ref name="actionFlow">
-    &lt;param name="nextActionName">nextAction&lt;/param>
-    &lt;param name="prevActionName">prevAction&lt;/param>
-&lt;/interceptor-ref> 
+&lt;interceptor-ref name="actionFlow"&gt;
+    &lt;param name="nextActionName"&gt;nextAction&lt;/param&gt;
+    &lt;param name="prevActionName"&gt;prevAction&lt;/param&gt;
+&lt;/interceptor-ref&gt;
         </pre>
         
         <i>Action configuration:</i>
         <pre>
-&lt;action name="saveEmail" method="saveEmail" class="...">
-    &lt;param name="actionFlowStep">3&lt;/param>
+&lt;action name="saveEmail" method="saveEmail" class="..."&gt;
+    &lt;param name="actionFlowStep"&gt;3&lt;/param&gt;
 		
-    &lt;result name="input">/WEB-INF/advanced/email.jsp&lt;/result>
-    &lt;result name="error">/WEB-INF/advanced/email.jsp&lt;/result>
-    &lt;result type="redirectAction">finish&lt;/result>
-&lt;/action>
+    &lt;result name="input"&gt;/WEB-INF/advanced/email.jsp&lt;/result&gt;
+    &lt;result name="error"&gt;/WEB-INF/advanced/email.jsp&lt;/result&gt;
+    &lt;result type="redirectAction"&gt;finish&lt;/result&gt;
+&lt;/action&gt;
         </pre>
     </div>
   </body>

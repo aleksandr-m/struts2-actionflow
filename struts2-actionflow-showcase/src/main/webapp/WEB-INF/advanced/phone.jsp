@@ -28,38 +28,38 @@
     <div class="example-code">		
         <i>Form:</i>
         <pre>
-&lt;s:form action="nextAction">
-    &lt;s:hidden name="step" value="%{#session['actionFlowPreviousAction']}" />
+&lt;s:form action="nextAction"&gt;
+    &lt;s:hidden name="step" value="%{#session['actionFlowPreviousAction']}" /&gt;
     
-    &lt;s:textfield key="phone" label="Phone" />
+    &lt;s:textfield key="phone" label="Phone" /&gt;
 
-    &lt;s:submit value="previous" action="prevAction" />
-    &lt;s:submit value="next" action="nextAction" />
-&lt;/s:form>
+    &lt;s:submit value="previous" action="prevAction" /&gt;
+    &lt;s:submit value="next" action="nextAction" /&gt;
+&lt;/s:form&gt;
         </pre>
         
         <i>Interceptor configuration:</i>
         <pre>
-&lt;interceptor-ref name="actionFlow">
-    &lt;param name="nextActionName">nextAction&lt;/param>
-    &lt;param name="prevActionName">prevAction&lt;/param>
-&lt;/interceptor-ref> 
+&lt;interceptor-ref name="actionFlow"&gt;
+    &lt;param name="nextActionName"&gt;nextAction&lt;/param&gt;
+    &lt;param name="prevActionName"&gt;prevAction&lt;/param&gt;
+&lt;/interceptor-ref&gt;
         </pre>
         
         <i>Action configuration:</i>
         <pre>
-&lt;action name="savePhone" method="savePhone" class="...">
-    &lt;param name="actionFlowStep">2&lt;/param>
+&lt;action name="savePhone" method="savePhone" class="..."&gt;
+    &lt;param name="actionFlowStep"&gt;2&lt;/param&gt;
 		
-    &lt;result name="input">/WEB-INF/advanced/phone.jsp&lt;/result>
-    &lt;result name="error">/WEB-INF/advanced/phone.jsp&lt;/result>
-    &lt;result type="redirectAction">finish&lt;/result>
-&lt;/action>
+    &lt;result name="input"&gt;/WEB-INF/advanced/phone.jsp&lt;/result&gt;
+    &lt;result name="error"&gt;/WEB-INF/advanced/phone.jsp&lt;/result&gt;
+    &lt;result type="redirectAction"&gt;finish&lt;/result&gt;
+&lt;/action&gt;
 		
-&lt;!-- overriding view -->
-&lt;action name="savePhoneView" class="...">
-    &lt;result>/WEB-INF/advanced/anotherPhone.jsp&lt;/result>
-&lt;/action>
+&lt;!-- overriding view --&gt;
+&lt;action name="savePhoneView" class="..."&gt;
+    &lt;result&gt;/WEB-INF/advanced/anotherPhone.jsp&lt;/result&gt;
+&lt;/action&gt;
         </pre>
     </div>
   </body>

@@ -15,6 +15,8 @@
  */
 package com.amashchenko.struts2.actionflow;
 
+import java.beans.PropertyDescriptor;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.struts2.StrutsJUnit4TestCase;
@@ -22,8 +24,15 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.amashchenko.struts2.actionflow.entities.ActionFlowStepConfig;
+import com.amashchenko.struts2.actionflow.mock.MockActionFlowAction;
 import com.opensymphony.xwork2.inject.Inject;
 
+/**
+ * Tests for ActionFlowConfigBuilder.
+ * 
+ * @author Aleksandr Mashchenko
+ * 
+ */
 public class ActionFlowConfigBuilderTest extends
         StrutsJUnit4TestCase<ActionFlowConfigBuilder> {
 
@@ -68,6 +77,64 @@ public class ActionFlowConfigBuilderTest extends
         } catch (Exception e) {
             Assert.assertTrue(
                     "The map must be unmodifiable. Should throw UnsupportedOperationException.",
+                    e instanceof UnsupportedOperationException);
+        }
+    }
+
+    /**
+     * Tests modifying of action flow scope fields configuration.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
+    @Test
+    public void testModifyingFlowScopeConfig() throws Exception {
+        injectStrutsDependencies(this);
+        Assert.assertNotNull(flowConfigBuilder);
+
+        Map<String, List<PropertyDescriptor>> map = flowConfigBuilder
+                .createFlowScopeFields("correctFlow");
+
+        Assert.assertNotNull(map);
+
+        try {
+            map.put("key", null);
+            Assert.fail("The map must be unmodifiable. Should throw UnsupportedOperationException.");
+        } catch (Exception e) {
+            Assert.assertTrue(
+                    "The map must be unmodifiable. Should throw UnsupportedOperationException.",
+                    e instanceof UnsupportedOperationException);
+        }
+
+        try {
+            map.remove(MockActionFlowAction.class.getName());
+            Assert.fail("The map must be unmodifiable. Should throw UnsupportedOperationException.");
+        } catch (Exception e) {
+            Assert.assertTrue(
+                    "The map must be unmodifiable. Should throw UnsupportedOperationException.",
+                    e instanceof UnsupportedOperationException);
+        }
+
+        List<PropertyDescriptor> list = map.get(MockActionFlowAction.class
+                .getName());
+
+        Assert.assertNotNull(list);
+
+        try {
+            list.add(new PropertyDescriptor("phone", MockActionFlowAction.class));
+            Assert.fail("The list must be unmodifiable. Should throw UnsupportedOperationException.");
+        } catch (Exception e) {
+            Assert.assertTrue(
+                    "The list must be unmodifiable. Should throw UnsupportedOperationException.",
+                    e instanceof UnsupportedOperationException);
+        }
+
+        try {
+            list.remove(0);
+            Assert.fail("The list must be unmodifiable. Should throw UnsupportedOperationException.");
+        } catch (Exception e) {
+            Assert.assertTrue(
+                    "The list must be unmodifiable. Should throw UnsupportedOperationException.",
                     e instanceof UnsupportedOperationException);
         }
     }
