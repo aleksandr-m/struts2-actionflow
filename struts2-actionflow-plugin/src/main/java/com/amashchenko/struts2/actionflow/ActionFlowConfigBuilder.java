@@ -432,7 +432,8 @@ public class ActionFlowConfigBuilder {
                             }
                         }
                         if (pds != null && !pds.isEmpty()) {
-                            flowScopeFields.put(classKey, pds);
+                            flowScopeFields.put(classKey,
+                                    Collections.unmodifiableList(pds));
                         }
                     }
                 } catch (Exception e) {
@@ -446,6 +447,6 @@ public class ActionFlowConfigBuilder {
                     + flowScopeFields);
         }
 
-        return flowScopeFields;
+        return Collections.unmodifiableMap(flowScopeFields);
     }
 }

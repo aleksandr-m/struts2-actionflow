@@ -30,7 +30,7 @@ public class ActionFlowScopeTest extends
 
     /** Key for previous flow action. */
     private static final String PREVIOUS_FLOW_ACTION = "actionFlowPreviousAction";
-    private static final String FLOW_SCOPE_PREFIX = "actionFlowScope.";
+    private static final String FLOW_SCOPE_KEY = "actionFlowScope";
 
     /** {@inheritDoc} */
     @Override
@@ -54,8 +54,9 @@ public class ActionFlowScopeTest extends
         MockActionFlowAction action = (MockActionFlowAction) ap.getAction();
 
         Map<String, Object> sessionMap = new HashMap<String, Object>();
-        sessionMap.put(FLOW_SCOPE_PREFIX + action.getClass().getName()
-                + ".phone", value);
+        Map<String, Object> scopeMap = new HashMap<String, Object>();
+        scopeMap.put(action.getClass().getName() + ".phone", value);
+        sessionMap.put(FLOW_SCOPE_KEY, scopeMap);
         ap.getInvocation().getInvocationContext().setSession(sessionMap);
 
         ap.execute();
@@ -63,6 +64,7 @@ public class ActionFlowScopeTest extends
         Assert.assertEquals(value, action.getPhone());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testSettingToScope() throws Exception {
         executeAction("/correctFlow/correctFlow");
@@ -85,10 +87,10 @@ public class ActionFlowScopeTest extends
 
         ap.execute();
 
-        Assert.assertEquals(
-                value,
-                sessionMap.get(FLOW_SCOPE_PREFIX + action.getClass().getName()
-                        + ".phone"));
+        Assert.assertNotNull(sessionMap.get(FLOW_SCOPE_KEY));
+        Assert.assertEquals(value, ((Map<String, Object>) sessionMap
+                .get(FLOW_SCOPE_KEY)).get(action.getClass().getName()
+                + ".phone"));
     }
 
     @Test
@@ -118,10 +120,7 @@ public class ActionFlowScopeTest extends
         ap.execute();
 
         Assert.assertEquals(null, sessionMap.get(PREVIOUS_FLOW_ACTION));
-        Assert.assertEquals(
-                null,
-                sessionMap.get(FLOW_SCOPE_PREFIX + action.getClass().getName()
-                        + ".phone"));
+        Assert.assertNull(sessionMap.get(FLOW_SCOPE_KEY));
         Assert.assertEquals(immutableValue, sessionMap.get(immutableValue));
     }
 
@@ -149,10 +148,7 @@ public class ActionFlowScopeTest extends
         ap.execute();
 
         Assert.assertEquals(null, sessionMap.get(PREVIOUS_FLOW_ACTION));
-        Assert.assertEquals(
-                null,
-                sessionMap.get(FLOW_SCOPE_PREFIX + action.getClass().getName()
-                        + ".phone"));
+        Assert.assertNull(sessionMap.get(FLOW_SCOPE_KEY));
         Assert.assertEquals(immutableValue, sessionMap.get(immutableValue));
     }
 }

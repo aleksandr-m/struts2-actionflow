@@ -17,10 +17,9 @@ package com.amashchenko.struts2.actionflow;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.amashchenko.struts2.actionflow.entities.ActionFlowStepConfig;
 import com.opensymphony.xwork2.Action;
@@ -136,8 +135,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     protected static final String PREV_ACTION_PARAM = "prevAction";
     protected static final String VIEW_ACTION_PARAM = "viewAction";
 
-    // TODO maybe map inside session
-    private static final String FLOW_SCOPE_PREFIX = "actionFlowScope.";
+    private static final String FLOW_SCOPE_KEY = "actionFlowScope";
     private Map<String, List<PropertyDescriptor>> flowScopeFields;
 
     /** Previous not special nor flow action. */
@@ -200,7 +198,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         // start
         if (startAction != null && startAction.equals(actionName)) {
             session.put(PREVIOUS_FLOW_ACTION, null);
-            clearFlowScope(session);
+            session.put(FLOW_SCOPE_KEY, null);
         }
 
         // scope
@@ -338,7 +336,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         // last flow action
         if (Action.SUCCESS.equals(result) && flowAction && lastFlowAction) {
             session.put(PREVIOUS_FLOW_ACTION, null);
-            clearFlowScope(session);
+            session.put(FLOW_SCOPE_KEY, null);
         }
 
         return result;
@@ -349,17 +347,25 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
      * 
      * @param action
      *            action object.
-     * @param scopeSession
+     * @param session
      *            session map.
      * @param fromFlowScope
      *            whether to store value into the session or retrieve it.
      */
+    @SuppressWarnings("unchecked")
     private void handleFlowScope(final Object action,
-            final Map<String, Object> scopeSession, final boolean fromFlowScope) {
-        if (action != null && flowScopeFields != null && scopeSession != null) {
+            final Map<String, Object> session, final boolean fromFlowScope) {
+        if (action != null && flowScopeFields != null && session != null) {
             String actionClassName = action.getClass().getName();
-            String classSessionKey = FLOW_SCOPE_PREFIX
-                    + action.getClass().getName() + ".";
+
+            Map<String, Object> scopeMap = null;
+            if (session.containsKey(FLOW_SCOPE_KEY)
+                    && session.get(FLOW_SCOPE_KEY) instanceof Map) {
+                scopeMap = (Map<String, Object>) session.get(FLOW_SCOPE_KEY);
+            }
+            if (scopeMap == null) {
+                scopeMap = new HashMap<String, Object>();
+            }
 
             if (flowScopeFields.containsKey(actionClassName)
                     && flowScopeFields.get(actionClassName) != null) {
@@ -369,49 +375,28 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                         Method getter = pd.getReadMethod();
                         if (getter != null) {
                             Object val = getter.invoke(action);
-                            String sessionKey = classSessionKey + pd.getName();
+                            String scopeFieldKey = actionClassName + "."
+                                    + pd.getName();
 
                             if (fromFlowScope) {
                                 if (val == null
-                                        && scopeSession.containsKey(sessionKey)) {
+                                        && scopeMap.containsKey(scopeFieldKey)) {
                                     Method setter = pd.getWriteMethod();
                                     if (setter != null) {
                                         setter.invoke(action,
-                                                scopeSession.get(sessionKey));
+                                                scopeMap.get(scopeFieldKey));
                                     }
                                 }
                             } else {
                                 if (val != null) {
-                                    scopeSession.put(sessionKey, val);
+                                    scopeMap.put(scopeFieldKey, val);
+                                    session.put(FLOW_SCOPE_KEY, scopeMap);
                                 }
                             }
                         }
                     } catch (Exception e) {
                         LOG.warn("In handleFlowScope", e);
                     }
-                }
-            }
-        }
-    }
-
-    /**
-     * Clears action flow scope.
-     * 
-     * @param scopeSession
-     *            session map.
-     */
-    private void clearFlowScope(final Map<String, Object> scopeSession) {
-        if (scopeSession != null) {
-            Set<String> removeKeys = new HashSet<String>();
-            for (String key : scopeSession.keySet()) {
-                if (key != null && key.startsWith(FLOW_SCOPE_PREFIX)) {
-                    removeKeys.add(key);
-                }
-            }
-
-            if (removeKeys != null && !removeKeys.isEmpty()) {
-                for (String key : removeKeys) {
-                    scopeSession.remove(key);
                 }
             }
         }
