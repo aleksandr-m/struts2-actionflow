@@ -28,25 +28,25 @@
     <div class="example-code">		
         <i>Form:</i>
         <pre>
-&lt;s:form action="next">
-    &lt;s:hidden name="step" value="%{#session['actionFlowPreviousAction']}" />
+&lt;s:form action="next"&gt;
+    &lt;s:hidden name="step" value="%{#session['actionFlowPreviousAction']}" /&gt;
 
-    &lt;s:textfield key="name" label="Name" />
+    &lt;s:textfield key="name" label="Name" /&gt;
 
-    &lt;s:submit value="previous" action="prev" />
-    &lt;s:submit value="next" action="next" />
-&lt;/s:form>
+    &lt;s:submit value="previous" action="prev" /&gt;
+    &lt;s:submit value="next" action="next" /&gt;
+&lt;/s:form&gt;
         </pre>
         
         <i>Action configuration:</i>
         <pre>
-&lt;action name="saveName" method="saveName" class="...">
-    &lt;param name="actionFlowStep">1&lt;/param>
+&lt;action name="saveName" method="saveName" class="..."&gt;
+    &lt;param name="actionFlowStep"&gt;1&lt;/param&gt;
 			
-    &lt;result name="input">/WEB-INF/pages/name.jsp&lt;/result>
-    &lt;result name="error">/WEB-INF/pages/name.jsp&lt;/result>
-    &lt;result type="redirectAction">finish&lt;/result>
-&lt;/action>
+    &lt;result name="input"&gt;/WEB-INF/pages/name.jsp&lt;/result&gt;
+    &lt;result name="error"&gt;/WEB-INF/pages/name.jsp&lt;/result&gt;
+    &lt;result type="redirectAction"&gt;finish&lt;/result&gt;
+&lt;/action&gt;
         </pre>
     </div>
   </body>

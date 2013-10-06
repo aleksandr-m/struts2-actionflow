@@ -15,6 +15,10 @@
  */
 package com.amashchenko.struts2.actionflow;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.amashchenko.struts2.actionflow.entities.ActionFlowStepConfig;
@@ -109,7 +113,7 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
 public class ActionFlowInterceptor extends AbstractInterceptor {
 
     /** Serial version uid. */
-    private static final long serialVersionUID = 6161518595680043244L;
+    private static final long serialVersionUID = -7520779074852595667L;
 
     /** Logger. */
     public static final Logger LOG = LoggerFactory
@@ -130,6 +134,14 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     protected static final String NEXT_ACTION_PARAM = "nextAction";
     protected static final String PREV_ACTION_PARAM = "prevAction";
     protected static final String VIEW_ACTION_PARAM = "viewAction";
+
+    private static final String FLOW_SCOPE_KEY = "actionFlowScope";
+    private Map<String, List<PropertyDescriptor>> flowScopeFields;
+
+    /** Previous not special nor flow action. */
+    private String prevSimpleAction;
+    /** Action before first next. */
+    private String startAction;
 
     // interceptor parameters
     private String nextActionName = DEFAULT_NEXT_ACTION_NAME;
@@ -157,26 +169,49 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             flowMap = flowConfigBuilder.createFlowMap(packageName,
                     nextActionName, prevActionName, viewActionPostfix,
                     viewActionMethod);
+
+            flowScopeFields = flowConfigBuilder
+                    .createFlowScopeFields(packageName);
         }
 
         boolean flowAction = false;
-        boolean lastAction = false;
-
+        boolean lastFlowAction = false;
         if (flowMap.containsKey(actionName)) {
             flowAction = true;
             if (flowMap.get(actionName).getNextAction() == null) {
-                lastAction = true;
+                lastFlowAction = true;
             }
+        }
+
+        boolean flowViewAction = false;
+        if (actionName.endsWith(viewActionPostfix)) {
+            String plainAction = actionName.substring(0,
+                    actionName.indexOf(viewActionPostfix));
+            if (flowMap.containsKey(plainAction)) {
+                flowViewAction = true;
+            }
+        }
+
+        Map<String, Object> session = invocation.getInvocationContext()
+                .getSession();
+
+        // start
+        if (startAction != null && startAction.equals(actionName)) {
+            session.put(PREVIOUS_FLOW_ACTION, null);
+            session.put(FLOW_SCOPE_KEY, null);
+        }
+
+        // scope
+        if (flowViewAction) {
+            handleFlowScope(invocation.getAction(), session, true);
         }
 
         // not a flow nor next nor previous action, just invoke
         if (!flowAction && !prevActionName.equals(actionName)
                 && !nextActionName.equals(actionName)) {
+            prevSimpleAction = actionName;
             return invocation.invoke();
         }
-
-        Map<String, Object> session = invocation.getInvocationContext()
-                .getSession();
 
         String previousFlowAction = (String) session.get(PREVIOUS_FLOW_ACTION);
 
@@ -248,6 +283,11 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         }
 
         if (nextActionName.equals(actionName)) {
+            // set start action
+            if (startAction == null) {
+                startAction = prevSimpleAction;
+            }
+
             invocation.getInvocationContext().getValueStack()
                     .set(NEXT_ACTION_PARAM, nextAction);
         } else if (prevActionName.equals(actionName)) {
@@ -265,7 +305,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         }
 
         // execute global view result on not last flow action
-        if (flowAction && nextAction.equals(actionName) && !lastAction) {
+        if (flowAction && nextAction.equals(actionName) && !lastFlowAction) {
             final String nextAct = flowMap.get(actionName).getNextAction();
             invocation.addPreResultListener(new PreResultListener() {
                 public void beforeResult(ActionInvocation invocation,
@@ -284,16 +324,82 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         String result = invocation.invoke();
 
+        // scope
+        if (flowAction) {
+            handleFlowScope(invocation.getAction(), session, false);
+        }
+
         if (GLOBAL_VIEW_RESULT.equals(result) && flowAction) {
             session.put(PREVIOUS_FLOW_ACTION, actionName);
         }
 
         // last flow action
-        if (Action.SUCCESS.equals(result) && flowAction && lastAction) {
+        if (Action.SUCCESS.equals(result) && flowAction && lastFlowAction) {
             session.put(PREVIOUS_FLOW_ACTION, null);
+            session.put(FLOW_SCOPE_KEY, null);
         }
 
         return result;
+    }
+
+    /**
+     * Handles action flow scope fields.
+     * 
+     * @param action
+     *            action object.
+     * @param session
+     *            session map.
+     * @param fromFlowScope
+     *            whether to store value into the session or retrieve it.
+     */
+    @SuppressWarnings("unchecked")
+    private void handleFlowScope(final Object action,
+            final Map<String, Object> session, final boolean fromFlowScope) {
+        if (action != null && flowScopeFields != null && session != null) {
+            String actionClassName = action.getClass().getName();
+
+            Map<String, Object> scopeMap = null;
+            if (session.containsKey(FLOW_SCOPE_KEY)
+                    && session.get(FLOW_SCOPE_KEY) instanceof Map) {
+                scopeMap = (Map<String, Object>) session.get(FLOW_SCOPE_KEY);
+            }
+            if (scopeMap == null) {
+                scopeMap = new HashMap<String, Object>();
+            }
+
+            if (flowScopeFields.containsKey(actionClassName)
+                    && flowScopeFields.get(actionClassName) != null) {
+                for (PropertyDescriptor pd : flowScopeFields
+                        .get(actionClassName)) {
+                    try {
+                        Method getter = pd.getReadMethod();
+                        if (getter != null) {
+                            Object val = getter.invoke(action);
+                            String scopeFieldKey = actionClassName + "."
+                                    + pd.getName();
+
+                            if (fromFlowScope) {
+                                if (val == null
+                                        && scopeMap.containsKey(scopeFieldKey)) {
+                                    Method setter = pd.getWriteMethod();
+                                    if (setter != null) {
+                                        setter.invoke(action,
+                                                scopeMap.get(scopeFieldKey));
+                                    }
+                                }
+                            } else {
+                                if (val != null) {
+                                    scopeMap.put(scopeFieldKey, val);
+                                    session.put(FLOW_SCOPE_KEY, scopeMap);
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        LOG.warn("In handleFlowScope", e);
+                    }
+                }
+            }
+        }
     }
 
     /**
