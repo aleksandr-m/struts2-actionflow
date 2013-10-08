@@ -2,6 +2,14 @@
 
 A Struts2 plug-in for creating wizards (action flows).
 
+## Features Overview
+
+- Simple integration to new or existing Struts2 application
+- Automatic use of Post/Redirect/Get pattern to avoid duplicate form submissions
+- Proper handling of browser back and refresh buttons
+- Action flow scope to keep data, there is no need to use scoped model-driven 
+actions
+
 ## Installation
 
 Copy struts2-actionflow-plugin-x.x.x.jar into your classpath (WEB-INF/lib). No other files need to be copied or created.
@@ -13,19 +21,17 @@ If you are using Maven, add this to your project POM:
         <dependency>
             <groupId>com.amashchenko.struts2.actionflow</groupId>
             <artifactId>struts2-actionflow-plugin</artifactId>
-            <version>1.5.5</version>
+            <version>2.0.0</version>
         </dependency>
         ...
     </dependencies>
 
 ## Example Usage
 
-The most simple setup to use this plug-in is:
-
 1. Install it by adding this plug-in dependency to your POM or by copying jar into /WEB-INF/lib directory.
 2. Make your action package extend `actionflow-default` package.
-3. Add `<param name="actionFlowStep">1</param>` parameters to actions you want to include in action flows. (NOTE: the action must have input result!)
-4. Use next and prev actions in JSP to move between flow steps.
+3. Add `<param name="actionFlowStep">` parameters to actions you want to include in action flows. (NOTE: the action must have an input result!)
+4. Use `next` and `prev` actions in JSP to move between wizard steps.
 
 ### Action Mappings
 
