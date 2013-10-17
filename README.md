@@ -32,6 +32,7 @@ If you are using Maven, add this to your project POM:
 2. Make your action package extend `actionflow-default` package.
 3. Add `<param name="actionFlowStep">` parameters to actions you want to include in action flows. (NOTE: the action must have an input result!)
 4. Use `next` and `prev` actions in JSP to move between wizard steps.
+5. Use `@ActionFlowScope` annotation on action classes and fields in order to keep data in action flow scope.
 
 ### Action Mappings
 
@@ -57,12 +58,20 @@ If you are using Maven, add this to your project POM:
 ### Form
 
     <s:form action="next">
-       <s:hidden name="step" value="%{#session['actionFlowPreviousAction']}" />
+        <s:hidden name="step" value="%{#session['actionFlowPreviousAction']}" />
     
-       <s:textfield key="name" label="Name" />
-       <s:submit value="previous" action="prev" />
-       <s:submit value="next" action="next" />
+        <s:textfield key="name" label="Name" />
+        <s:submit value="previous" action="prev" />
+        <s:submit value="next" action="next" />
     </s:form>
+
+### Action
+
+    @ActionFlowScope
+    public class FlowAction extends ActionSupport {
+        @ActionFlowScope
+        private String name;
+    }
 
 ## License
 
