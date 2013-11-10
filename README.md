@@ -65,6 +65,12 @@ If you are using Maven, add this to your project POM:
         <s:submit value="next" action="next" />
     </s:form>
 
+**Note:** Since Struts2 version 2.3.15.3 if you are using `<s:submit>` tags with `action` attribute you need to enable support for `action:` prefix.
+
+Put that in your struts.xml file:
+
+    <constant name="struts.mapper.action.prefix.enabled" value="true" />
+
 ### Action
 
     @ActionFlowScope
