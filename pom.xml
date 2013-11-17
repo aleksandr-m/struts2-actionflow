@@ -64,7 +64,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <struts2.version>2.3.15.1</struts2.version>
+        <struts2.version>2.3.15.3</struts2.version>
         <scm.url>scm:git:git@github.com:aleksandr-m/struts2-actionflow.git</scm.url>
         <url>https://github.com/aleksandr-m/struts2-actionflow</url>
     </properties>
@@ -91,7 +91,7 @@
                 <plugin>
                     <groupId>com.atlassian.maven.plugins</groupId>
                     <artifactId>maven-jgitflow-plugin</artifactId>
-                    <version>1.0-alpha21.1</version>
+                    <version>1.0-alpha26</version>
                     <configuration>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                         <flowInitContext>

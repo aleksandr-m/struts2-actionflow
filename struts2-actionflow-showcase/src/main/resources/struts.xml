@@ -23,6 +23,7 @@
     <constant name="struts.enable.DynamicMethodInvocation" value="false" />
     <constant name="struts.devMode" value="false" />
     <constant name="struts.locale" value="en" />
+    <constant name="struts.mapper.action.prefix.enabled" value="true" />
 
     <!-- simple example -->
     <package name="actionflow-showcase" namespace="/" extends="actionflow-default">
