@@ -174,10 +174,16 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                     .createFlowScopeFields(packageName);
         }
 
+        Integer stepCount = null;
+
         boolean flowAction = false;
         boolean lastFlowAction = false;
         if (flowMap.containsKey(actionName)) {
             flowAction = true;
+
+            // this is needed when input result is returned
+            stepCount = flowMap.get(actionName).getIndex();
+
             if (flowMap.get(actionName).getNextAction() == null) {
                 lastFlowAction = true;
             }
@@ -189,6 +195,8 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                     actionName.indexOf(viewActionPostfix));
             if (flowMap.containsKey(plainAction)) {
                 flowViewAction = true;
+
+                stepCount = flowMap.get(plainAction).getIndex();
             }
         }
 
@@ -199,6 +207,12 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         if (startAction != null && startAction.equals(actionName)) {
             session.put(PREVIOUS_FLOW_ACTION, null);
             session.put(FLOW_SCOPE_KEY, null);
+        }
+
+        // action flow step configuration aware
+        if (invocation.getAction() instanceof ActionFlowStepCountAware) {
+            ((ActionFlowStepCountAware) invocation.getAction())
+                    .setActionFlowStepCount(stepCount == null ? 1 : stepCount);
         }
 
         // scope
