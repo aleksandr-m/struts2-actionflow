@@ -94,6 +94,7 @@
                     <version>1.0-alpha26</version>
                     <configuration>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
+                        <enableFeatureVersions>true</enableFeatureVersions>
                         <flowInitContext>
                             <versionTagPrefix>v</versionTagPrefix>
                         </flowInitContext>
