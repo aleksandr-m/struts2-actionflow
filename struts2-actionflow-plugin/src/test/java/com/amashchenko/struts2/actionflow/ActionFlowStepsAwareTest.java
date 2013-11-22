@@ -26,7 +26,7 @@ import com.amashchenko.struts2.actionflow.mock.MockActionFlowAction;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionProxy;
 
-public class ActionFlowStepCountAwareTest extends
+public class ActionFlowStepsAwareTest extends
         StrutsJUnit4TestCase<MockActionFlowAction> {
 
     /** Key for previous flow action. */
@@ -47,13 +47,17 @@ public class ActionFlowStepCountAwareTest extends
         Assert.assertNotNull(ap);
         Assert.assertNotNull(ap.getAction());
         Assert.assertTrue(ap.getAction() instanceof MockActionFlowAction);
-        Assert.assertTrue(ap.getAction() instanceof ActionFlowStepCountAware);
+        Assert.assertTrue(ap.getAction() instanceof ActionFlowStepsAware);
 
         MockActionFlowAction action = (MockActionFlowAction) ap.getAction();
 
         ap.execute();
 
-        Assert.assertEquals(stepCount, action.getStepCount());
+        Assert.assertNotNull(action.getStepsData());
+        Assert.assertEquals(new Integer(1), action.getStepsData().getSteps()
+                .firstKey());
+
+        Assert.assertEquals(stepCount, action.getStepsData().getStepIndex());
     }
 
     @Test
@@ -68,13 +72,15 @@ public class ActionFlowStepCountAwareTest extends
         Assert.assertNotNull(ap);
         Assert.assertNotNull(ap.getAction());
         Assert.assertTrue(ap.getAction() instanceof MockActionFlowAction);
-        Assert.assertTrue(ap.getAction() instanceof ActionFlowStepCountAware);
+        Assert.assertTrue(ap.getAction() instanceof ActionFlowStepsAware);
 
         MockActionFlowAction action = (MockActionFlowAction) ap.getAction();
 
         ap.execute();
 
-        Assert.assertEquals(stepCount, action.getStepCount());
+        Assert.assertNotNull(action.getStepsData());
+
+        Assert.assertEquals(stepCount, action.getStepsData().getStepIndex());
     }
 
     @Test
@@ -92,7 +98,7 @@ public class ActionFlowStepCountAwareTest extends
         Assert.assertNotNull(ap);
         Assert.assertNotNull(ap.getAction());
         Assert.assertTrue(ap.getAction() instanceof MockActionFlowAction);
-        Assert.assertTrue(ap.getAction() instanceof ActionFlowStepCountAware);
+        Assert.assertTrue(ap.getAction() instanceof ActionFlowStepsAware);
 
         MockActionFlowAction action = (MockActionFlowAction) ap.getAction();
 
@@ -104,6 +110,8 @@ public class ActionFlowStepCountAwareTest extends
 
         Assert.assertEquals(Action.INPUT, resultCode);
 
-        Assert.assertEquals(stepCount, action.getStepCount());
+        Assert.assertNotNull(action.getStepsData());
+
+        Assert.assertEquals(stepCount, action.getStepsData().getStepIndex());
     }
 }

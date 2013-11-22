@@ -20,8 +20,10 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.amashchenko.struts2.actionflow.entities.ActionFlowStepConfig;
+import com.amashchenko.struts2.actionflow.entities.ActionFlowStepsData;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.inject.Inject;
@@ -154,6 +156,9 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     /** Holds action flow. */
     private Map<String, ActionFlowStepConfig> flowMap;
 
+    /** Holds action flow steps data. */
+    private ActionFlowStepsData flowStepsData;
+
     /** Action flow configuration builder. */
     @Inject
     private ActionFlowConfigBuilder flowConfigBuilder;
@@ -172,9 +177,20 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
             flowScopeFields = flowConfigBuilder
                     .createFlowScopeFields(packageName);
+
+            // create action flow steps data
+            if (flowMap != null) {
+                TreeMap<Integer, String> m = new TreeMap<Integer, String>();
+                for (ActionFlowStepConfig cfg : flowMap.values()) {
+                    if (cfg.getIndex() < flowMap.size() - 1) {
+                        m.put(cfg.getIndex() + 1, cfg.getNextAction());
+                    }
+                }
+                flowStepsData = new ActionFlowStepsData(m);
+            }
         }
 
-        Integer stepCount = null;
+        Integer stepCount = 1;
 
         boolean flowAction = false;
         boolean lastFlowAction = false;
@@ -209,10 +225,12 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             session.put(FLOW_SCOPE_KEY, null);
         }
 
-        // action flow step configuration aware
-        if (invocation.getAction() instanceof ActionFlowStepCountAware) {
-            ((ActionFlowStepCountAware) invocation.getAction())
-                    .setActionFlowStepCount(stepCount == null ? 1 : stepCount);
+        // action flow steps configuration aware
+        if (invocation.getAction() instanceof ActionFlowStepsAware) {
+            flowStepsData.setStepIndex(stepCount);
+
+            ((ActionFlowStepsAware) invocation.getAction())
+                    .setActionFlowSteps(flowStepsData);
         }
 
         // scope

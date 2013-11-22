@@ -18,7 +18,8 @@ package com.amashchenko.struts2.actionflow.mock;
 import java.util.Date;
 
 import com.amashchenko.struts2.actionflow.ActionFlowScope;
-import com.amashchenko.struts2.actionflow.ActionFlowStepCountAware;
+import com.amashchenko.struts2.actionflow.ActionFlowStepsAware;
+import com.amashchenko.struts2.actionflow.entities.ActionFlowStepsData;
 import com.opensymphony.xwork2.ActionSupport;
 
 /**
@@ -29,18 +30,16 @@ import com.opensymphony.xwork2.ActionSupport;
  */
 @ActionFlowScope
 public class MockActionFlowAction extends ActionSupport implements
-        ActionFlowStepCountAware {
+        ActionFlowStepsAware {
 
     /** Serial version uid. */
     private static final long serialVersionUID = 6659699489397750306L;
 
-    /** Action flow step count. */
-    private Integer stepCount;
+    private ActionFlowStepsData stepsData;
 
-    /** {@inheritDoc} */
     @Override
-    public void setActionFlowStepCount(Integer stepCount) {
-        this.stepCount = stepCount;
+    public void setActionFlowSteps(ActionFlowStepsData stepsData) {
+        this.stepsData = stepsData;
     }
 
     /** Phone field. */
@@ -66,13 +65,6 @@ public class MockActionFlowAction extends ActionSupport implements
     }
 
     /**
-     * @return the stepCount
-     */
-    public Integer getStepCount() {
-        return stepCount;
-    }
-
-    /**
      * @return the date
      */
     public Date getDate() {
@@ -85,5 +77,12 @@ public class MockActionFlowAction extends ActionSupport implements
      */
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    /**
+     * @return the stepsData
+     */
+    public ActionFlowStepsData getStepsData() {
+        return stepsData;
     }
 }

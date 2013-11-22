@@ -15,19 +15,21 @@
  */
 package com.amashchenko.struts2.actionflow;
 
+import com.amashchenko.struts2.actionflow.entities.ActionFlowStepsData;
+
 /**
- * Actions that want to get hold of current action flow step count should
- * implement this interface.
+ * Actions that want to get hold of action flow steps data should implement this
+ * interface.
  * 
  * @author Aleksandr Mashchenko
  * 
  */
-public interface ActionFlowStepCountAware {
+public interface ActionFlowStepsAware {
     /**
-     * Sets the action flow step count in the implementing class.
+     * Sets the action flow steps data in the implementing class.
      * 
-     * @param stepCount
-     *            action flow step count.
+     * @param stepsData
+     *            action flow steps data.
      */
-    void setActionFlowStepCount(Integer stepCount);
+    void setActionFlowSteps(ActionFlowStepsData stepsData);
 }
