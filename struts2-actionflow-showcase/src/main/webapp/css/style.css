@@ -1,0 +1,14 @@
+a {
+	text-decoration: none;
+}
+
+.navbar .nav li {
+	line-height: 20px;
+	text-align: center;
+}
+
+.navbar .nav > .active {
+   background-color: #E5E5E5;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.125) inset;
+    color: #555555;
+}

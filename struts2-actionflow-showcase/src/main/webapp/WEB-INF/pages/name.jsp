@@ -4,9 +4,12 @@
 <html>
 	<head>
 		<title>Struts2 ActionFlow Showcase</title>
+		<link rel="stylesheet" type="text/css" href="<s:url value="/css/bootstrap.min.css"/>"/>
+		<link rel="stylesheet" type="text/css" href="<s:url value="/css/style.css"/>"/>
 	</head>
 	<body>
 		<h4>simple example</h4>
+		<s:include value="steps.jsp"/>
 		<s:form action="next">
 			<s:hidden name="step" value="%{#session['actionFlowPreviousAction']}"/>
 		
@@ -17,8 +20,8 @@
 			<tr>
     		<td colspan="2">
     			<div>
-						<s:submit value="previous" action="prev" theme="simple"/>
-						<s:submit value="next" action="next" theme="simple"/>
+						<s:submit value="previous" action="prev" cssClass="btn" theme="simple"/>
+						<s:submit value="next" action="next" cssClass="btn" theme="simple"/>
 					</div>
 				</td>
 			</tr>
@@ -27,7 +30,7 @@
     <br/>
     <div class="example-code">		
         <i>Form:</i>
-        <pre>
+<pre>
 &lt;s:form action="next"&gt;
     &lt;s:hidden name="step" value="%{#session['actionFlowPreviousAction']}" /&gt;
 
@@ -36,10 +39,10 @@
     &lt;s:submit value="previous" action="prev" /&gt;
     &lt;s:submit value="next" action="next" /&gt;
 &lt;/s:form&gt;
-        </pre>
+</pre>
         
         <i>Action configuration:</i>
-        <pre>
+<pre>
 &lt;action name="saveName" method="saveName" class="..."&gt;
     &lt;param name="actionFlowStep"&gt;1&lt;/param&gt;
 			
@@ -47,7 +50,7 @@
     &lt;result name="error"&gt;/WEB-INF/pages/name.jsp&lt;/result&gt;
     &lt;result type="redirectAction"&gt;finish&lt;/result&gt;
 &lt;/action&gt;
-        </pre>
+</pre>
     </div>
   </body>
 </html>

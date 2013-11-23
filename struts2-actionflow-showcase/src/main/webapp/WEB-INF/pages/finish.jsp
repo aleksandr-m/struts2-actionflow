@@ -4,6 +4,8 @@
 <html>
 	<head>
 		<title>Struts2 ActionFlow Showcase</title>
+		<link rel="stylesheet" type="text/css" href="<s:url value="/css/bootstrap.min.css"/>"/>
+		<link rel="stylesheet" type="text/css" href="<s:url value="/css/style.css"/>"/>
 	</head>
 	<body>
 		<h4>simple example</h4>
@@ -16,8 +18,8 @@
 		<br/>
 		<s:url var="m1Url" action="start" namespace="/"/>
 		<s:url var="m2Url" action="start" namespace="/advanced"/>
-		<s:a href="%{m1Url}">start simple example</s:a>
+		<s:a href="%{m1Url}" cssClass="btn btn-large">start simple example</s:a>
 		&nbsp;&nbsp;
-		<s:a href="%{m2Url}">start advanced example</s:a>
+		<s:a href="%{m2Url}" cssClass="btn btn-large">start advanced example</s:a>
   </body>
 </html>
