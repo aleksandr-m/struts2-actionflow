@@ -16,12 +16,6 @@
         <div class="container-fluid">
             <div class="row-fluid">
                 <div class="span12">
-                    <tiles:insertAttribute name="header" />
-                </div>
-            </div>
-
-            <div class="row-fluid">
-                <div class="span12">
                     <tiles:insertAttribute name="body" />
                 </div>
             </div>

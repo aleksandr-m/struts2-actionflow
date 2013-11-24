@@ -2,6 +2,8 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 
 <h4>advanced example</h4>
+<s:include value="steps.jsp"/>
+
 <s:form action="nextAction">
 	<s:hidden name="step" value="%{#session['actionFlowPreviousAction']}"/>
 

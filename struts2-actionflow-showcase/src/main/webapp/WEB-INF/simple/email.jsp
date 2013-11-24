@@ -3,6 +3,7 @@
 
 <h4>simple example</h4>
 <s:include value="steps.jsp"/>
+
 <s:form action="next">
 	<s:hidden name="step" value="%{#session['actionFlowPreviousAction']}"/>
 

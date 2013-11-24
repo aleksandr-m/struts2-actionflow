@@ -3,6 +3,8 @@
 
 <h4>advanced example</h4>
 <h4>Another phone page</h4>
+<s:include value="steps.jsp"/>
+
 <s:form action="nextAction">
 	<s:hidden name="step" value="%{#session['actionFlowPreviousAction']}"/>
 
