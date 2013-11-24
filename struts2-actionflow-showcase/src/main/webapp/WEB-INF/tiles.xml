@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+    <definition name="homepage" template="/WEB-INF/layouts/classic.jsp">
+        <put-attribute name="header" value="" />
+        <put-attribute name="body" value="/WEB-INF/pages/homepage.jsp" />
+    </definition>
+    
+    <definition name="name" extends="homepage">
+        <put-attribute name="header" value="" />
+        <put-attribute name="body" value="/WEB-INF/simple/name.jsp" />
+    </definition>
+    <definition name="phone" extends="homepage">
+        <put-attribute name="header" value="" />
+        <put-attribute name="body" value="/WEB-INF/simple/phone.jsp" />
+    </definition>
+    <definition name="email" extends="homepage">
+        <put-attribute name="header" value="" />
+        <put-attribute name="body" value="/WEB-INF/simple/email.jsp" />
+    </definition>
+    <definition name="finish" extends="homepage">
+        <put-attribute name="header" value="" />
+        <put-attribute name="body" value="/WEB-INF/simple/finish.jsp" />
+    </definition>
+    
+    <definition name="advanced-name" extends="homepage">
+        <put-attribute name="header" value="" />
+        <put-attribute name="body" value="/WEB-INF/advanced/name.jsp" />
+    </definition>
+    <definition name="advanced-phone" extends="homepage">
+        <put-attribute name="header" value="" />
+        <put-attribute name="body" value="/WEB-INF/advanced/phone.jsp" />
+    </definition>
+    <definition name="advanced-anotherPhone" extends="homepage">
+        <put-attribute name="header" value="" />
+        <put-attribute name="body" value="/WEB-INF/advanced/anotherPhone.jsp" />
+    </definition>
+    <definition name="advanced-email" extends="homepage">
+        <put-attribute name="header" value="" />
+        <put-attribute name="body" value="/WEB-INF/advanced/email.jsp" />
+    </definition>
+    <definition name="advanced-finish" extends="homepage">
+        <put-attribute name="header" value="" />
+        <put-attribute name="body" value="/WEB-INF/advanced/finish.jsp" />
+    </definition>
+</tiles-definitions>

@@ -87,5 +87,17 @@
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
         </dependency>
+        <dependency>
+          <groupId>org.apache.struts</groupId>
+          <artifactId>struts2-tiles3-plugin</artifactId>
+          <version>${struts2.version}</version>
+          <type>jar</type>
+          <scope>compile</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.slf4j</groupId>
+        	<artifactId>jcl-over-slf4j</artifactId>
+        	<version>1.7.5</version>
+        </dependency>
     </dependencies>
 </project>

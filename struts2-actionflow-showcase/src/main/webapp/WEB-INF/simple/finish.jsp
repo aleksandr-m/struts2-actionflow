@@ -1,7 +1,7 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ page contentType="text/html; charset=UTF-8"%>
 
-<h4>advanced example</h4>
+<h4>simple example</h4>
 finish<br/><br/>
 
 Name: <s:property value="#session.names"/><br/>
