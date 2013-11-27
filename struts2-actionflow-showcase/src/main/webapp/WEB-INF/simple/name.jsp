@@ -33,8 +33,8 @@
 &lt;action name="saveName" method="saveName" class="..."&gt;
     &lt;param name="actionFlowStep"&gt;1&lt;/param&gt;
 			
-    &lt;result name="input"&gt;/WEB-INF/pages/name.jsp&lt;/result&gt;
-    &lt;result name="error"&gt;/WEB-INF/pages/name.jsp&lt;/result&gt;
+    &lt;result name="input"&gt;/WEB-INF/simple/name.jsp&lt;/result&gt;
+    &lt;result name="error"&gt;/WEB-INF/simple/name.jsp&lt;/result&gt;
     &lt;result type="redirectAction"&gt;finish&lt;/result&gt;
 &lt;/action&gt;
 </pre>

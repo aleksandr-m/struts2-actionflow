@@ -25,8 +25,13 @@ a {
 	text-align: center;
 }
 
-.navbar .nav > .active {
+.navbar .nav > .passed {
 	background-color: #E5E5E5;
 	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.125) inset;
 	color: #555555;
+}
+
+.navbar .nav > .active {
+	background-color: #CDD4FA;
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.125) inset;
 }

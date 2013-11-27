@@ -33,8 +33,8 @@
 &lt;action name="savePhone" method="savePhone" class="..."&gt;
     &lt;param name="actionFlowStep"&gt;2&lt;/param&gt;
 			
-    &lt;result name="input"&gt;/WEB-INF/pages/phone.jsp&lt;/result&gt;
-    &lt;result name="error"&gt;/WEB-INF/pages/phone.jsp&lt;/result&gt;
+    &lt;result name="input"&gt;/WEB-INF/simple/phone.jsp&lt;/result&gt;
+    &lt;result name="error"&gt;/WEB-INF/simple/phone.jsp&lt;/result&gt;
     &lt;result type="redirectAction"&gt;finish&lt;/result&gt;
 &lt;/action&gt;
 </pre>

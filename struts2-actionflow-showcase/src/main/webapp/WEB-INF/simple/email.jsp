@@ -33,8 +33,8 @@
 &lt;action name="saveEmail" method="saveEmail" class="..."&gt;
     &lt;param name="actionFlowStep"&gt;3&lt;/param&gt;
 			
-    &lt;result name="input"&gt;/WEB-INF/pages/email.jsp&lt;/result&gt;
-    &lt;result name="error"&gt;/WEB-INF/pages/email.jsp&lt;/result&gt;
+    &lt;result name="input"&gt;/WEB-INF/simple/email.jsp&lt;/result&gt;
+    &lt;result name="error"&gt;/WEB-INF/simple/email.jsp&lt;/result&gt;
     &lt;result type="redirectAction"&gt;finish&lt;/result&gt;
 &lt;/action&gt;
 </pre>
