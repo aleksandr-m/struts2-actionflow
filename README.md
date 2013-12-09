@@ -2,18 +2,37 @@
 
 A Struts2 plug-in for creating wizards (action flows).
 
+## Features Overview
+
+- Simple integration to new or existing Struts2 application
+- Automatic use of Post/Redirect/Get pattern to avoid duplicate form submissions
+- Proper handling of browser back and refresh buttons
+- Action flow scope to keep data, there is no need to use scoped model-driven 
+actions
+
 ## Installation
 
 Copy struts2-actionflow-plugin-x.x.x.jar into your classpath (WEB-INF/lib). No other files need to be copied or created.
 
+If you are using Maven, add this to your project POM:
+
+    <dependencies>
+        ...
+        <dependency>
+            <groupId>com.amashchenko.struts2.actionflow</groupId>
+            <artifactId>struts2-actionflow-plugin</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        ...
+    </dependencies>
+
 ## Example Usage
 
-The most simple setup to use this plug-in is:
-
-1. Install it by copying jar into /WEB-INF/lib directory.
+1. Install it by adding this plug-in dependency to your POM or by copying jar into /WEB-INF/lib directory.
 2. Make your action package extend `actionflow-default` package.
-3. Add `<param name="actionFlowStep">1</param>` parameters to actions you want to include in action flows. (NOTE: the action must have input result!)
-4. Use next and prev actions in JSP to move between flow steps.
+3. Add `<param name="actionFlowStep">` parameters to actions you want to include in action flows. (NOTE: the action must have an input result!)
+4. Use `next` and `prev` actions in JSP to move between wizard steps.
+5. Use `@ActionFlowScope` annotation on action classes and fields in order to keep data in action flow scope.
 
 ### Action Mappings
 
@@ -39,12 +58,65 @@ The most simple setup to use this plug-in is:
 ### Form
 
     <s:form action="next">
-       <s:hidden name="step" value="%{#session['actionFlowPreviousAction']}" />
+        <s:hidden name="step" value="%{#session['actionFlowPreviousAction']}" />
     
-       <s:textfield key="name" label="Name" />
-       <s:submit value="previous" action="prev" />
-       <s:submit value="next" action="next" />
+        <s:textfield key="name" label="Name" />
+        <s:submit value="previous" action="prev" />
+        <s:submit value="next" action="next" />
     </s:form>
+
+**Note:** Since Struts2 version 2.3.15.3 if you are using `<s:submit>` tags with `action` attribute you need to enable support for `action:` prefix.
+
+Put that in your struts.xml file:
+
+    <constant name="struts.mapper.action.prefix.enabled" value="true" />
+
+### Action
+
+    @ActionFlowScope
+    public class FlowAction extends ActionSupport {
+        @ActionFlowScope
+        private String name;
+    }
+
+## Showing action flow steps in JSP
+
+**Available from struts2-actionflow-plugin 2.1.0**
+
+1. Implement `ActionFlowStepsAware` interface in action and create getter for `ActionFlowStepsData`:
+
+    public class FlowAction extends ActionSupport implements ActionFlowStepsAware {
+        private ActionFlowStepsData stepsData;
+
+        @Override
+        public void setActionFlowSteps(ActionFlowStepsData stepsData) {
+            this.stepsData = stepsData;
+        }
+        public ActionFlowStepsData getStepsData() {
+            return stepsData;
+        }
+    }
+
+2. In JSP iterate over `ActionFlowStepsData#steps` map. Use `#key` and `#value` to get step index (starting from 1) and action name.
+The `ActionFlowStepsData#stepIndex` property holds index of current step.
+
+    <ul>
+        <s:iterator value="stepsData.steps">
+            <s:if test="stepsData.stepIndex > key">
+                <s:set var="status" value="'passed'"/>
+            </s:if>
+            <s:elseif test="stepsData.stepIndex == key">
+                <s:set var="status" value="'active'"/>
+            </s:elseif>
+            <s:else>
+                <s:set var="status" value="'simple'"/>
+            </s:else>
+
+            <li class="<s:property value="#status"/>">
+                <s:property value="key"/> <s:property value="value"/>
+            </li>
+        </s:iterator>
+    </ul>
 
 ## License
 
