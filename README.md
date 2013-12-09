@@ -21,7 +21,7 @@ If you are using Maven, add this to your project POM:
         <dependency>
             <groupId>com.amashchenko.struts2.actionflow</groupId>
             <artifactId>struts2-actionflow-plugin</artifactId>
-            <version>2.0.0</version>
+            <version>2.1.0</version>
         </dependency>
         ...
     </dependencies>
@@ -83,7 +83,7 @@ Put that in your struts.xml file:
 
 **Available from struts2-actionflow-plugin 2.1.0**
 
-1. Implement `ActionFlowStepsAware` interface in action and create getter for `ActionFlowStepsData`:
+Implement `ActionFlowStepsAware` interface in action and create getter for `ActionFlowStepsData`:
 
     public class FlowAction extends ActionSupport implements ActionFlowStepsAware {
         private ActionFlowStepsData stepsData;
@@ -97,7 +97,7 @@ Put that in your struts.xml file:
         }
     }
 
-2. In JSP iterate over `ActionFlowStepsData#steps` map. Use `#key` and `#value` to get step index (starting from 1) and action name.
+In JSP iterate over `ActionFlowStepsData#steps` map. Use `#key` and `#value` to get step index (starting from 1) and action name.
 The `ActionFlowStepsData#stepIndex` property holds index of current step.
 
     <ul>
