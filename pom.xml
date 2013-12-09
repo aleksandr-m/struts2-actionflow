@@ -95,6 +95,7 @@
                     <configuration>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                         <enableFeatureVersions>true</enableFeatureVersions>
+                        <noDeploy>true</noDeploy>
                         <flowInitContext>
                             <versionTagPrefix>v</versionTagPrefix>
                         </flowInitContext>
