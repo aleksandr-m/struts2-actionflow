@@ -79,6 +79,45 @@ Put that in your struts.xml file:
         private String name;
     }
 
+## Showing action flow steps in JSP
+
+**Available from struts2-actionflow-plugin 2.1.0**
+
+1. Implement `ActionFlowStepsAware` interface in action and create getter for `ActionFlowStepsData`:
+
+    public class FlowAction extends ActionSupport implements ActionFlowStepsAware {
+        private ActionFlowStepsData stepsData;
+
+        @Override
+        public void setActionFlowSteps(ActionFlowStepsData stepsData) {
+            this.stepsData = stepsData;
+        }
+        public ActionFlowStepsData getStepsData() {
+            return stepsData;
+        }
+    }
+
+2. In JSP iterate over `ActionFlowStepsData#steps` map. Use `#key` and `#value` to get step index (starting from 1) and action name.
+The `ActionFlowStepsData#stepIndex` property holds index of current step.
+
+    <ul>
+        <s:iterator value="stepsData.steps">
+            <s:if test="stepsData.stepIndex > key">
+                <s:set var="status" value="'passed'"/>
+            </s:if>
+            <s:elseif test="stepsData.stepIndex == key">
+                <s:set var="status" value="'active'"/>
+            </s:elseif>
+            <s:else>
+                <s:set var="status" value="'simple'"/>
+            </s:else>
+
+            <li class="<s:property value="#status"/>">
+                <s:property value="key"/> <s:property value="value"/>
+            </li>
+        </s:iterator>
+    </ul>
+
 ## License
 
     Copyright 2013 Aleksandr Mashchenko.

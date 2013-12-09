@@ -2,7 +2,7 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 
 <div class="well">
-	<h4>advanced example</h4>
+	<h4>simple example</h4>
 	finish<br/><br/>
 	
 	Name: <s:property value="#session.names"/><br/>

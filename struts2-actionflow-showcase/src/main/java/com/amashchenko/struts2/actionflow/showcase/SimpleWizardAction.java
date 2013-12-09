@@ -20,6 +20,8 @@ import java.util.Map;
 import org.apache.struts2.interceptor.SessionAware;
 
 import com.amashchenko.struts2.actionflow.ActionFlowScope;
+import com.amashchenko.struts2.actionflow.ActionFlowStepsAware;
+import com.amashchenko.struts2.actionflow.entities.ActionFlowStepsData;
 import com.opensymphony.xwork2.ActionSupport;
 
 /**
@@ -29,7 +31,8 @@ import com.opensymphony.xwork2.ActionSupport;
  * 
  */
 @ActionFlowScope
-public class SimpleWizardAction extends ActionSupport implements SessionAware {
+public class SimpleWizardAction extends ActionSupport implements SessionAware,
+        ActionFlowStepsAware {
 
     /** Serial version uid. */
     private static final long serialVersionUID = 1023310153547766887L;
@@ -41,6 +44,15 @@ public class SimpleWizardAction extends ActionSupport implements SessionAware {
     @Override
     public void setSession(Map<String, Object> session) {
         this.session = session;
+    }
+
+    /** Action flow steps data. */
+    private ActionFlowStepsData stepsData;
+
+    /** {@inheritDoc} */
+    @Override
+    public void setActionFlowSteps(ActionFlowStepsData stepsData) {
+        this.stepsData = stepsData;
     }
 
     /** Name input. */
@@ -126,5 +138,12 @@ public class SimpleWizardAction extends ActionSupport implements SessionAware {
      */
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    /**
+     * @return the stepsData
+     */
+    public ActionFlowStepsData getStepsData() {
+        return stepsData;
     }
 }

@@ -1,0 +1,37 @@
+a {
+	text-decoration: none;
+}
+
+.hero-unit {
+	margin-top: 30px;
+}
+
+.navbar {
+  display: inline-block;
+}
+
+.navbar .navbar-inner {
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+.navbar .nav {
+	padding-left: 0px;
+	margin-right: 0px;
+}
+
+.navbar .nav li {
+	line-height: 20px;
+	text-align: center;
+}
+
+.navbar .nav > .passed {
+	background-color: #E5E5E5;
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.125) inset;
+	color: #555555;
+}
+
+.navbar .nav > .active {
+	background-color: #CDD4FA;
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.125) inset;
+}
