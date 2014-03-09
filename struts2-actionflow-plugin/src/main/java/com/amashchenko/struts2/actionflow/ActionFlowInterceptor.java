@@ -115,17 +115,19 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
 public class ActionFlowInterceptor extends AbstractInterceptor {
 
     /** Serial version uid. */
-    private static final long serialVersionUID = -7520779074852595667L;
+    private static final long serialVersionUID = -1930819163413544578L;
 
     /** Logger. */
     public static final Logger LOG = LoggerFactory
             .getLogger(ActionFlowInterceptor.class);
 
+    /** Key for holding in session the name of the previous flow action. */
     private static final String PREVIOUS_FLOW_ACTION = "actionFlowPreviousAction";
 
     private static final String DEFAULT_NEXT_ACTION_NAME = "next";
     private static final String DEFAULT_PREV_ACTION_NAME = "prev";
 
+    /** Name of the first flow action. */
     protected static final String FIRST_FLOW_ACTION_NAME = "firstFlowAction";
     protected static final String GLOBAL_VIEW_RESULT = "actionFlowViewResult";
 
@@ -306,7 +308,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("The forceFlowStepsOrder parameter is set to true. The '"
                         + actionName
-                        + "' will not be executed because it is executed in the wrong order.");
+                        + "' action will not be executed because it is called in the wrong order.");
             }
 
             invocation.getInvocationContext().getValueStack()
@@ -382,7 +384,10 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
      * @param session
      *            session map.
      * @param fromFlowScope
-     *            whether to store value into the session or retrieve it.
+     *            whether to store value into the session or retrieve it. On
+     *            <code>true</code> sets value from session into the action
+     *            field, on <code>false</code> puts value from action field to
+     *            session.
      */
     @SuppressWarnings("unchecked")
     private void handleFlowScope(final Object action,

@@ -76,7 +76,8 @@ public class ActionFlowConfigBuilder {
      *            View action postfix.
      * @param viewActionMethod
      *            View action method.
-     * @return Map of the action flow.
+     * @return Map of the action flow, where key is the name of the action and
+     *         value is {@link ActionFlowStepConfig}.
      */
     protected Map<String, ActionFlowStepConfig> createFlowMap(
             final String packageName, final String nextActionName,
@@ -382,7 +383,9 @@ public class ActionFlowConfigBuilder {
      * 
      * @param packageName
      *            Name of the package.
-     * @return Map of the action flow scope fields.
+     * @return Map of the action flow scope fields, where key is the name of the
+     *         action class (as returned by {@link Class#getName()}) and value
+     *         is list of {@link PropertyDescriptor}.
      */
     protected Map<String, List<PropertyDescriptor>> createFlowScopeFields(
             final String packageName) {
