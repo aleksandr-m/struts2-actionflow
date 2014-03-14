@@ -227,7 +227,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             session.put(FLOW_SCOPE_KEY, null);
         }
 
-        // action flow steps configuration aware
+        // action flow steps aware
         if (invocation.getAction() instanceof ActionFlowStepsAware) {
             flowStepsData.setStepIndex(stepCount);
 
@@ -244,7 +244,38 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         if (!flowAction && !prevActionName.equals(actionName)
                 && !nextActionName.equals(actionName)) {
             prevSimpleAction = actionName;
-            return invocation.invoke();
+
+            // action flow aware
+            String prevFromAction = null;
+            if (flowViewAction
+                    && invocation.getAction() instanceof ActionFlowAware) {
+                flowStepsData.setStepIndex(stepCount);
+
+                prevFromAction = ((ActionFlowAware) invocation.getAction())
+                        .prevActionFlowAction(flowStepsData);
+                // check if returned action is a flow action
+                if (!flowMap.containsKey(prevFromAction)) {
+                    prevFromAction = null;
+                }
+            }
+            if (prevFromAction != null) {
+                final String prevAct = prevFromAction;
+                invocation.addPreResultListener(new PreResultListener() {
+                    public void beforeResult(ActionInvocation invocation,
+                            String resultCode) {
+                        if (Action.SUCCESS.equals(resultCode)) {
+                            invocation
+                                    .getInvocationContext()
+                                    .getValueStack()
+                                    .set(VIEW_ACTION_PARAM,
+                                            prevAct + viewActionPostfix);
+                            invocation.setResultCode(GLOBAL_VIEW_RESULT);
+                        }
+                    }
+                });
+            } else {
+                return invocation.invoke();
+            }
         }
 
         String previousFlowAction = (String) session.get(PREVIOUS_FLOW_ACTION);
@@ -340,7 +371,29 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         // execute global view result on not last flow action
         if (flowAction && nextAction.equals(actionName) && !lastFlowAction) {
-            final String nextAct = flowMap.get(actionName).getNextAction();
+            // action flow aware
+            String nextFromAction = null;
+            if (invocation.getAction() instanceof ActionFlowAware) {
+                flowStepsData.setStepIndex(stepCount);
+
+                nextFromAction = ((ActionFlowAware) invocation.getAction())
+                        .nextActionFlowAction(flowStepsData);
+
+                // check if returned action is a flow action
+                if (!flowMap.containsKey(nextFromAction)) {
+                    nextFromAction = null;
+                }
+            }
+
+            final String nextAct;
+            if (nextFromAction != null) {
+                nextAct = nextFromAction;
+                // override actionName
+                actionName = flowMap.get(nextFromAction).getPrevAction();
+            } else {
+                nextAct = flowMap.get(actionName).getNextAction();
+            }
+
             invocation.addPreResultListener(new PreResultListener() {
                 public void beforeResult(ActionInvocation invocation,
                         String resultCode) {
