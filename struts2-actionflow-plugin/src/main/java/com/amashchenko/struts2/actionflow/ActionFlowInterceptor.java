@@ -123,6 +123,10 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
     /** Key for holding in session the name of the previous flow action. */
     private static final String PREVIOUS_FLOW_ACTION = "actionFlowPreviousAction";
+    /**
+     * Key for holding in session if previous action was 'prev' action.
+     */
+    private static final String IS_PREVIOUS_ACTION_PREV = "actionFlowIsPreviousActionPrev";
 
     private static final String DEFAULT_NEXT_ACTION_NAME = "next";
     private static final String DEFAULT_PREV_ACTION_NAME = "prev";
@@ -247,7 +251,10 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
             // action flow aware
             String prevFromAction = null;
-            if (flowViewAction
+            Boolean isPreviousPrev = (Boolean) session
+                    .get(IS_PREVIOUS_ACTION_PREV);
+
+            if (flowViewAction && isPreviousPrev != null && isPreviousPrev
                     && invocation.getAction() instanceof ActionFlowAware) {
                 flowStepsData.setStepIndex(stepCount);
 
@@ -273,9 +280,12 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                         }
                     }
                 });
-            } else {
-                return invocation.invoke();
+
+                session.put(PREVIOUS_FLOW_ACTION, flowMap.get(prevAct)
+                        .getPrevAction());
             }
+
+            return invocation.invoke();
         }
 
         String previousFlowAction = (String) session.get(PREVIOUS_FLOW_ACTION);
@@ -355,6 +365,8 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
             invocation.getInvocationContext().getValueStack()
                     .set(NEXT_ACTION_PARAM, nextAction);
+
+            session.put(IS_PREVIOUS_ACTION_PREV, false);
         } else if (prevActionName.equals(actionName)) {
             if (FIRST_FLOW_ACTION_NAME.equals(previousFlowAction)) {
                 invocation.getInvocationContext().getValueStack()
@@ -367,6 +379,8 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                                 previousFlowAction + viewActionPostfix);
             }
             session.put(PREVIOUS_FLOW_ACTION, prevAction);
+
+            session.put(IS_PREVIOUS_ACTION_PREV, true);
         }
 
         // execute global view result on not last flow action
