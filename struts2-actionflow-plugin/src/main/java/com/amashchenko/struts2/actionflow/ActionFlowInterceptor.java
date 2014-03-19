@@ -123,10 +123,10 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
     /** Key for holding in session the name of the previous flow action. */
     private static final String PREVIOUS_FLOW_ACTION = "actionFlowPreviousAction";
-    /**
-     * Key for holding in session if previous action was 'prev' action.
-     */
+    /** Key for holding in session if previous action was 'prev' action. */
     private static final String IS_PREVIOUS_ACTION_PREV = "actionFlowIsPreviousActionPrev";
+    /** Key for holding in session current highest action index. */
+    private static final String HIGHEST_CURRENT_ACTION_INDEX = "actionFlowHighestCurrentActionIndex";
 
     private static final String DEFAULT_NEXT_ACTION_NAME = "next";
     private static final String DEFAULT_PREV_ACTION_NAME = "prev";
@@ -229,6 +229,9 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         if (startAction != null && startAction.equals(actionName)) {
             session.put(PREVIOUS_FLOW_ACTION, null);
             session.put(FLOW_SCOPE_KEY, null);
+
+            session.put(IS_PREVIOUS_ACTION_PREV, null);
+            session.put(HIGHEST_CURRENT_ACTION_INDEX, null);
         }
 
         // action flow steps aware
@@ -297,6 +300,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         // handling of back/forward buttons
         Object[] stepParam = (Object[]) invocation.getInvocationContext()
                 .getParameters().get(stepParameterName);
+        boolean overriddenWithStep = false;
         if (stepParam != null && stepParam.length > 0) {
             String step = "" + stepParam[0];
 
@@ -304,29 +308,22 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                 step = FIRST_FLOW_ACTION_NAME;
             }
 
-            if (step != null && !step.equals(previousFlowAction)) {
-                // check indexes, step parameter action flow index cannot be
-                // greater than previousFlowAction index
-                if (flowMap.containsKey(previousFlowAction)
-                        && flowMap.containsKey(step)) {
-                    int indexPrev = flowMap.get(previousFlowAction).getIndex();
-                    int indexStep = flowMap.get(step).getIndex();
-                    if (indexStep < indexPrev) {
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("The 'previousFlowAction' value from session is '"
-                                    + previousFlowAction
-                                    + "', but '"
-                                    + stepParameterName
-                                    + "' parameter value is '"
-                                    + step
-                                    + "' The '"
-                                    + stepParameterName
-                                    + "' parameter value will be used for 'previousFlowAction'.");
-                        }
-
-                        previousFlowAction = step;
-                    }
+            if (step != null && !step.equals(previousFlowAction)
+                    && flowMap.containsKey(step)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("The 'previousFlowAction' value from session is '"
+                            + previousFlowAction
+                            + "', but '"
+                            + stepParameterName
+                            + "' parameter value is '"
+                            + step
+                            + "' The '"
+                            + stepParameterName
+                            + "' parameter value will be used for 'previousFlowAction'.");
                 }
+
+                previousFlowAction = step;
+                overriddenWithStep = true;
             }
         }
 
@@ -344,16 +341,33 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                     + ", prevAction: " + prevAction);
         }
 
+        int indexPrev = flowMap.get(previousFlowAction).getIndex();
+        Integer highestCurrentIndex = 0;
+        if (session.containsKey(HIGHEST_CURRENT_ACTION_INDEX)
+                && session.get(HIGHEST_CURRENT_ACTION_INDEX) != null) {
+            highestCurrentIndex = (Integer) session
+                    .get(HIGHEST_CURRENT_ACTION_INDEX);
+        }
+
         // force order of flow actions
-        if (forceFlowStepsOrder && flowAction && !actionName.equals(nextAction)) {
+        if (forceFlowStepsOrder && flowAction
+                && indexPrev >= highestCurrentIndex.intValue()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("The forceFlowStepsOrder parameter is set to true. The '"
                         + actionName
                         + "' action will not be executed because it is called in the wrong order.");
             }
 
-            invocation.getInvocationContext().getValueStack()
-                    .set(VIEW_ACTION_PARAM, nextAction + viewActionPostfix);
+            if (overriddenWithStep) {
+                invocation
+                        .getInvocationContext()
+                        .getValueStack()
+                        .set(VIEW_ACTION_PARAM,
+                                previousFlowAction + viewActionPostfix);
+            } else {
+                invocation.getInvocationContext().getValueStack()
+                        .set(VIEW_ACTION_PARAM, nextAction + viewActionPostfix);
+            }
             return GLOBAL_VIEW_RESULT;
         }
 
@@ -367,6 +381,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                     .set(NEXT_ACTION_PARAM, nextAction);
 
             session.put(IS_PREVIOUS_ACTION_PREV, false);
+            session.put(HIGHEST_CURRENT_ACTION_INDEX, ++highestCurrentIndex);
         } else if (prevActionName.equals(actionName)) {
             if (FIRST_FLOW_ACTION_NAME.equals(previousFlowAction)) {
                 invocation.getInvocationContext().getValueStack()
@@ -438,6 +453,9 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         if (Action.SUCCESS.equals(result) && flowAction && lastFlowAction) {
             session.put(PREVIOUS_FLOW_ACTION, null);
             session.put(FLOW_SCOPE_KEY, null);
+
+            session.put(IS_PREVIOUS_ACTION_PREV, null);
+            session.put(HIGHEST_CURRENT_ACTION_INDEX, null);
         }
 
         return result;
