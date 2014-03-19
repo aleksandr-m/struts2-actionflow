@@ -23,14 +23,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.amashchenko.struts2.actionflow.mock.MockActionFlowAction;
+import com.amashchenko.struts2.actionflow.test.TestConstants;
 import com.opensymphony.xwork2.ActionProxy;
 
 public class ActionFlowScopeTest extends
         StrutsJUnit4TestCase<MockActionFlowAction> {
-
-    /** Key for previous flow action. */
-    private static final String PREVIOUS_FLOW_ACTION = "actionFlowPreviousAction";
-    private static final String FLOW_SCOPE_KEY = "actionFlowScope";
 
     /** {@inheritDoc} */
     @Override
@@ -45,7 +42,7 @@ public class ActionFlowScopeTest extends
 
         final String value = "phoneFromFlowScope";
 
-        ActionProxy ap = getActionProxy("/correctFlow/savePhoneView");
+        ActionProxy ap = getActionProxy("/correctFlow/savePhone-2View");
 
         Assert.assertNotNull(ap);
         Assert.assertNotNull(ap.getAction());
@@ -56,7 +53,7 @@ public class ActionFlowScopeTest extends
         Map<String, Object> sessionMap = new HashMap<String, Object>();
         Map<String, Object> scopeMap = new HashMap<String, Object>();
         scopeMap.put(action.getClass().getName() + ".phone", value);
-        sessionMap.put(FLOW_SCOPE_KEY, scopeMap);
+        sessionMap.put(TestConstants.FLOW_SCOPE_KEY, scopeMap);
         ap.getInvocation().getInvocationContext().setSession(sessionMap);
 
         ap.execute();
@@ -72,7 +69,7 @@ public class ActionFlowScopeTest extends
 
         final String value = "phoneFromFlowScope";
 
-        ActionProxy ap = getActionProxy("/correctFlow/savePhone");
+        ActionProxy ap = getActionProxy("/correctFlow/savePhone-2");
 
         Assert.assertNotNull(ap);
         Assert.assertNotNull(ap.getAction());
@@ -82,15 +79,16 @@ public class ActionFlowScopeTest extends
         action.setPhone(value);
 
         Map<String, Object> sessionMap = new HashMap<String, Object>();
-        sessionMap.put(PREVIOUS_FLOW_ACTION, "saveName");
+        sessionMap.put(TestConstants.PREVIOUS_FLOW_ACTION, "saveName-1");
+        sessionMap.put(TestConstants.HIGHEST_CURRENT_ACTION_INDEX, 2);
         ap.getInvocation().getInvocationContext().setSession(sessionMap);
 
         ap.execute();
 
-        Assert.assertNotNull(sessionMap.get(FLOW_SCOPE_KEY));
+        Assert.assertNotNull(sessionMap.get(TestConstants.FLOW_SCOPE_KEY));
         Assert.assertEquals(value, ((Map<String, Object>) sessionMap
-                .get(FLOW_SCOPE_KEY)).get(action.getClass().getName()
-                + ".phone"));
+                .get(TestConstants.FLOW_SCOPE_KEY)).get(action.getClass()
+                .getName() + ".phone"));
     }
 
     @Test
@@ -114,13 +112,14 @@ public class ActionFlowScopeTest extends
 
         Map<String, Object> sessionMap = new HashMap<String, Object>();
         sessionMap.put(immutableValue, immutableValue);
-        sessionMap.put(PREVIOUS_FLOW_ACTION, "savePhone");
+        sessionMap.put(TestConstants.PREVIOUS_FLOW_ACTION, "savePhone-2");
         ap.getInvocation().getInvocationContext().setSession(sessionMap);
 
         ap.execute();
 
-        Assert.assertEquals(null, sessionMap.get(PREVIOUS_FLOW_ACTION));
-        Assert.assertNull(sessionMap.get(FLOW_SCOPE_KEY));
+        Assert.assertEquals(null,
+                sessionMap.get(TestConstants.PREVIOUS_FLOW_ACTION));
+        Assert.assertNull(sessionMap.get(TestConstants.FLOW_SCOPE_KEY));
         Assert.assertEquals(immutableValue, sessionMap.get(immutableValue));
     }
 
@@ -131,7 +130,7 @@ public class ActionFlowScopeTest extends
 
         final String immutableValue = "immutableValue";
 
-        ActionProxy ap = getActionProxy("/correctFlow/saveEmail");
+        ActionProxy ap = getActionProxy("/correctFlow/saveEmail-3");
 
         Assert.assertNotNull(ap);
         Assert.assertNotNull(ap.getAction());
@@ -142,13 +141,15 @@ public class ActionFlowScopeTest extends
 
         Map<String, Object> sessionMap = new HashMap<String, Object>();
         sessionMap.put(immutableValue, immutableValue);
-        sessionMap.put(PREVIOUS_FLOW_ACTION, "savePhone");
+        sessionMap.put(TestConstants.PREVIOUS_FLOW_ACTION, "savePhone-2");
+        sessionMap.put(TestConstants.HIGHEST_CURRENT_ACTION_INDEX, 3);
         ap.getInvocation().getInvocationContext().setSession(sessionMap);
 
         ap.execute();
 
-        Assert.assertEquals(null, sessionMap.get(PREVIOUS_FLOW_ACTION));
-        Assert.assertNull(sessionMap.get(FLOW_SCOPE_KEY));
+        Assert.assertEquals(null,
+                sessionMap.get(TestConstants.PREVIOUS_FLOW_ACTION));
+        Assert.assertNull(sessionMap.get(TestConstants.FLOW_SCOPE_KEY));
         Assert.assertEquals(immutableValue, sessionMap.get(immutableValue));
     }
 }

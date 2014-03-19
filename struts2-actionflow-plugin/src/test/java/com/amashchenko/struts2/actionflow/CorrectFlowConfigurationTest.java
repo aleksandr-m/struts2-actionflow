@@ -64,32 +64,32 @@ public class CorrectFlowConfigurationTest extends StrutsJUnit4TestCase<Object> {
         String action = "firstFlowAction";
 
         Assert.assertTrue(map.containsKey(action));
-        Assert.assertEquals("saveName", map.get(action).getNextAction());
+        Assert.assertEquals("saveName-1", map.get(action).getNextAction());
         Assert.assertEquals("firstFlowAction", map.get(action).getPrevAction());
         Assert.assertEquals(0, map.get(action).getIndex());
 
         // check saveName
-        action = "saveName";
+        action = "saveName-1";
 
         Assert.assertTrue(map.containsKey(action));
-        Assert.assertEquals("savePhone", map.get(action).getNextAction());
+        Assert.assertEquals("savePhone-2", map.get(action).getNextAction());
         Assert.assertEquals("firstFlowAction", map.get(action).getPrevAction());
         Assert.assertEquals(1, map.get(action).getIndex());
 
         // check savePhone
-        action = "savePhone";
+        action = "savePhone-2";
 
         Assert.assertTrue(map.containsKey(action));
-        Assert.assertEquals("saveEmail", map.get(action).getNextAction());
-        Assert.assertEquals("saveName", map.get(action).getPrevAction());
+        Assert.assertEquals("saveEmail-3", map.get(action).getNextAction());
+        Assert.assertEquals("saveName-1", map.get(action).getPrevAction());
         Assert.assertEquals(2, map.get(action).getIndex());
 
         // check saveEmail
-        action = "saveEmail";
+        action = "saveEmail-3";
 
         Assert.assertTrue(map.containsKey(action));
         Assert.assertEquals(null, map.get(action).getNextAction());
-        Assert.assertEquals("savePhone", map.get(action).getPrevAction());
+        Assert.assertEquals("savePhone-2", map.get(action).getPrevAction());
         Assert.assertEquals(3, map.get(action).getIndex());
     }
 
@@ -117,9 +117,9 @@ public class CorrectFlowConfigurationTest extends StrutsJUnit4TestCase<Object> {
                 overriddenViewConf.getResults().get(Action.SUCCESS).getParams()
                         .get(ServletDispatcherResult.DEFAULT_PARAM));
 
-        ActionConfig actionConfig = configuration
-                .getRuntimeConfiguration()
-                .getActionConfig("/correctFlowOverride", "saveNameViewOverride");
+        ActionConfig actionConfig = configuration.getRuntimeConfiguration()
+                .getActionConfig("/correctFlowOverride",
+                        "saveName-1ViewOverride");
 
         Assert.assertNotNull(actionConfig);
         Assert.assertEquals("executeOverride", actionConfig.getMethodName());
