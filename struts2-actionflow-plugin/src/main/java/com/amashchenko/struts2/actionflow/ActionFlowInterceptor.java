@@ -341,7 +341,11 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                     + ", prevAction: " + prevAction);
         }
 
-        int indexPrev = flowMap.get(previousFlowAction).getIndex();
+        int indexCurrent = -1;
+        if (flowAction) {
+            indexCurrent = flowMap.get(actionName).getIndex();
+        }
+
         Integer highestCurrentIndex = 0;
         if (session.containsKey(HIGHEST_CURRENT_ACTION_INDEX)
                 && session.get(HIGHEST_CURRENT_ACTION_INDEX) != null) {
@@ -350,8 +354,8 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         }
 
         // force order of flow actions
-        if (forceFlowStepsOrder && flowAction
-                && indexPrev >= highestCurrentIndex.intValue()) {
+        if (forceFlowStepsOrder && flowAction && indexCurrent != -1
+                && (highestCurrentIndex.intValue() + 1) < indexCurrent) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("The forceFlowStepsOrder parameter is set to true. The '"
                         + actionName
@@ -381,7 +385,6 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                     .set(NEXT_ACTION_PARAM, nextAction);
 
             session.put(IS_PREVIOUS_ACTION_PREV, false);
-            session.put(HIGHEST_CURRENT_ACTION_INDEX, ++highestCurrentIndex);
         } else if (prevActionName.equals(actionName)) {
             if (FIRST_FLOW_ACTION_NAME.equals(previousFlowAction)) {
                 invocation.getInvocationContext().getValueStack()
@@ -447,6 +450,9 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         if (GLOBAL_VIEW_RESULT.equals(result) && flowAction) {
             session.put(PREVIOUS_FLOW_ACTION, actionName);
+
+            // increment highest current action index on a view result
+            session.put(HIGHEST_CURRENT_ACTION_INDEX, ++highestCurrentIndex);
         }
 
         // last flow action
