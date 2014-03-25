@@ -354,7 +354,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         }
 
         // force order of flow actions
-        if (forceFlowStepsOrder && flowAction && indexCurrent != -1
+        if (forceFlowStepsOrder && flowAction
                 && (highestCurrentIndex.intValue() + 1) < indexCurrent) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("The forceFlowStepsOrder parameter is set to true. The '"
@@ -451,8 +451,10 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         if (GLOBAL_VIEW_RESULT.equals(result) && flowAction) {
             session.put(PREVIOUS_FLOW_ACTION, actionName);
 
-            // increment highest current action index on a view result
-            session.put(HIGHEST_CURRENT_ACTION_INDEX, ++highestCurrentIndex);
+            // set highest current action index on a view result
+            if (indexCurrent > highestCurrentIndex) {
+                session.put(HIGHEST_CURRENT_ACTION_INDEX, indexCurrent);
+            }
         }
 
         // last flow action
