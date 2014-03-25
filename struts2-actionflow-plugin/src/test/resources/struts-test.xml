@@ -70,6 +70,33 @@
         </action>
     </package>
     
+    <package name="correctFlowAware" namespace="/correctFlowAware" extends="actionflow-default">
+        <action name="correctFlowAware" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAwareAction">
+            <result>homepage</result>
+        </action>
+        <action name="saveName-1" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAwareAction">
+            <param name="actionFlowStep">1</param>
+            
+            <result name="input">name</result>
+            <result name="error">name</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="savePhone-2" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAwareAction">
+            <param name="actionFlowStep">2</param>
+        
+            <result name="input">phone</result>
+            <result name="error">phone</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="saveEmail-3" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAwareAction">
+            <param name="actionFlowStep">3</param>
+        
+            <result name="input">email</result>
+            <result name="error">email</result>
+            <result>finish</result>
+        </action>
+    </package>
+    
     <package name="correctFlowOverride" namespace="/correctFlowOverride" extends="actionflow-default">
         <interceptors>
             <interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
@@ -114,7 +141,7 @@
             <result type="redirectAction">view</result>
         </action>
         <!-- view action override -->
-        <action name="savePhoneViewOverride" method="phone">
+        <action name="savePhone-2ViewOverride" method="phone">
             <result>anotherPhone</result>
         </action>
         <action name="saveEmail-3">

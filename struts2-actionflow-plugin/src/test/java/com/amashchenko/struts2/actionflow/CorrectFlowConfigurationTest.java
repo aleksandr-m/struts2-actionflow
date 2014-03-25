@@ -109,7 +109,7 @@ public class CorrectFlowConfigurationTest extends StrutsJUnit4TestCase<Object> {
 
         ActionConfig overriddenViewConf = configuration
                 .getRuntimeConfiguration().getActionConfig(
-                        "/correctFlowOverride", "savePhoneViewOverride");
+                        "/correctFlowOverride", "savePhone-2ViewOverride");
 
         Assert.assertNotNull(overriddenViewConf);
         Assert.assertEquals("phone", overriddenViewConf.getMethodName());

@@ -15,17 +15,27 @@
  */
 package com.amashchenko.struts2.actionflow;
 
-import com.amashchenko.struts2.actionflow.entities.ActionFlowStepsData;
-
 /**
- * 
+ * Actions that want to change the flow of action steps should implement this
+ * interface.
  * 
  * @author Aleksandr Mashchenko
  * 
  */
 public interface ActionFlowAware {
+    /**
+     * 
+     * @param actionName
+     * @return Name of the action to be called on next 'next'. If
+     *         <code>null</code> is returned action flow won't be changed.
+     */
+    String nextActionFlowAction(String actionName);
 
-    String nextActionFlowAction(ActionFlowStepsData stepsData);
-
-    String prevActionFlowAction(ActionFlowStepsData stepsData);
+    /**
+     * 
+     * @param actionName
+     * @return Name of the action to be called on next 'next'. If
+     *         <code>null</code> is returned action flow won't be changed.
+     */
+    String prevActionFlowAction(String actionName);
 }

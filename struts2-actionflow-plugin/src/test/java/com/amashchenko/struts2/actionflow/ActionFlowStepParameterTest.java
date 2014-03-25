@@ -36,8 +36,8 @@ public class ActionFlowStepParameterTest extends
         return "struts-plugin.xml, struts-test.xml";
     }
 
-    /** {@inheritDoc} */
-    protected void initServletMockObjectsPreserveSession() {
+    /** Initializes servlet mock objects but preserves session. */
+    private void initServletMockObjectsPreserveSession() {
         servletContext = new MockServletContext(resourceLoader);
         response = new MockHttpServletResponse();
 
