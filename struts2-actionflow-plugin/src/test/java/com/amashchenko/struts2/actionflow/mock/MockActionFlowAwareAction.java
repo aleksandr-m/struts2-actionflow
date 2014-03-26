@@ -28,17 +28,31 @@ public class MockActionFlowAwareAction extends ActionSupport implements
         ActionFlowAware {
 
     /** Serial version uid. */
-    private static final long serialVersionUID = -5337868957855157564L;
+    private static final long serialVersionUID = 6183268804607231373L;
 
+    /** Wrong action name constant. */
+    public static final String WRONG_ACTION_NAME = "wrongActionName";
+
+    /** Name field. */
+    private String name;
+
+    /** {@inheritDoc} */
     @Override
     public String nextActionFlowAction(String actionName) {
         String nextAction = null;
         if ("saveName-1".equals(actionName)) {
             nextAction = "saveEmail-3";
         }
+        if (WRONG_ACTION_NAME.equals(name)) {
+            nextAction = WRONG_ACTION_NAME;
+        }
+        if ("null".equals(name)) {
+            nextAction = null;
+        }
         return nextAction;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String prevActionFlowAction(String actionName) {
         String prevAction = null;
@@ -46,5 +60,20 @@ public class MockActionFlowAwareAction extends ActionSupport implements
             prevAction = "saveName-1";
         }
         return prevAction;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name
+     *            the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 }

@@ -169,10 +169,15 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     @Inject
     private ActionFlowConfigBuilder flowConfigBuilder;
 
+    /** Current action name retrieved from invocation context. */
+    private String actionName;
+    /** Index of the current action from the flowMap. */
+    private int indexCurrent;
+
     /** {@inheritDoc} */
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
-        String actionName = invocation.getInvocationContext().getName();
+        actionName = invocation.getInvocationContext().getName();
 
         if (flowMap == null) {
             String packageName = invocation.getProxy().getConfig()
@@ -196,6 +201,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             }
         }
 
+        indexCurrent = -1;
         Integer stepCount = 1;
 
         boolean flowAction = false;
@@ -203,8 +209,10 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         if (flowMap.containsKey(actionName)) {
             flowAction = true;
 
+            indexCurrent = flowMap.get(actionName).getIndex();
+
             // this is needed when input result is returned
-            stepCount = flowMap.get(actionName).getIndex();
+            stepCount = indexCurrent;
 
             if (flowMap.get(actionName).getNextAction() == null) {
                 lastFlowAction = true;
@@ -343,11 +351,6 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                     + ", prevAction: " + prevAction);
         }
 
-        int indexCurrent = -1;
-        if (flowAction) {
-            indexCurrent = flowMap.get(actionName).getIndex();
-        }
-
         final Integer highestCurrentIndex;
         if (session.containsKey(HIGHEST_CURRENT_ACTION_INDEX)
                 && session.get(HIGHEST_CURRENT_ACTION_INDEX) != null) {
@@ -407,35 +410,37 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         // execute global view result on not last flow action
         if (flowAction && nextAction.equals(actionName) && !lastFlowAction) {
-            // action flow aware
-            String nextFromAction = null;
-            if (invocation.getAction() instanceof ActionFlowAware) {
-                nextFromAction = ((ActionFlowAware) invocation.getAction())
-                        .nextActionFlowAction(actionName);
-
-                // if null just ignore otherwise check if returned action is a
-                // flow action
-                if (nextFromAction != null
-                        && !flowMap.containsKey(nextFromAction)) {
-                    nextFromAction = null;
-                }
-            }
-
-            final String nextAct;
-            if (nextFromAction != null) {
-                nextAct = nextFromAction;
-                // override actionName
-                actionName = flowMap.get(nextFromAction).getPrevAction();
-                // override indexCurrent
-                indexCurrent = flowMap.get(actionName).getIndex();
-            } else {
-                nextAct = flowMap.get(actionName).getNextAction();
-            }
-
             invocation.addPreResultListener(new PreResultListener() {
                 public void beforeResult(ActionInvocation invocation,
                         String resultCode) {
                     if (Action.SUCCESS.equals(resultCode)) {
+                        // action flow aware
+                        String nextFromAction = null;
+                        if (invocation.getAction() instanceof ActionFlowAware) {
+                            nextFromAction = ((ActionFlowAware) invocation
+                                    .getAction())
+                                    .nextActionFlowAction(actionName);
+
+                            // if null just ignore otherwise check if returned
+                            // action is a flow action
+                            if (nextFromAction != null
+                                    && !flowMap.containsKey(nextFromAction)) {
+                                nextFromAction = null;
+                            }
+                        }
+
+                        String nextAct = null;
+                        if (nextFromAction != null) {
+                            nextAct = nextFromAction;
+                            // override actionName
+                            actionName = flowMap.get(nextFromAction)
+                                    .getPrevAction();
+                            // override indexCurrent
+                            indexCurrent = flowMap.get(actionName).getIndex();
+                        } else {
+                            nextAct = flowMap.get(actionName).getNextAction();
+                        }
+
                         invocation
                                 .getInvocationContext()
                                 .getValueStack()

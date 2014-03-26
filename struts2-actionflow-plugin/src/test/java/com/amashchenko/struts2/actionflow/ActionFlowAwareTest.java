@@ -28,6 +28,12 @@ import org.springframework.mock.web.MockServletContext;
 import com.amashchenko.struts2.actionflow.mock.MockActionFlowAwareAction;
 import com.amashchenko.struts2.actionflow.test.TestConstants;
 
+/**
+ * Tests ActionFlowAware feature.
+ * 
+ * @author Aleksandr Mashchenko
+ * 
+ */
 public class ActionFlowAwareTest extends
         StrutsJUnit4TestCase<MockActionFlowAwareAction> {
 
@@ -53,6 +59,12 @@ public class ActionFlowAwareTest extends
         pageContext = new MockPageContext(servletContext, request, response);
     }
 
+    /**
+     * Tests skipping action on 'next'.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
     @Test
     public void testSkipNextAction() throws Exception {
         executeAction("/correctFlowAware/correctFlowAware");
@@ -77,6 +89,12 @@ public class ActionFlowAwareTest extends
         Assert.assertEquals(new Integer(2), highestCurrentIndex);
     }
 
+    /**
+     * Tests skipping action on 'prev'.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
     @Test
     public void testSkipPrevAction() throws Exception {
         executeAction("/correctFlowAware/correctFlowAware");
@@ -97,5 +115,68 @@ public class ActionFlowAwareTest extends
 
         viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
         Assert.assertEquals("saveName-1View", viewActionParam);
+    }
+
+    /**
+     * Tests skipping action on 'next' with not defined action name.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
+    @Test
+    public void testSkipNextActionWrongActionName() throws Exception {
+        executeAction("/correctFlowAware/correctFlowAware");
+        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
+        Assert.assertEquals(null, previousAction);
+        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
+        Assert.assertEquals(null, viewActionParam);
+        Integer highestCurrentIndex = (Integer) findValueAfterExecute(TestConstants.SESSION_HIGHEST_CURRENT_ACTION_INDEX);
+        Assert.assertEquals(null, highestCurrentIndex);
+
+        initServletMockObjectsPreserveSession();
+
+        request.setParameter("name",
+                MockActionFlowAwareAction.WRONG_ACTION_NAME);
+        executeAction("/correctFlowAware/next");
+
+        previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
+        Assert.assertEquals("saveName-1", previousAction);
+
+        viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
+        Assert.assertEquals("savePhone-2View", viewActionParam);
+
+        highestCurrentIndex = (Integer) findValueAfterExecute(TestConstants.SESSION_HIGHEST_CURRENT_ACTION_INDEX);
+        Assert.assertEquals(new Integer(1), highestCurrentIndex);
+    }
+
+    /**
+     * Tests skipping action on 'next' with null value.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
+    @Test
+    public void testSkipNextActionNull() throws Exception {
+        executeAction("/correctFlowAware/correctFlowAware");
+        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
+        Assert.assertEquals(null, previousAction);
+        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
+        Assert.assertEquals(null, viewActionParam);
+        Integer highestCurrentIndex = (Integer) findValueAfterExecute(TestConstants.SESSION_HIGHEST_CURRENT_ACTION_INDEX);
+        Assert.assertEquals(null, highestCurrentIndex);
+
+        initServletMockObjectsPreserveSession();
+
+        request.setParameter("name", "null");
+        executeAction("/correctFlowAware/next");
+
+        previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
+        Assert.assertEquals("saveName-1", previousAction);
+
+        viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
+        Assert.assertEquals("savePhone-2View", viewActionParam);
+
+        highestCurrentIndex = (Integer) findValueAfterExecute(TestConstants.SESSION_HIGHEST_CURRENT_ACTION_INDEX);
+        Assert.assertEquals(new Integer(1), highestCurrentIndex);
     }
 }
