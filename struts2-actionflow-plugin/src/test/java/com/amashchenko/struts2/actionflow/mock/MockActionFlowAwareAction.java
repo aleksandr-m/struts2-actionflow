@@ -59,6 +59,9 @@ public class MockActionFlowAwareAction extends ActionSupport implements
         if ("savePhone-2".equals(actionName)) {
             prevAction = "saveName-1";
         }
+        if ("saveEmail-3".equals(actionName)) {
+            prevAction = WRONG_ACTION_NAME;
+        }
         return prevAction;
     }
 

@@ -15,6 +15,12 @@
  */
 package com.amashchenko.struts2.actionflow.test;
 
+/**
+ * Utility class for test constants.
+ * 
+ * @author Aleksandr Mashchenko
+ * 
+ */
 public class TestConstants {
     /** Key for previous flow action. */
     public static final String PREVIOUS_FLOW_ACTION = "actionFlowPreviousAction";
