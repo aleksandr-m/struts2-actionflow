@@ -123,6 +123,10 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
     /** Key for holding in session the name of the previous flow action. */
     private static final String PREVIOUS_FLOW_ACTION = "actionFlowPreviousAction";
+    /** Key for holding in session if previous action was 'prev' action. */
+    private static final String IS_PREVIOUS_ACTION_PREV = "actionFlowIsPreviousActionPrev";
+    /** Key for holding in session current highest action index. */
+    private static final String HIGHEST_CURRENT_ACTION_INDEX = "actionFlowHighestCurrentActionIndex";
 
     private static final String DEFAULT_NEXT_ACTION_NAME = "next";
     private static final String DEFAULT_PREV_ACTION_NAME = "prev";
@@ -165,10 +169,15 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     @Inject
     private ActionFlowConfigBuilder flowConfigBuilder;
 
+    /** Current action name retrieved from invocation context. */
+    private String actionName;
+    /** Index of the current action from the flowMap. */
+    private int indexCurrent;
+
     /** {@inheritDoc} */
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
-        String actionName = invocation.getInvocationContext().getName();
+        actionName = invocation.getInvocationContext().getName();
 
         if (flowMap == null) {
             String packageName = invocation.getProxy().getConfig()
@@ -192,6 +201,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             }
         }
 
+        indexCurrent = -1;
         Integer stepCount = 1;
 
         boolean flowAction = false;
@@ -199,8 +209,10 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         if (flowMap.containsKey(actionName)) {
             flowAction = true;
 
+            indexCurrent = flowMap.get(actionName).getIndex();
+
             // this is needed when input result is returned
-            stepCount = flowMap.get(actionName).getIndex();
+            stepCount = indexCurrent;
 
             if (flowMap.get(actionName).getNextAction() == null) {
                 lastFlowAction = true;
@@ -208,13 +220,15 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         }
 
         boolean flowViewAction = false;
+        // action name w/o view postfix
+        String plainActionName = null;
         if (actionName.endsWith(viewActionPostfix)) {
-            String plainAction = actionName.substring(0,
+            plainActionName = actionName.substring(0,
                     actionName.indexOf(viewActionPostfix));
-            if (flowMap.containsKey(plainAction)) {
+            if (flowMap.containsKey(plainActionName)) {
                 flowViewAction = true;
 
-                stepCount = flowMap.get(plainAction).getIndex();
+                stepCount = flowMap.get(plainActionName).getIndex();
             }
         }
 
@@ -225,9 +239,12 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         if (startAction != null && startAction.equals(actionName)) {
             session.put(PREVIOUS_FLOW_ACTION, null);
             session.put(FLOW_SCOPE_KEY, null);
+
+            session.put(IS_PREVIOUS_ACTION_PREV, null);
+            session.put(HIGHEST_CURRENT_ACTION_INDEX, null);
         }
 
-        // action flow steps configuration aware
+        // action flow steps aware
         if (invocation.getAction() instanceof ActionFlowStepsAware) {
             flowStepsData.setStepIndex(stepCount);
 
@@ -244,6 +261,43 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         if (!flowAction && !prevActionName.equals(actionName)
                 && !nextActionName.equals(actionName)) {
             prevSimpleAction = actionName;
+
+            // action flow aware
+            String prevFromAction = null;
+            Boolean isPreviousPrev = (Boolean) session
+                    .get(IS_PREVIOUS_ACTION_PREV);
+
+            if (flowViewAction && isPreviousPrev != null && isPreviousPrev
+                    && invocation.getAction() instanceof ActionFlowAware) {
+                prevFromAction = ((ActionFlowAware) invocation.getAction())
+                        .prevActionFlowAction(plainActionName);
+                // if null just ignore otherwise check if returned action is a
+                // flow action
+                if (prevFromAction != null
+                        && !flowMap.containsKey(prevFromAction)) {
+                    prevFromAction = null;
+                }
+            }
+            if (prevFromAction != null) {
+                final String prevAct = prevFromAction;
+                invocation.addPreResultListener(new PreResultListener() {
+                    public void beforeResult(ActionInvocation invocation,
+                            String resultCode) {
+                        if (Action.SUCCESS.equals(resultCode)) {
+                            invocation
+                                    .getInvocationContext()
+                                    .getValueStack()
+                                    .set(VIEW_ACTION_PARAM,
+                                            prevAct + viewActionPostfix);
+                            invocation.setResultCode(GLOBAL_VIEW_RESULT);
+                        }
+                    }
+                });
+
+                session.put(PREVIOUS_FLOW_ACTION, flowMap.get(prevAct)
+                        .getPrevAction());
+            }
+
             return invocation.invoke();
         }
 
@@ -256,6 +310,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         // handling of back/forward buttons
         Object[] stepParam = (Object[]) invocation.getInvocationContext()
                 .getParameters().get(stepParameterName);
+        boolean overriddenWithStep = false;
         if (stepParam != null && stepParam.length > 0) {
             String step = "" + stepParam[0];
 
@@ -263,29 +318,22 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                 step = FIRST_FLOW_ACTION_NAME;
             }
 
-            if (step != null && !step.equals(previousFlowAction)) {
-                // check indexes, step parameter action flow index cannot be
-                // greater than previousFlowAction index
-                if (flowMap.containsKey(previousFlowAction)
-                        && flowMap.containsKey(step)) {
-                    int indexPrev = flowMap.get(previousFlowAction).getIndex();
-                    int indexStep = flowMap.get(step).getIndex();
-                    if (indexStep < indexPrev) {
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("The 'previousFlowAction' value from session is '"
-                                    + previousFlowAction
-                                    + "', but '"
-                                    + stepParameterName
-                                    + "' parameter value is '"
-                                    + step
-                                    + "' The '"
-                                    + stepParameterName
-                                    + "' parameter value will be used for 'previousFlowAction'.");
-                        }
-
-                        previousFlowAction = step;
-                    }
+            if (step != null && !step.equals(previousFlowAction)
+                    && flowMap.containsKey(step)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("The 'previousFlowAction' value from session is '"
+                            + previousFlowAction
+                            + "', but '"
+                            + stepParameterName
+                            + "' parameter value is '"
+                            + step
+                            + "' The '"
+                            + stepParameterName
+                            + "' parameter value will be used for 'previousFlowAction'.");
                 }
+
+                previousFlowAction = step;
+                overriddenWithStep = true;
             }
         }
 
@@ -303,16 +351,34 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                     + ", prevAction: " + prevAction);
         }
 
+        final Integer highestCurrentIndex;
+        if (session.containsKey(HIGHEST_CURRENT_ACTION_INDEX)
+                && session.get(HIGHEST_CURRENT_ACTION_INDEX) != null) {
+            highestCurrentIndex = (Integer) session
+                    .get(HIGHEST_CURRENT_ACTION_INDEX);
+        } else {
+            highestCurrentIndex = 0;
+        }
+
         // force order of flow actions
-        if (forceFlowStepsOrder && flowAction && !actionName.equals(nextAction)) {
+        if (forceFlowStepsOrder && flowAction
+                && (highestCurrentIndex.intValue() + 1) < indexCurrent) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("The forceFlowStepsOrder parameter is set to true. The '"
                         + actionName
                         + "' action will not be executed because it is called in the wrong order.");
             }
 
-            invocation.getInvocationContext().getValueStack()
-                    .set(VIEW_ACTION_PARAM, nextAction + viewActionPostfix);
+            if (overriddenWithStep) {
+                invocation
+                        .getInvocationContext()
+                        .getValueStack()
+                        .set(VIEW_ACTION_PARAM,
+                                previousFlowAction + viewActionPostfix);
+            } else {
+                invocation.getInvocationContext().getValueStack()
+                        .set(VIEW_ACTION_PARAM, nextAction + viewActionPostfix);
+            }
             return GLOBAL_VIEW_RESULT;
         }
 
@@ -324,6 +390,8 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
             invocation.getInvocationContext().getValueStack()
                     .set(NEXT_ACTION_PARAM, nextAction);
+
+            session.put(IS_PREVIOUS_ACTION_PREV, false);
         } else if (prevActionName.equals(actionName)) {
             if (FIRST_FLOW_ACTION_NAME.equals(previousFlowAction)) {
                 invocation.getInvocationContext().getValueStack()
@@ -336,15 +404,43 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                                 previousFlowAction + viewActionPostfix);
             }
             session.put(PREVIOUS_FLOW_ACTION, prevAction);
+
+            session.put(IS_PREVIOUS_ACTION_PREV, true);
         }
 
         // execute global view result on not last flow action
         if (flowAction && nextAction.equals(actionName) && !lastFlowAction) {
-            final String nextAct = flowMap.get(actionName).getNextAction();
             invocation.addPreResultListener(new PreResultListener() {
                 public void beforeResult(ActionInvocation invocation,
                         String resultCode) {
                     if (Action.SUCCESS.equals(resultCode)) {
+                        // action flow aware
+                        String nextFromAction = null;
+                        if (invocation.getAction() instanceof ActionFlowAware) {
+                            nextFromAction = ((ActionFlowAware) invocation
+                                    .getAction())
+                                    .nextActionFlowAction(actionName);
+
+                            // if null just ignore otherwise check if returned
+                            // action is a flow action
+                            if (nextFromAction != null
+                                    && !flowMap.containsKey(nextFromAction)) {
+                                nextFromAction = null;
+                            }
+                        }
+
+                        String nextAct = null;
+                        if (nextFromAction != null) {
+                            nextAct = nextFromAction;
+                            // override actionName
+                            actionName = flowMap.get(nextFromAction)
+                                    .getPrevAction();
+                            // override indexCurrent
+                            indexCurrent = flowMap.get(actionName).getIndex();
+                        } else {
+                            nextAct = flowMap.get(actionName).getNextAction();
+                        }
+
                         invocation
                                 .getInvocationContext()
                                 .getValueStack()
@@ -365,12 +461,20 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         if (GLOBAL_VIEW_RESULT.equals(result) && flowAction) {
             session.put(PREVIOUS_FLOW_ACTION, actionName);
+
+            // set highest current action index on a view result
+            if (indexCurrent > highestCurrentIndex) {
+                session.put(HIGHEST_CURRENT_ACTION_INDEX, indexCurrent);
+            }
         }
 
         // last flow action
         if (Action.SUCCESS.equals(result) && flowAction && lastFlowAction) {
             session.put(PREVIOUS_FLOW_ACTION, null);
             session.put(FLOW_SCOPE_KEY, null);
+
+            session.put(IS_PREVIOUS_ACTION_PREV, null);
+            session.put(HIGHEST_CURRENT_ACTION_INDEX, null);
         }
 
         return result;

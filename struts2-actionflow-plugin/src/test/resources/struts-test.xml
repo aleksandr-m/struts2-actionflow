@@ -26,17 +26,17 @@
         <action name="noFlow">
             <result>homepage</result>
         </action>
-        <action name="saveName" method="saveName">
+        <action name="saveName-1" method="saveName-1">
             <result name="input">name</result>
             <result name="error">name</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="savePhone" method="savePhone">
+        <action name="savePhone-2" method="savePhone-2">
             <result name="input">phone</result>
             <result name="error">phone</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="saveEmail" method="saveEmail">
+        <action name="saveEmail-3" method="saveEmail-3">
             <result name="input">email</result>
             <result name="error">email</result>
             <result>finish</result>
@@ -47,21 +47,48 @@
         <action name="correctFlow" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAction">
             <result>homepage</result>
         </action>
-        <action name="saveName" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAction">
+        <action name="saveName-1" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAction">
             <param name="actionFlowStep">1</param>
             
             <result name="input">name</result>
             <result name="error">name</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="savePhone" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAction">
+        <action name="savePhone-2" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAction">
             <param name="actionFlowStep">2</param>
         
             <result name="input">phone</result>
             <result name="error">phone</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="saveEmail" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAction">
+        <action name="saveEmail-3" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAction">
+            <param name="actionFlowStep">3</param>
+        
+            <result name="input">email</result>
+            <result name="error">email</result>
+            <result>finish</result>
+        </action>
+    </package>
+    
+    <package name="correctFlowAware" namespace="/correctFlowAware" extends="actionflow-default">
+        <action name="correctFlowAware" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAwareAction">
+            <result>homepage</result>
+        </action>
+        <action name="saveName-1" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAwareAction">
+            <param name="actionFlowStep">1</param>
+            
+            <result name="input">name</result>
+            <result name="error">name</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="savePhone-2" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAwareAction">
+            <param name="actionFlowStep">2</param>
+        
+            <result name="input">phone</result>
+            <result name="error">phone</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="saveEmail-3" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAwareAction">
             <param name="actionFlowStep">3</param>
         
             <result name="input">email</result>
@@ -99,14 +126,14 @@
         <action name="correctFlowOverride">
             <result>homepage</result>
         </action>
-        <action name="saveName">
+        <action name="saveName-1">
             <param name="actionFlowStep">1</param>
             
             <result name="input">name</result>
             <result name="error">name</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="savePhone">
+        <action name="savePhone-2">
             <param name="actionFlowStep">2</param>
         
             <result name="input">phone</result>
@@ -114,10 +141,10 @@
             <result type="redirectAction">view</result>
         </action>
         <!-- view action override -->
-        <action name="savePhoneViewOverride" method="phone">
+        <action name="savePhone-2ViewOverride" method="phone">
             <result>anotherPhone</result>
         </action>
-        <action name="saveEmail">
+        <action name="saveEmail-3">
             <param name="actionFlowStep">3</param>
         
             <result name="input">email</result>
@@ -131,19 +158,19 @@
         <action name="noInputResult">
             <result>homepage</result>
         </action>
-        <action name="saveName" method="saveName">
+        <action name="saveName-1" method="saveName-1">
             <param name="actionFlowStep">1</param>
             <result name="input">name</result>
             <result name="error">name</result>
             <result type="redirectAction">view</result>
         </action>
         <!-- no input result -->
-        <action name="savePhone" method="savePhone">
+        <action name="savePhone-2" method="savePhone-2">
             <param name="actionFlowStep">2</param>
             <result name="error">phone</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="saveEmail" method="saveEmail">
+        <action name="saveEmail-3" method="saveEmail-3">
             <param name="actionFlowStep">3</param>
             <result name="input">email</result>
             <result name="error">email</result>
@@ -155,21 +182,21 @@
         <action name="sameFlowSteps">
             <result>homepage</result>
         </action>
-        <action name="saveName" method="saveName">
+        <action name="saveName-1" method="saveName-1">
             <param name="actionFlowStep">1</param>
             <result name="input">name</result>
             <result name="error">name</result>
             <result type="redirectAction">view</result>
         </action>
-        <!-- same actionFlowStep step as in saveEmail action -->
-        <action name="savePhone" method="savePhone">
+        <!-- same actionFlowStep step as in saveEmail-3 action -->
+        <action name="savePhone-2" method="savePhone-2">
             <param name="actionFlowStep">2</param>
             <result name="input">phone</result>
             <result name="error">phone</result>
             <result type="redirectAction">view</result>
         </action>
-        <!-- same actionFlowStep step as in savePhone action -->
-        <action name="saveEmail" method="saveEmail">
+        <!-- same actionFlowStep step as in savePhone-2 action -->
+        <action name="saveEmail-3" method="saveEmail-3">
             <param name="actionFlowStep">2</param>
             <result name="input">email</result>
             <result name="error">email</result>
@@ -200,19 +227,19 @@
         <action name="next">
             <result type="redirectAction">${nextAction}</result>
         </action>
-        <action name="saveName" method="saveName">
+        <action name="saveName-1" method="saveName-1">
             <param name="actionFlowStep">1</param>
             <result name="input">name</result>
             <result name="error">name</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="savePhone" method="savePhone">
+        <action name="savePhone-2" method="savePhone-2">
             <param name="actionFlowStep">2</param>
             <result name="input">phone</result>
             <result name="error">phone</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="saveEmail" method="saveEmail">
+        <action name="saveEmail-3" method="saveEmail-3">
             <param name="actionFlowStep">3</param>
             <result name="input">email</result>
             <result name="error">email</result>
@@ -243,19 +270,19 @@
         <action name="next">
             <result type="chain">${nextActionWrong}</result>
         </action>
-        <action name="saveName" method="saveName">
+        <action name="saveName-1" method="saveName-1">
             <param name="actionFlowStep">1</param>
             <result name="input">name</result>
             <result name="error">name</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="savePhone" method="savePhone">
+        <action name="savePhone-2" method="savePhone-2">
             <param name="actionFlowStep">2</param>
             <result name="input">phone</result>
             <result name="error">phone</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="saveEmail" method="saveEmail">
+        <action name="saveEmail-3" method="saveEmail-3">
             <param name="actionFlowStep">3</param>
             <result name="input">email</result>
             <result name="error">email</result>
@@ -272,19 +299,19 @@
         <action name="prev">
             <result type="redirectAction">${prevActionWrong}</result>
         </action>
-        <action name="saveName" method="saveName">
+        <action name="saveName-1" method="saveName-1">
             <param name="actionFlowStep">1</param>
             <result name="input">name</result>
             <result name="error">name</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="savePhone" method="savePhone">
+        <action name="savePhone-2" method="savePhone-2">
             <param name="actionFlowStep">2</param>
             <result name="input">phone</result>
             <result name="error">phone</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="saveEmail" method="saveEmail">
+        <action name="saveEmail-3" method="saveEmail-3">
             <param name="actionFlowStep">3</param>
             <result name="input">email</result>
             <result name="error">email</result>
@@ -300,19 +327,19 @@
         <action name="prev">
             <result name="input">${prevAction}</result>
         </action>
-        <action name="saveName" method="saveName">
+        <action name="saveName-1" method="saveName-1">
             <param name="actionFlowStep">1</param>
             <result name="input">name</result>
             <result name="error">name</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="savePhone" method="savePhone">
+        <action name="savePhone-2" method="savePhone-2">
             <param name="actionFlowStep">2</param>
             <result name="input">phone</result>
             <result name="error">phone</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="saveEmail" method="saveEmail">
+        <action name="saveEmail-3" method="saveEmail-3">
             <param name="actionFlowStep">3</param>
             <result name="input">email</result>
             <result name="error">email</result>
@@ -337,19 +364,19 @@
         <action name="noViewResult">
             <result>homepage</result>
         </action>
-        <action name="saveName" method="saveName">
+        <action name="saveName-1" method="saveName-1">
             <param name="actionFlowStep">1</param>
             <result name="input">name</result>
             <result name="error">name</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="savePhone" method="savePhone">
+        <action name="savePhone-2" method="savePhone-2">
             <param name="actionFlowStep">2</param>
             <result name="input">phone</result>
             <result name="error">phone</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="saveEmail" method="saveEmail">
+        <action name="saveEmail-3" method="saveEmail-3">
             <param name="actionFlowStep">3</param>
             <result name="input">email</result>
             <result name="error">email</result>
@@ -377,19 +404,19 @@
         <action name="wrongViewResultType">
             <result>homepage</result>
         </action>
-        <action name="saveName" method="saveName">
+        <action name="saveName-1" method="saveName-1">
             <param name="actionFlowStep">1</param>
             <result name="input">name</result>
             <result name="error">name</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="savePhone" method="savePhone">
+        <action name="savePhone-2" method="savePhone-2">
             <param name="actionFlowStep">2</param>
             <result name="input">phone</result>
             <result name="error">phone</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="saveEmail" method="saveEmail">
+        <action name="saveEmail-3" method="saveEmail-3">
             <param name="actionFlowStep">3</param>
             <result name="input">email</result>
             <result name="error">email</result>
@@ -417,19 +444,19 @@
         <action name="wrongViewResultParam">
             <result>homepage</result>
         </action>
-        <action name="saveName" method="saveName">
+        <action name="saveName-1" method="saveName-1">
             <param name="actionFlowStep">1</param>
             <result name="input">name</result>
             <result name="error">name</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="savePhone" method="savePhone">
+        <action name="savePhone-2" method="savePhone-2">
             <param name="actionFlowStep">2</param>
             <result name="input">phone</result>
             <result name="error">phone</result>
             <result type="redirectAction">view</result>
         </action>
-        <action name="saveEmail" method="saveEmail">
+        <action name="saveEmail-3" method="saveEmail-3">
             <param name="actionFlowStep">3</param>
             <result name="input">email</result>
             <result name="error">email</result>

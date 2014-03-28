@@ -72,7 +72,7 @@ public class ActionFlowConfigBuilderTest extends
         }
 
         try {
-            map.remove("saveName");
+            map.remove("saveName-1");
             Assert.fail("The map must be unmodifiable. Should throw UnsupportedOperationException.");
         } catch (Exception e) {
             Assert.assertTrue(
