@@ -30,12 +30,4 @@ public interface ActionFlowAware {
      *         <code>null</code> is returned action flow won't be changed.
      */
     String nextActionFlowAction(String actionName);
-
-    /**
-     * 
-     * @param actionName
-     * @return Name of the action to be called on next 'next'. If
-     *         <code>null</code> is returned action flow won't be changed.
-     */
-    String prevActionFlowAction(String actionName);
 }

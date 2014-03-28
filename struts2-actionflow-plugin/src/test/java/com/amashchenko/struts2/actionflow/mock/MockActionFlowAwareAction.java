@@ -28,10 +28,14 @@ public class MockActionFlowAwareAction extends ActionSupport implements
         ActionFlowAware {
 
     /** Serial version uid. */
-    private static final long serialVersionUID = 6183268804607231373L;
+    private static final long serialVersionUID = 3108909520018157706L;
 
     /** Wrong action name constant. */
     public static final String WRONG_ACTION_NAME = "wrongActionName";
+    /** Null constant. */
+    public static final String NULL = "null";
+    /** Skip multiple actions constant. */
+    public static final String SKIP_MULTIPLE_ACTIONS = "multiple";
 
     /** Name field. */
     private String name;
@@ -46,23 +50,13 @@ public class MockActionFlowAwareAction extends ActionSupport implements
         if (WRONG_ACTION_NAME.equals(name)) {
             nextAction = WRONG_ACTION_NAME;
         }
-        if ("null".equals(name)) {
+        if (NULL.equals(name)) {
             nextAction = null;
         }
+        if (SKIP_MULTIPLE_ACTIONS.equals(name)) {
+            nextAction = "saveAddress-4";
+        }
         return nextAction;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String prevActionFlowAction(String actionName) {
-        String prevAction = null;
-        if ("savePhone-2".equals(actionName)) {
-            prevAction = "saveName-1";
-        }
-        if ("saveEmail-3".equals(actionName)) {
-            prevAction = WRONG_ACTION_NAME;
-        }
-        return prevAction;
     }
 
     /**
