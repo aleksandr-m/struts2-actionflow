@@ -36,11 +36,4 @@ public class TestConstants {
     /** Expression for getting current highest action index from session. */
     public static final String SESSION_HIGHEST_CURRENT_ACTION_INDEX = "#session['"
             + HIGHEST_CURRENT_ACTION_INDEX + "']";
-
-    /** Key for holding in session if previous action was 'prev' action. */
-    public static final String IS_PREVIOUS_ACTION_PREV = "actionFlowIsPreviousActionPrev";
-
-    /** Expression for getting if previous action was 'prev' from session. */
-    public static final String SESSION_IS_PREVIOUS_ACTION_PREV = "#session['"
-            + IS_PREVIOUS_ACTION_PREV + "']";
 }

@@ -139,7 +139,7 @@ public class ActionFlowAwareTest extends
 
         initServletMockObjectsPreserveSession();
 
-        request.setParameter("name", "null");
+        request.setParameter("name", MockActionFlowAwareAction.NULL);
         executeAction("/correctFlowAware/next");
 
         previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
@@ -166,73 +166,67 @@ public class ActionFlowAwareTest extends
         String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
         Assert.assertEquals(null, viewActionParam);
 
-        initServletMockObjects();
+        initServletMockObjectsPreserveSession();
 
-        // simulating 'prev' action
-        request.getSession().setAttribute(
-                TestConstants.IS_PREVIOUS_ACTION_PREV, true);
-        executeAction("/correctFlowAware/savePhone-2View");
+        executeAction("/correctFlowAware/next");
+
+        previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
+        Assert.assertEquals("savePhone-2", previousAction);
+
+        viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
+        Assert.assertEquals("saveEmail-3View", viewActionParam);
+
+        Integer highestCurrentIndex = (Integer) findValueAfterExecute(TestConstants.SESSION_HIGHEST_CURRENT_ACTION_INDEX);
+        Assert.assertEquals(new Integer(2), highestCurrentIndex);
+
+        initServletMockObjectsPreserveSession();
+
+        executeAction("/correctFlowAware/prev");
 
         previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals("firstFlowAction", previousAction);
 
-        viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
-        Assert.assertEquals("saveName-1View", viewActionParam);
+        String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
+        Assert.assertEquals("saveName-1View", prevActionParam);
     }
 
     /**
-     * Tests skipping action on 'prev' with not defined action name.
+     * Tests skipping multiple actions and 'prev'.
      * 
      * @throws Exception
      *             when something goes wrong.
      */
     @Test
-    public void testSkipPrevActionWrongActionName() throws Exception {
+    public void testSkipMultipleActionsAndPrev() throws Exception {
         executeAction("/correctFlowAware/correctFlowAware");
         String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals(null, previousAction);
         String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
         Assert.assertEquals(null, viewActionParam);
 
-        initServletMockObjects();
+        initServletMockObjectsPreserveSession();
 
-        // simulating 'prev' action
-        request.getSession().setAttribute(
-                TestConstants.IS_PREVIOUS_ACTION_PREV, true);
-        executeAction("/correctFlowAware/saveEmail-3View");
-
-        previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals(null, previousAction);
-
-        viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
-        Assert.assertEquals(null, viewActionParam);
-    }
-
-    /**
-     * Tests skipping action on 'prev' with null value.
-     * 
-     * @throws Exception
-     *             when something goes wrong.
-     */
-    @Test
-    public void testSkipPrevActionNull() throws Exception {
-        executeAction("/correctFlowAware/correctFlowAware");
-        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals(null, previousAction);
-        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
-        Assert.assertEquals(null, viewActionParam);
-
-        initServletMockObjects();
-
-        // simulating 'prev' action
-        request.getSession().setAttribute(
-                TestConstants.IS_PREVIOUS_ACTION_PREV, true);
-        executeAction("/correctFlowAware/saveName-1View");
+        request.setParameter("name",
+                MockActionFlowAwareAction.SKIP_MULTIPLE_ACTIONS);
+        executeAction("/correctFlowAware/next");
 
         previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals(null, previousAction);
+        Assert.assertEquals("saveEmail-3", previousAction);
 
         viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
-        Assert.assertEquals(null, viewActionParam);
+        Assert.assertEquals("saveAddress-4View", viewActionParam);
+
+        Integer highestCurrentIndex = (Integer) findValueAfterExecute(TestConstants.SESSION_HIGHEST_CURRENT_ACTION_INDEX);
+        Assert.assertEquals(new Integer(3), highestCurrentIndex);
+
+        initServletMockObjectsPreserveSession();
+
+        executeAction("/correctFlowAware/prev");
+
+        previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
+        Assert.assertEquals("firstFlowAction", previousAction);
+
+        String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
+        Assert.assertEquals("saveName-1View", prevActionParam);
     }
 }

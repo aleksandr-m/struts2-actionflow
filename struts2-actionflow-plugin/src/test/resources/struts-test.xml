@@ -95,6 +95,20 @@
             <result name="error">email</result>
             <result>finish</result>
         </action>
+        <action name="saveAddress-4" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAwareAction">
+            <param name="actionFlowStep">4</param>
+        
+            <result name="input">address</result>
+            <result name="error">address</result>
+            <result>finish</result>
+        </action>
+        <action name="saveWebsite-5" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAwareAction">
+            <param name="actionFlowStep">5</param>
+        
+            <result name="input">website</result>
+            <result name="error">website</result>
+            <result>finish</result>
+        </action>
     </package>
     
     <package name="correctFlowOverride" namespace="/correctFlowOverride" extends="actionflow-default">

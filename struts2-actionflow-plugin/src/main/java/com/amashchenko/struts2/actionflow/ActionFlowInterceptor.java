@@ -115,7 +115,7 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
 public class ActionFlowInterceptor extends AbstractInterceptor {
 
     /** Serial version uid. */
-    private static final long serialVersionUID = -1930819163413544578L;
+    private static final long serialVersionUID = -8931708101962468929L;
 
     /** Logger. */
     public static final Logger LOG = LoggerFactory
@@ -123,18 +123,19 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
     /** Key for holding in session the name of the previous flow action. */
     private static final String PREVIOUS_FLOW_ACTION = "actionFlowPreviousAction";
-    /** Key for holding in session if previous action was 'prev' action. */
-    private static final String IS_PREVIOUS_ACTION_PREV = "actionFlowIsPreviousActionPrev";
     /** Key for holding in session current highest action index. */
     private static final String HIGHEST_CURRENT_ACTION_INDEX = "actionFlowHighestCurrentActionIndex";
 
+    /** Default next action name. */
     private static final String DEFAULT_NEXT_ACTION_NAME = "next";
+    /** Default previous action name. */
     private static final String DEFAULT_PREV_ACTION_NAME = "prev";
 
     /** Name of the first flow action. */
     protected static final String FIRST_FLOW_ACTION_NAME = "firstFlowAction";
     protected static final String GLOBAL_VIEW_RESULT = "actionFlowViewResult";
 
+    /** Default postfix for view actions. */
     private static final String DEFAULT_VIEW_ACTION_POSTFIX = "View";
     private static final String DEFAULT_VIEW_ACTION_METHOD = "execute";
     private static final String DEFAULT_STEP_PARAM_NAME = "step";
@@ -175,6 +176,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     private int indexCurrent;
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
         actionName = invocation.getInvocationContext().getName();
@@ -240,8 +242,9 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             session.put(PREVIOUS_FLOW_ACTION, null);
             session.put(FLOW_SCOPE_KEY, null);
 
-            session.put(IS_PREVIOUS_ACTION_PREV, null);
             session.put(HIGHEST_CURRENT_ACTION_INDEX, null);
+
+            session.put("skipMap", null);
         }
 
         // action flow steps aware
@@ -261,43 +264,6 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         if (!flowAction && !prevActionName.equals(actionName)
                 && !nextActionName.equals(actionName)) {
             prevSimpleAction = actionName;
-
-            // action flow aware
-            String prevFromAction = null;
-            Boolean isPreviousPrev = (Boolean) session
-                    .get(IS_PREVIOUS_ACTION_PREV);
-
-            if (flowViewAction && isPreviousPrev != null && isPreviousPrev
-                    && invocation.getAction() instanceof ActionFlowAware) {
-                prevFromAction = ((ActionFlowAware) invocation.getAction())
-                        .prevActionFlowAction(plainActionName);
-                // if null just ignore otherwise check if returned action is a
-                // flow action
-                if (prevFromAction != null
-                        && !flowMap.containsKey(prevFromAction)) {
-                    prevFromAction = null;
-                }
-            }
-            if (prevFromAction != null) {
-                final String prevAct = prevFromAction;
-                invocation.addPreResultListener(new PreResultListener() {
-                    public void beforeResult(ActionInvocation invocation,
-                            String resultCode) {
-                        if (Action.SUCCESS.equals(resultCode)) {
-                            invocation
-                                    .getInvocationContext()
-                                    .getValueStack()
-                                    .set(VIEW_ACTION_PARAM,
-                                            prevAct + viewActionPostfix);
-                            invocation.setResultCode(GLOBAL_VIEW_RESULT);
-                        }
-                    }
-                });
-
-                session.put(PREVIOUS_FLOW_ACTION, flowMap.get(prevAct)
-                        .getPrevAction());
-            }
-
             return invocation.invoke();
         }
 
@@ -382,6 +348,9 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             return GLOBAL_VIEW_RESULT;
         }
 
+        Map<String, String> skipMap = (Map<String, String>) session
+                .get("skipMap");
+
         if (nextActionName.equals(actionName)) {
             // set start action
             if (startAction == null) {
@@ -390,22 +359,25 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
             invocation.getInvocationContext().getValueStack()
                     .set(NEXT_ACTION_PARAM, nextAction);
-
-            session.put(IS_PREVIOUS_ACTION_PREV, false);
         } else if (prevActionName.equals(actionName)) {
+            String prevView = null;
             if (FIRST_FLOW_ACTION_NAME.equals(previousFlowAction)) {
-                invocation.getInvocationContext().getValueStack()
-                        .set(PREV_ACTION_PARAM, nextAction + viewActionPostfix);
+                prevView = nextAction;
             } else {
-                invocation
-                        .getInvocationContext()
-                        .getValueStack()
-                        .set(PREV_ACTION_PARAM,
-                                previousFlowAction + viewActionPostfix);
-            }
-            session.put(PREVIOUS_FLOW_ACTION, prevAction);
+                if (skipMap != null && skipMap.containsKey(nextAction)) {
+                    prevView = skipMap.get(nextAction);
 
-            session.put(IS_PREVIOUS_ACTION_PREV, true);
+                    // override prevAction
+                    prevAction = flowMap.get(prevView).getPrevAction();
+                } else {
+                    prevView = previousFlowAction;
+                }
+            }
+
+            invocation.getInvocationContext().getValueStack()
+                    .set(PREV_ACTION_PARAM, prevView + viewActionPostfix);
+
+            session.put(PREVIOUS_FLOW_ACTION, prevAction);
         }
 
         // execute global view result on not last flow action
@@ -429,23 +401,38 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                             }
                         }
 
-                        String nextAct = null;
+                        Map<String, String> skipMap = null;
+                        if (invocation.getInvocationContext().getSession()
+                                .containsKey("skipMap")) {
+                            skipMap = (Map<String, String>) invocation
+                                    .getInvocationContext().getSession()
+                                    .get("skipMap");
+                        } else {
+                            skipMap = new HashMap<String, String>();
+                        }
                         if (nextFromAction != null) {
-                            nextAct = nextFromAction;
+                            skipMap.put(nextFromAction, actionName);
+
                             // override actionName
                             actionName = flowMap.get(nextFromAction)
                                     .getPrevAction();
                             // override indexCurrent
                             indexCurrent = flowMap.get(actionName).getIndex();
                         } else {
-                            nextAct = flowMap.get(actionName).getNextAction();
+                            nextFromAction = flowMap.get(actionName)
+                                    .getNextAction();
+
+                            skipMap.remove(nextFromAction);
                         }
+
+                        invocation.getInvocationContext().getSession()
+                                .put("skipMap", skipMap);
 
                         invocation
                                 .getInvocationContext()
                                 .getValueStack()
                                 .set(VIEW_ACTION_PARAM,
-                                        nextAct + viewActionPostfix);
+                                        nextFromAction + viewActionPostfix);
                         invocation.setResultCode(GLOBAL_VIEW_RESULT);
                     }
                 }
@@ -473,8 +460,9 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             session.put(PREVIOUS_FLOW_ACTION, null);
             session.put(FLOW_SCOPE_KEY, null);
 
-            session.put(IS_PREVIOUS_ACTION_PREV, null);
             session.put(HIGHEST_CURRENT_ACTION_INDEX, null);
+
+            session.put("skipMap", null);
         }
 
         return result;
