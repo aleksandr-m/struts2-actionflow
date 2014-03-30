@@ -2,12 +2,14 @@
 
 *.java        text
 *.jsp         text
+*.ftl         text
 *.css         text
 *.js          text
 *.html        text
 *.xml         text
 *.properties  text
 *.md          text
+*.jrxml       text
 
 
 *.class       binary
@@ -15,4 +17,6 @@
 *.png         binary
 *.jpg         binary
 *.gif         binary
+*.ico         binary
 *.pdf         binary
+*.jasper      binary

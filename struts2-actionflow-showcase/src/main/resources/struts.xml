@@ -32,7 +32,7 @@
             <result type="tiles">homepage</result>
         </action>
         
-        <action name="start" class="com.amashchenko.struts2.actionflow.showcase.SimpleWizardAction">
+        <action name="start" method="start" class="com.amashchenko.struts2.actionflow.showcase.SimpleWizardAction">
             <result type="tiles">name</result>
         </action>
         

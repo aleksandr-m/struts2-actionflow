@@ -35,7 +35,7 @@ public class SimpleWizardAction extends ActionSupport implements SessionAware,
         ActionFlowStepsAware {
 
     /** Serial version uid. */
-    private static final long serialVersionUID = 1023310153547766887L;
+    private static final long serialVersionUID = 2540993908387026815L;
 
     /** HTTP session. */
     private Map<String, Object> session;
@@ -64,6 +64,18 @@ public class SimpleWizardAction extends ActionSupport implements SessionAware,
     /** Email input. */
     @ActionFlowScope
     private String email;
+
+    /**
+     * Clears session variables.
+     * 
+     * @return action result.
+     */
+    public String start() {
+        session.remove("names");
+        session.remove("phones");
+        session.remove("emails");
+        return SUCCESS;
+    }
 
     /**
      * Saves name.
