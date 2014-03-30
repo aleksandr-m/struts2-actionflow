@@ -21,7 +21,7 @@
     <artifactId>struts2-actionflow-parent</artifactId>
     <packaging>pom</packaging>
     <name>struts2-actionflow-parent</name>
-    <version>2.1.1-skip_action_update-SNAPSHOT</version>
+    <version>2.1.1-SNAPSHOT</version>
  
     <description>Parent POM for struts2-actionflow.</description>
  
