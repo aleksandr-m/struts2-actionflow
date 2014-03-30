@@ -115,7 +115,7 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
 public class ActionFlowInterceptor extends AbstractInterceptor {
 
     /** Serial version uid. */
-    private static final long serialVersionUID = -1930819163413544578L;
+    private static final long serialVersionUID = -8931708101962468929L;
 
     /** Logger. */
     public static final Logger LOG = LoggerFactory
@@ -126,13 +126,16 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     /** Key for holding in session current highest action index. */
     private static final String HIGHEST_CURRENT_ACTION_INDEX = "actionFlowHighestCurrentActionIndex";
 
+    /** Default next action name. */
     private static final String DEFAULT_NEXT_ACTION_NAME = "next";
+    /** Default previous action name. */
     private static final String DEFAULT_PREV_ACTION_NAME = "prev";
 
     /** Name of the first flow action. */
     protected static final String FIRST_FLOW_ACTION_NAME = "firstFlowAction";
     protected static final String GLOBAL_VIEW_RESULT = "actionFlowViewResult";
 
+    /** Default postfix for view actions. */
     private static final String DEFAULT_VIEW_ACTION_POSTFIX = "View";
     private static final String DEFAULT_VIEW_ACTION_METHOD = "execute";
     private static final String DEFAULT_STEP_PARAM_NAME = "step";
