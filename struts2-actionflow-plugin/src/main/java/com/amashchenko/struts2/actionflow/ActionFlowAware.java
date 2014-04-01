@@ -16,7 +16,7 @@
 package com.amashchenko.struts2.actionflow;
 
 /**
- * Actions that want to change the flow of action steps should implement this
+ * Actions that want to change the flow of actions should implement this
  * interface.
  * 
  * @author Aleksandr Mashchenko
@@ -29,10 +29,12 @@ public interface ActionFlowAware {
      * be skipped return 'a3' from this method when <code>actionName</code> is
      * 'a1'.
      * 
-     * @param actionName
+     * @param currentActionName
      *            Current action name.
      * @return Name of the action to be called on next 'next'. If
-     *         <code>null</code> is returned action flow won't be changed.
+     *         <code>null</code> or not an action flow name is returned then
+     *         action flow won't be changed (i.e. the configured next action
+     *         from the flow will be executed).
      */
-    String nextActionFlowAction(String actionName);
+    String nextActionFlowAction(String currentActionName);
 }

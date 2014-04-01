@@ -26,6 +26,12 @@ import com.amashchenko.struts2.actionflow.mock.MockActionFlowAction;
 import com.amashchenko.struts2.actionflow.test.TestConstants;
 import com.opensymphony.xwork2.ActionProxy;
 
+/**
+ * Tests for action flow scope.
+ * 
+ * @author Aleksandr Mashchenko
+ * 
+ */
 public class ActionFlowScopeTest extends
         StrutsJUnit4TestCase<MockActionFlowAction> {
 
@@ -35,6 +41,12 @@ public class ActionFlowScopeTest extends
         return "struts-plugin.xml, struts-test.xml";
     }
 
+    /**
+     * Tests getting values from scope.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
     @Test
     public void testGettingFromScope() throws Exception {
         executeAction("/correctFlow/correctFlow");
@@ -61,6 +73,12 @@ public class ActionFlowScopeTest extends
         Assert.assertEquals(value, action.getPhone());
     }
 
+    /**
+     * Tests setting values to scope.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
     @SuppressWarnings("unchecked")
     @Test
     public void testSettingToScope() throws Exception {
@@ -91,6 +109,12 @@ public class ActionFlowScopeTest extends
                 .getName() + ".phone"));
     }
 
+    /**
+     * Tests clearing scope on start.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
     @Test
     public void testClearFlowScopeStart() throws Exception {
         executeAction("/correctFlow/correctFlow");
@@ -113,6 +137,8 @@ public class ActionFlowScopeTest extends
         Map<String, Object> sessionMap = new HashMap<String, Object>();
         sessionMap.put(immutableValue, immutableValue);
         sessionMap.put(TestConstants.PREVIOUS_FLOW_ACTION, "savePhone-2");
+        sessionMap.put(TestConstants.FLOW_SCOPE_KEY,
+                new HashMap<String, Object>());
         ap.getInvocation().getInvocationContext().setSession(sessionMap);
 
         ap.execute();
@@ -123,6 +149,12 @@ public class ActionFlowScopeTest extends
         Assert.assertEquals(immutableValue, sessionMap.get(immutableValue));
     }
 
+    /**
+     * Tests clearing scope on last flow action.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
     @Test
     public void testClearFlowScopeLast() throws Exception {
         executeAction("/correctFlow/correctFlow");

@@ -125,6 +125,8 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     private static final String PREVIOUS_FLOW_ACTION = "actionFlowPreviousAction";
     /** Key for holding in session current highest action index. */
     private static final String HIGHEST_CURRENT_ACTION_INDEX = "actionFlowHighestCurrentActionIndex";
+    /** Key for holding in session map of skip actions. */
+    private static final String SKIP_ACTIONS = "actionFlowSkipActionsMap";
 
     /** Default next action name. */
     private static final String DEFAULT_NEXT_ACTION_NAME = "next";
@@ -244,7 +246,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
             session.put(HIGHEST_CURRENT_ACTION_INDEX, null);
 
-            session.put("skipMap", null);
+            session.put(SKIP_ACTIONS, null);
         }
 
         // action flow steps aware
@@ -349,7 +351,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         }
 
         Map<String, String> skipMap = (Map<String, String>) session
-                .get("skipMap");
+                .get(SKIP_ACTIONS);
 
         if (nextActionName.equals(actionName)) {
             // set start action
@@ -403,10 +405,10 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
                         Map<String, String> skipMap = null;
                         if (invocation.getInvocationContext().getSession()
-                                .containsKey("skipMap")) {
+                                .containsKey(SKIP_ACTIONS)) {
                             skipMap = (Map<String, String>) invocation
                                     .getInvocationContext().getSession()
-                                    .get("skipMap");
+                                    .get(SKIP_ACTIONS);
                         } else {
                             skipMap = new HashMap<String, String>();
                         }
@@ -426,7 +428,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                         }
 
                         invocation.getInvocationContext().getSession()
-                                .put("skipMap", skipMap);
+                                .put(SKIP_ACTIONS, skipMap);
 
                         invocation
                                 .getInvocationContext()
@@ -462,7 +464,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
             session.put(HIGHEST_CURRENT_ACTION_INDEX, null);
 
-            session.put("skipMap", null);
+            session.put(SKIP_ACTIONS, null);
         }
 
         return result;

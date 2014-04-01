@@ -27,6 +27,12 @@ import org.springframework.mock.web.MockServletContext;
 
 import com.amashchenko.struts2.actionflow.test.TestConstants;
 
+/**
+ * Tests for forcing order of flow actions.
+ * 
+ * @author Aleksandr Mashchenko
+ * 
+ */
 public class ActionFlowStepParameterTest extends
         StrutsJUnit4TestCase<ActionFlowInterceptor> {
 
@@ -54,7 +60,7 @@ public class ActionFlowStepParameterTest extends
 
     // next, step from saveName-1 to savePhone-2
     @Test
-    public void testName() throws Exception {
+    public void testChangingStepParam() throws Exception {
         executeAction("/correctFlow/correctFlow");
         initServletMockObjectsPreserveSession();
         executeAction("/correctFlow/next");
@@ -87,7 +93,7 @@ public class ActionFlowStepParameterTest extends
 
     // next, saveEmail-3
     @Test
-    public void testName2() throws Exception {
+    public void testWrongOrderAction() throws Exception {
         executeAction("/correctFlow/correctFlow");
         initServletMockObjectsPreserveSession();
         executeAction("/correctFlow/next");
@@ -122,7 +128,7 @@ public class ActionFlowStepParameterTest extends
 
     // next, prev, back, next
     @Test
-    public void testName3() throws Exception {
+    public void testPrevWithBack() throws Exception {
         executeAction("/correctFlow/correctFlow");
         initServletMockObjectsPreserveSession();
         executeAction("/correctFlow/next");

@@ -27,6 +27,12 @@ import com.amashchenko.struts2.actionflow.test.TestConstants;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionProxy;
 
+/**
+ * Tests for ActionFlowStepsAware.
+ * 
+ * @author Aleksandr Mashchenko
+ * 
+ */
 public class ActionFlowStepsAwareTest extends
         StrutsJUnit4TestCase<MockActionFlowAction> {
 
