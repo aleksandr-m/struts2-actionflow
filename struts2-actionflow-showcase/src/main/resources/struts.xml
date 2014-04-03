@@ -86,18 +86,18 @@
             <result name="actionFlowViewResult" type="redirectAction">${viewAction}</result>
         </global-results>
         
-        <action name="start" class="com.amashchenko.struts2.actionflow.showcase.SimpleWizardAction">
+        <action name="start" method="start" class="com.amashchenko.struts2.actionflow.showcase.AdvancedWizardAction">
             <result type="tiles">advanced-name</result>
         </action>
         
-        <action name="saveName" method="saveName" class="com.amashchenko.struts2.actionflow.showcase.SimpleWizardAction">
+        <action name="saveName" method="saveName" class="com.amashchenko.struts2.actionflow.showcase.AdvancedWizardAction">
             <param name="actionFlowStep">1</param>
             
             <result name="input" type="tiles">advanced-name</result>
             <result name="error" type="tiles">advanced-name</result>
             <result type="redirectAction">finish</result>
         </action>
-        <action name="savePhone" method="savePhone" class="com.amashchenko.struts2.actionflow.showcase.SimpleWizardAction">
+        <action name="savePhone" method="savePhone" class="com.amashchenko.struts2.actionflow.showcase.AdvancedWizardAction">
             <param name="actionFlowStep">2</param>
         
             <result name="input" type="tiles">advanced-phone</result>
@@ -106,11 +106,11 @@
         </action>
         
         <!-- overriding view -->
-        <action name="savePhoneView" class="com.amashchenko.struts2.actionflow.showcase.SimpleWizardAction">
+        <action name="savePhoneView" class="com.amashchenko.struts2.actionflow.showcase.AdvancedWizardAction">
             <result type="tiles">advanced-anotherPhone</result>
         </action>
         
-        <action name="saveEmail" method="saveEmail" class="com.amashchenko.struts2.actionflow.showcase.SimpleWizardAction">
+        <action name="saveEmail" method="saveEmail" class="com.amashchenko.struts2.actionflow.showcase.AdvancedWizardAction">
             <param name="actionFlowStep">3</param>
         
             <result name="input" type="tiles">advanced-email</result>
@@ -118,7 +118,7 @@
             <result type="redirectAction">finish</result>
         </action>
 
-        <action name="finish" class="com.amashchenko.struts2.actionflow.showcase.SimpleWizardAction">
+        <action name="finish" class="com.amashchenko.struts2.actionflow.showcase.AdvancedWizardAction">
             <result type="tiles">advanced-finish</result>
         </action>
         

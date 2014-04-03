@@ -8,6 +8,8 @@
 	<s:hidden name="step" value="%{#session['actionFlowPreviousAction']}"/>
 
 	<s:textfield key="name" label="Name" />
+	
+	<tr><td></td><td colspan="2" class="hint">Type 'skip' as a name to jump over next step. <a href="#ActionFlowAware">(configuration)</a></td></tr>
 
 	<tr><td><br/></td></tr>
 
@@ -45,5 +47,19 @@
     &lt;result name="error"&gt;/WEB-INF/advanced/name.jsp&lt;/result&gt;
     &lt;result type="redirectAction"&gt;finish&lt;/result&gt;
 &lt;/action&gt;
+</pre>
+
+    <i>ActionFlowAware:</i><a id="ActionFlowAware"></a>
+<pre>
+public class AdvancedWizardAction extends ActionSupport implements ActionFlowAware {
+    @Override
+    public String nextActionFlowAction(String currentActionName) {
+        String action = null;
+        if ("saveName".equals(currentActionName) &amp;&amp; "skip".equalsIgnoreCase(getName())) {
+            action = "saveEmail";
+        }
+        return action;
+    }
+}
 </pre>
 </div>
