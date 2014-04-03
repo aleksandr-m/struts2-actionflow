@@ -122,15 +122,15 @@ The `ActionFlowStepsData#stepIndex` property holds index of current step.
 
 **Available from struts2-actionflow-plugin 2.3.0**
 
-Implementing `ActionFlowAware` interface gives you control over changing flow of actions.
+Implementing `ActionFlowAware` interface gives you ability to change flow of actions.
 
 The `nextActionFlowAction` method controls which flow action will be executed next. Return the name of the flow action which should be executed after the action 
 which is passed as `currentActionName` argument. E.g. if wizard consists of three actions: 'saveName' > 'savePhone' > 'saveEmail', and 
 action 'savePhone' must be skipped return 'saveEmail' from this method when method argument `currentActionName` is 'saveName'.
+On returning not a flow action name or `null`, action flow won't be changed (i.e. the configured next action from the flow will be executed).
 
 The action properties values passed for the current action will be available in `nextActionFlowAction` method.
 So you can write different conditions based on user input and current action name. 
-On returning not a flow action name or `null` action flow won't be changed (i.e. the configured next action from the flow will be executed).
 
     public class FlowAction extends ActionSupport implements ActionFlowAware {
         private String name;
