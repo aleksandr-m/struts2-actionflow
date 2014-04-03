@@ -350,8 +350,11 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             return GLOBAL_VIEW_RESULT;
         }
 
-        Map<String, String> skipMap = (Map<String, String>) session
-                .get(SKIP_ACTIONS);
+        Map<String, String> skipMap = null;
+        if (session.containsKey(SKIP_ACTIONS)
+                && session.get(SKIP_ACTIONS) instanceof Map) {
+            skipMap = (Map<String, String>) session.get(SKIP_ACTIONS);
+        }
 
         if (nextActionName.equals(actionName)) {
             // set start action
@@ -405,7 +408,9 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
                         Map<String, String> skipMap = null;
                         if (invocation.getInvocationContext().getSession()
-                                .containsKey(SKIP_ACTIONS)) {
+                                .containsKey(SKIP_ACTIONS)
+                                && invocation.getInvocationContext()
+                                        .getSession().get(SKIP_ACTIONS) instanceof Map) {
                             skipMap = (Map<String, String>) invocation
                                     .getInvocationContext().getSession()
                                     .get(SKIP_ACTIONS);

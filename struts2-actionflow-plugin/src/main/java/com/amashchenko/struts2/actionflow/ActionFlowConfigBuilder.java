@@ -35,6 +35,7 @@ import org.apache.struts2.dispatcher.ServletActionRedirectResult;
 import com.amashchenko.struts2.actionflow.entities.ActionFlowStepConfig;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionChainResult;
+import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.config.Configuration;
 import com.opensymphony.xwork2.config.ConfigurationException;
 import com.opensymphony.xwork2.config.entities.ActionConfig;
@@ -417,7 +418,8 @@ public class ActionFlowConfigBuilder {
                     if (clazz.isAnnotationPresent(ActionFlowScope.class)) {
                         List<PropertyDescriptor> pds = new ArrayList<PropertyDescriptor>();
                         for (PropertyDescriptor pd : Introspector.getBeanInfo(
-                                clazz).getPropertyDescriptors()) {
+                                clazz, ActionSupport.class)
+                                .getPropertyDescriptors()) {
                             Field field = null;
                             try {
                                 field = clazz.getDeclaredField(pd.getName());
