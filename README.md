@@ -130,7 +130,7 @@ action 'savePhone' must be skipped return 'saveEmail' from this method when meth
 On returning not a flow action name or `null`, action flow won't be changed (i.e. the configured next action from the flow will be executed).
 
 The action properties values passed for the current action will be available in `nextActionFlowAction` method.
-So you can write different conditions based on user input and current action name. 
+As a result of that you can skip actions based on user input and current action name.
 
     public class FlowAction extends ActionSupport implements ActionFlowAware {
         private String name;
