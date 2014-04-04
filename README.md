@@ -21,7 +21,7 @@ If you are using Maven, add this to your project POM:
         <dependency>
             <groupId>com.amashchenko.struts2.actionflow</groupId>
             <artifactId>struts2-actionflow-plugin</artifactId>
-            <version>2.1.0</version>
+            <version>2.3.0</version>
         </dependency>
         ...
     </dependencies>
