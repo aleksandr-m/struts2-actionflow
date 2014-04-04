@@ -19,23 +19,27 @@ import java.util.Map;
 
 import org.apache.struts2.interceptor.SessionAware;
 
+import com.amashchenko.struts2.actionflow.ActionFlowAware;
 import com.amashchenko.struts2.actionflow.ActionFlowScope;
 import com.amashchenko.struts2.actionflow.ActionFlowStepsAware;
 import com.amashchenko.struts2.actionflow.entities.ActionFlowStepsData;
 import com.opensymphony.xwork2.ActionSupport;
 
 /**
- * Simple wizard action.
+ * Advanced wizard action.
  * 
  * @author Aleksandr Mashchenko
  * 
  */
 @ActionFlowScope
-public class SimpleWizardAction extends ActionSupport implements SessionAware,
-        ActionFlowStepsAware {
+public class AdvancedWizardAction extends ActionSupport implements
+        SessionAware, ActionFlowStepsAware, ActionFlowAware {
 
     /** Serial version uid. */
-    private static final long serialVersionUID = 2540993908387026815L;
+    private static final long serialVersionUID = -1317467522590291364L;
+
+    /** Skip action keyword. */
+    private static final String SKIP_ACTION_KEYWORD = "skip";
 
     /** HTTP session. */
     private Map<String, Object> session;
@@ -53,6 +57,17 @@ public class SimpleWizardAction extends ActionSupport implements SessionAware,
     @Override
     public void setActionFlowSteps(ActionFlowStepsData stepsData) {
         this.stepsData = stepsData;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String nextActionFlowAction(String currentActionName) {
+        String action = null;
+        if ("saveName".equals(currentActionName)
+                && SKIP_ACTION_KEYWORD.equalsIgnoreCase(getName())) {
+            action = "saveEmail";
+        }
+        return action;
     }
 
     /** Name input. */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Aleksandr Mashchenko.
+ * Copyright 2013-2014 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.apache.struts2.dispatcher.ServletActionRedirectResult;
 import com.amashchenko.struts2.actionflow.entities.ActionFlowStepConfig;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionChainResult;
+import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.config.Configuration;
 import com.opensymphony.xwork2.config.ConfigurationException;
 import com.opensymphony.xwork2.config.entities.ActionConfig;
@@ -76,7 +77,8 @@ public class ActionFlowConfigBuilder {
      *            View action postfix.
      * @param viewActionMethod
      *            View action method.
-     * @return Map of the action flow.
+     * @return Map of the action flow, where key is the name of the action and
+     *         value is {@link ActionFlowStepConfig}.
      */
     protected Map<String, ActionFlowStepConfig> createFlowMap(
             final String packageName, final String nextActionName,
@@ -382,7 +384,9 @@ public class ActionFlowConfigBuilder {
      * 
      * @param packageName
      *            Name of the package.
-     * @return Map of the action flow scope fields.
+     * @return Map of the action flow scope fields, where key is the name of the
+     *         action class (as returned by {@link Class#getName()}) and value
+     *         is list of {@link PropertyDescriptor}.
      */
     protected Map<String, List<PropertyDescriptor>> createFlowScopeFields(
             final String packageName) {
@@ -414,7 +418,8 @@ public class ActionFlowConfigBuilder {
                     if (clazz.isAnnotationPresent(ActionFlowScope.class)) {
                         List<PropertyDescriptor> pds = new ArrayList<PropertyDescriptor>();
                         for (PropertyDescriptor pd : Introspector.getBeanInfo(
-                                clazz).getPropertyDescriptors()) {
+                                clazz, ActionSupport.class)
+                                .getPropertyDescriptors()) {
                             Field field = null;
                             try {
                                 field = clazz.getDeclaredField(pd.getName());

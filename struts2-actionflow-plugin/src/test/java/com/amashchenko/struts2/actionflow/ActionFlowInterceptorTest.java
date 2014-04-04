@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Aleksandr Mashchenko.
+ * Copyright 2013-2014 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import com.amashchenko.struts2.actionflow.test.TestConstants;
 
 /**
  * Tests for ActionFlowInterceptor.
@@ -60,12 +62,6 @@ public class ActionFlowInterceptorTest extends
         return "struts-plugin.xml, struts-test.xml";
     }
 
-    /** Key for previous flow action. */
-    private static final String PREVIOUS_FLOW_ACTION = "actionFlowPreviousAction";
-    /** Expression for getting previous flow action from session. */
-    private static final String SESSION_PREVIOUS_FLOW_ACTION = "#session['"
-            + PREVIOUS_FLOW_ACTION + "']";
-
     /** Initialize method. */
     @BeforeClass
     public static void init() {
@@ -83,7 +79,8 @@ public class ActionFlowInterceptorTest extends
      */
     @Parameters(name = "{0}")
     public static Collection<Object[]> data() {
-        Object[][] data = new Object[][] { { "", "saveName", "savePhoneView" },
+        Object[][] data = new Object[][] {
+                { "", "saveName-1", "savePhone-2View" },
                 { "Override", null, null }, };
         return Arrays.asList(data);
     }
@@ -122,17 +119,17 @@ public class ActionFlowInterceptorTest extends
         executeAction(startingAction);
         initServletMockObjects();
         executeAction(nextAction);
-        String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals("saveName", previousAction);
+        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
+        Assert.assertEquals("saveName-1", previousAction);
 
         String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
-        Assert.assertEquals("saveName", nextActionParam);
+        Assert.assertEquals("saveName-1", nextActionParam);
 
         String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
         Assert.assertEquals(null, prevActionParam);
 
         String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
-        Assert.assertEquals("savePhoneView" + suffix, viewActionParam);
+        Assert.assertEquals("savePhone-2View" + suffix, viewActionParam);
     }
 
     /**
@@ -146,14 +143,14 @@ public class ActionFlowInterceptorTest extends
         executeAction(startingAction);
         initServletMockObjects();
         executeAction(prevAction);
-        String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
+        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals("firstFlowAction", previousAction);
 
         String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
         Assert.assertEquals(null, nextActionParam);
 
         String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
-        Assert.assertEquals("saveNameView" + suffix, prevActionParam);
+        Assert.assertEquals("saveName-1View" + suffix, prevActionParam);
 
         String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
         Assert.assertEquals(null, viewActionParam);
@@ -169,16 +166,17 @@ public class ActionFlowInterceptorTest extends
     public void testPrev() throws Exception {
         executeAction(startingAction);
         initServletMockObjects();
-        request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "savePhone");
+        request.getSession().setAttribute(TestConstants.PREVIOUS_FLOW_ACTION,
+                "savePhone-2");
         executeAction(prevAction);
-        String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals("saveName", previousAction);
+        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
+        Assert.assertEquals("saveName-1", previousAction);
 
         String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
         Assert.assertEquals(null, nextActionParam);
 
         String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
-        Assert.assertEquals("savePhoneView" + suffix, prevActionParam);
+        Assert.assertEquals("savePhone-2View" + suffix, prevActionParam);
 
         String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
         Assert.assertEquals(null, viewActionParam);
@@ -194,13 +192,16 @@ public class ActionFlowInterceptorTest extends
     public void testLastNext() throws Exception {
         executeAction(startingAction);
         initServletMockObjects();
-        request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "savePhone");
+        request.getSession().setAttribute(TestConstants.PREVIOUS_FLOW_ACTION,
+                "savePhone-2");
+        request.getSession().setAttribute(
+                TestConstants.HIGHEST_CURRENT_ACTION_INDEX, 3);
         executeAction(nextAction);
-        String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
+        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals(null, previousAction);
 
         String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
-        Assert.assertEquals("saveEmail", nextActionParam);
+        Assert.assertEquals("saveEmail-3", nextActionParam);
 
         String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
         Assert.assertEquals(null, prevActionParam);
@@ -219,20 +220,21 @@ public class ActionFlowInterceptorTest extends
     public void testStepParameterPrevAction() throws Exception {
         executeAction(startingAction);
         initServletMockObjects();
-        request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "savePhone");
+        request.getSession().setAttribute(TestConstants.PREVIOUS_FLOW_ACTION,
+                "savePhone-2");
         request.setParameter("step" + suffix, "");
         executeAction(nextAction);
-        String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals("saveName", previousAction);
+        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
+        Assert.assertEquals("saveName-1", previousAction);
 
         String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
-        Assert.assertEquals("saveName", nextActionParam);
+        Assert.assertEquals("saveName-1", nextActionParam);
 
         String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
         Assert.assertEquals(null, prevActionParam);
 
         String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
-        Assert.assertEquals("savePhoneView" + suffix, viewActionParam);
+        Assert.assertEquals("savePhone-2View" + suffix, viewActionParam);
     }
 
     /**
@@ -245,20 +247,52 @@ public class ActionFlowInterceptorTest extends
     public void testStepParameterNextAction() throws Exception {
         executeAction(startingAction);
         initServletMockObjects();
-        request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "saveName");
-        request.setParameter("step" + suffix, "savePhone");
+        request.getSession().setAttribute(TestConstants.PREVIOUS_FLOW_ACTION,
+                "saveName-1");
+        request.getSession().setAttribute(
+                TestConstants.HIGHEST_CURRENT_ACTION_INDEX, 3);
+        request.setParameter("step" + suffix, "savePhone-2");
         executeAction(nextAction);
-        String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals("savePhone", previousAction);
+        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
+        Assert.assertEquals(null, previousAction);
 
         String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
-        Assert.assertEquals("savePhone", nextActionParam);
+        Assert.assertEquals("saveEmail-3", nextActionParam);
 
         String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
         Assert.assertEquals(null, prevActionParam);
 
         String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
-        Assert.assertEquals("saveEmailView" + suffix, viewActionParam);
+        Assert.assertEquals(null, viewActionParam);
+    }
+
+    /**
+     * Tests step parameter is a next action order forced.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
+    @Test
+    public void testStepParameterNextForceOrderAction() throws Exception {
+        executeAction(startingAction);
+        initServletMockObjects();
+        request.getSession().setAttribute(TestConstants.PREVIOUS_FLOW_ACTION,
+                "saveName-1");
+        request.getSession().setAttribute(
+                TestConstants.HIGHEST_CURRENT_ACTION_INDEX, 1);
+        request.setParameter("step" + suffix, "savePhone-2");
+        executeAction(nextAction);
+        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
+        Assert.assertEquals(expectedWrongOrderAction, previousAction);
+
+        String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
+        Assert.assertEquals("saveEmail-3", nextActionParam);
+
+        String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
+        Assert.assertEquals(null, prevActionParam);
+
+        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
+        Assert.assertEquals(expectedWrongOrderViewParam, viewActionParam);
     }
 
     /**
@@ -271,9 +305,10 @@ public class ActionFlowInterceptorTest extends
     public void testWrongFlowOrder() throws Exception {
         executeAction(startingAction);
         initServletMockObjects();
-        request.getSession().setAttribute(PREVIOUS_FLOW_ACTION, "saveName");
-        executeAction(namespace + "/saveEmail");
-        String previousAction = (String) findValueAfterExecute(SESSION_PREVIOUS_FLOW_ACTION);
+        request.getSession().setAttribute(TestConstants.PREVIOUS_FLOW_ACTION,
+                "saveName-1");
+        executeAction(namespace + "/saveEmail-3");
+        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
         Assert.assertEquals(expectedWrongOrderAction, previousAction);
 
         String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);

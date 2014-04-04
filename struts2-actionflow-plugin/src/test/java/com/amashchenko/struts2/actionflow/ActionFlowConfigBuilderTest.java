@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Aleksandr Mashchenko.
+ * Copyright 2013-2014 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ public class ActionFlowConfigBuilderTest extends
         }
 
         try {
-            map.remove("saveName");
+            map.remove("saveName-1");
             Assert.fail("The map must be unmodifiable. Should throw UnsupportedOperationException.");
         } catch (Exception e) {
             Assert.assertTrue(

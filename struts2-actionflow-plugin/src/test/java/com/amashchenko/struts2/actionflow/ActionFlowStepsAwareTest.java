@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Aleksandr Mashchenko.
+ * Copyright 2013-2014 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,18 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.amashchenko.struts2.actionflow.mock.MockActionFlowAction;
+import com.amashchenko.struts2.actionflow.test.TestConstants;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionProxy;
 
+/**
+ * Tests for ActionFlowStepsAware.
+ * 
+ * @author Aleksandr Mashchenko
+ * 
+ */
 public class ActionFlowStepsAwareTest extends
         StrutsJUnit4TestCase<MockActionFlowAction> {
-
-    /** Key for previous flow action. */
-    private static final String PREVIOUS_FLOW_ACTION = "actionFlowPreviousAction";
 
     /** {@inheritDoc} */
     @Override
@@ -51,6 +55,9 @@ public class ActionFlowStepsAwareTest extends
 
         MockActionFlowAction action = (MockActionFlowAction) ap.getAction();
 
+        ap.getInvocation().getInvocationContext()
+                .setSession(new HashMap<String, Object>());
+
         ap.execute();
 
         Assert.assertNotNull(action.getStepsData());
@@ -67,7 +74,7 @@ public class ActionFlowStepsAwareTest extends
 
         final Integer stepCount = 2;
 
-        ActionProxy ap = getActionProxy("/correctFlow/savePhoneView");
+        ActionProxy ap = getActionProxy("/correctFlow/savePhone-2View");
 
         Assert.assertNotNull(ap);
         Assert.assertNotNull(ap.getAction());
@@ -75,6 +82,9 @@ public class ActionFlowStepsAwareTest extends
         Assert.assertTrue(ap.getAction() instanceof ActionFlowStepsAware);
 
         MockActionFlowAction action = (MockActionFlowAction) ap.getAction();
+
+        ap.getInvocation().getInvocationContext()
+                .setSession(new HashMap<String, Object>());
 
         ap.execute();
 
@@ -93,7 +103,7 @@ public class ActionFlowStepsAwareTest extends
         // for the input result
         request.setParameter("date", "errorrr");
 
-        ActionProxy ap = getActionProxy("/correctFlow/savePhone");
+        ActionProxy ap = getActionProxy("/correctFlow/savePhone-2");
 
         Assert.assertNotNull(ap);
         Assert.assertNotNull(ap.getAction());
@@ -103,7 +113,8 @@ public class ActionFlowStepsAwareTest extends
         MockActionFlowAction action = (MockActionFlowAction) ap.getAction();
 
         Map<String, Object> sessionMap = new HashMap<String, Object>();
-        sessionMap.put(PREVIOUS_FLOW_ACTION, "saveName");
+        sessionMap.put(TestConstants.PREVIOUS_FLOW_ACTION, "saveName-1");
+        sessionMap.put(TestConstants.HIGHEST_CURRENT_ACTION_INDEX, 3);
         ap.getInvocation().getInvocationContext().setSession(sessionMap);
 
         String resultCode = ap.execute();
