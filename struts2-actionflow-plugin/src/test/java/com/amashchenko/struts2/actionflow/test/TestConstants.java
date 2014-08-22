@@ -36,4 +36,6 @@ public class TestConstants {
     /** Expression for getting current highest action index from session. */
     public static final String SESSION_HIGHEST_CURRENT_ACTION_INDEX = "#session['"
             + HIGHEST_CURRENT_ACTION_INDEX + "']";
+
+    public static final String SKIP_ACTIONS = "actionFlowSkipActionsMap";
 }
