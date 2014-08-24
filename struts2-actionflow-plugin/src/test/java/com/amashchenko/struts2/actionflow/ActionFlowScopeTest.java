@@ -64,7 +64,12 @@ public class ActionFlowScopeTest extends
 
         Map<String, Object> sessionMap = new HashMap<String, Object>();
         Map<String, Object> scopeMap = new HashMap<String, Object>();
-        scopeMap.put(action.getClass().getName() + ".phone", value);
+
+        // key for 'phone' field
+        final String key = MockActionFlowAction.mockPropertyDescriptorPhone()
+                .getReadMethod().toString();
+
+        scopeMap.put(key, value);
         sessionMap.put(TestConstants.FLOW_SCOPE_KEY, scopeMap);
         ap.getInvocation().getInvocationContext().setSession(sessionMap);
 
@@ -104,9 +109,9 @@ public class ActionFlowScopeTest extends
         ap.execute();
 
         Assert.assertNotNull(sessionMap.get(TestConstants.FLOW_SCOPE_KEY));
-        Assert.assertEquals(value, ((Map<String, Object>) sessionMap
-                .get(TestConstants.FLOW_SCOPE_KEY)).get(action.getClass()
-                .getName() + ".phone"));
+        Assert.assertTrue(sessionMap.get(TestConstants.FLOW_SCOPE_KEY) instanceof Map);
+        Assert.assertTrue(((Map<String, Object>) sessionMap
+                .get(TestConstants.FLOW_SCOPE_KEY)).containsValue(value));
     }
 
     /**

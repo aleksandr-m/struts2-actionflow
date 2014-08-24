@@ -490,10 +490,10 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
      *            session.
      */
     @SuppressWarnings("unchecked")
-    private void handleFlowScope(final Object action,
+    void handleFlowScope(final Object action,
             final Map<String, Object> session, final boolean fromFlowScope) {
         if (action != null && flowScopeFields != null && session != null) {
-            String actionClassName = action.getClass().getName();
+            final String actionClassName = action.getClass().getName();
 
             Map<String, Object> scopeMap = null;
             if (session.containsKey(FLOW_SCOPE_KEY)
@@ -509,23 +509,39 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                 for (PropertyDescriptor pd : flowScopeFields
                         .get(actionClassName)) {
                     try {
-                        Method getter = pd.getReadMethod();
+                        final Method getter = pd.getReadMethod();
                         if (getter != null) {
-                            Object val = getter.invoke(action);
-                            String scopeFieldKey = actionClassName + "."
-                                    + pd.getName();
+                            final Object val = getter.invoke(action);
+                            final String scopeFieldKey = getter.toString();
 
                             if (fromFlowScope) {
                                 if (val == null
                                         && scopeMap.containsKey(scopeFieldKey)) {
-                                    Method setter = pd.getWriteMethod();
+                                    final Method setter = pd.getWriteMethod();
                                     if (setter != null) {
+                                        if (LOG.isDebugEnabled()) {
+                                            LOG.debug("Setting the value: '"
+                                                    + scopeMap
+                                                            .get(scopeFieldKey)
+                                                    + "' for key: '"
+                                                    + scopeFieldKey
+                                                    + "' from the action flow scope into the action.");
+                                        }
+
                                         setter.invoke(action,
                                                 scopeMap.get(scopeFieldKey));
                                     }
                                 }
                             } else {
                                 if (val != null) {
+                                    if (LOG.isDebugEnabled()) {
+                                        LOG.debug("Storing the value: '"
+                                                + val
+                                                + "' for key: '"
+                                                + scopeFieldKey
+                                                + "' from the action into the action flow scope.");
+                                    }
+
                                     scopeMap.put(scopeFieldKey, val);
                                     session.put(FLOW_SCOPE_KEY, scopeMap);
                                 }

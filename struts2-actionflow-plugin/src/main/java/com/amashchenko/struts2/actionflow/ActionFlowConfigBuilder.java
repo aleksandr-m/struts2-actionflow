@@ -121,7 +121,7 @@ public class ActionFlowConfigBuilder {
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("found action flows: " + actionsStepMap);
+            LOG.debug("Found action flows: " + actionsStepMap);
         }
 
         if (actionsStepMap != null && !actionsStepMap.isEmpty()) {
@@ -244,7 +244,7 @@ public class ActionFlowConfigBuilder {
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("created action flow mapping: " + actionFlows);
+            LOG.debug("Created action flow mapping: " + actionFlows);
         }
 
         if (actionFlows != null && !actionFlows.isEmpty()) {
@@ -254,7 +254,7 @@ public class ActionFlowConfigBuilder {
             // add view actions
             if (viewActionConfigs != null && !viewActionConfigs.isEmpty()) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("view action configurations: "
+                    LOG.debug("View action configurations: "
                             + viewActionConfigs);
                 }
 
@@ -420,15 +420,8 @@ public class ActionFlowConfigBuilder {
                         for (PropertyDescriptor pd : Introspector.getBeanInfo(
                                 clazz, ActionSupport.class)
                                 .getPropertyDescriptors()) {
-                            Field field = null;
-                            try {
-                                field = clazz.getDeclaredField(pd.getName());
-                            } catch (NoSuchFieldException nsfe) {
-                                if (LOG.isTraceEnabled()) {
-                                    LOG.trace("In createFlowScope", nsfe);
-                                }
-                            }
-
+                            // try to find field
+                            Field field = findField(clazz, pd.getName());
                             if (field != null
                                     && field.isAnnotationPresent(ActionFlowScope.class)
                                     && pd.getReadMethod() != null
@@ -448,10 +441,38 @@ public class ActionFlowConfigBuilder {
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("created action flow scope fields mapping: "
+            LOG.debug("Created action flow scope fields mapping: "
                     + flowScopeFields);
         }
 
         return Collections.unmodifiableMap(flowScopeFields);
+    }
+
+    /**
+     * Tries to find field by name in given class or it super classes up to
+     * (excluded) ActionSupport or Object.
+     * 
+     * @param clazz
+     *            Class to start searching a field from.
+     * @param fieldName
+     *            Name of the field to search.
+     * @return Field instance or <code>null</code> if no such field is found.
+     */
+    Field findField(Class<?> clazz, final String fieldName) {
+        Field field = null;
+        if (clazz != null && fieldName != null) {
+            do {
+                try {
+                    field = clazz.getDeclaredField(fieldName);
+                } catch (NoSuchFieldException nsfe) {
+                    if (LOG.isTraceEnabled()) {
+                        LOG.trace("In findField", nsfe);
+                    }
+                }
+                clazz = clazz.getSuperclass();
+            } while (clazz != ActionSupport.class && clazz != Object.class
+                    && clazz != null && field == null);
+        }
+        return field;
     }
 }
