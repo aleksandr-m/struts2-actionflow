@@ -144,7 +144,8 @@ public class ActionFlowInterceptorConfTest extends
         initServletMockObjects();
         executeAction(prevAction);
         String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals("firstFlowAction", previousAction);
+        Assert.assertEquals(ActionFlowInterceptor.FIRST_FLOW_ACTION_NAME,
+                previousAction);
 
         String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
         Assert.assertEquals(null, nextActionParam);

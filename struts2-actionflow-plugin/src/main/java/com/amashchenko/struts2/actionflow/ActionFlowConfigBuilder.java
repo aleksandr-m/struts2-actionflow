@@ -124,39 +124,6 @@ public class ActionFlowConfigBuilder {
             LOG.debug("Found action flows: " + actionsStepMap);
         }
 
-        if (actionsStepMap != null && !actionsStepMap.isEmpty()) {
-            // view global result
-            if (!packageConfig.getAllGlobalResults().containsKey(
-                    ActionFlowInterceptor.GLOBAL_VIEW_RESULT)) {
-                throw new ConfigurationException(
-                        "There is no 'view' global result with name '"
-                                + ActionFlowInterceptor.GLOBAL_VIEW_RESULT
-                                + "' defined in '" + packageName + "' package.",
-                        packageConfig);
-            } else {
-                ResultConfig rs = packageConfig.getAllGlobalResults().get(
-                        ActionFlowInterceptor.GLOBAL_VIEW_RESULT);
-                if (!ServletActionRedirectResult.class.getName().equals(
-                        rs.getClassName())) {
-                    throw new ConfigurationException(
-                            "The '"
-                                    + ActionFlowInterceptor.GLOBAL_VIEW_RESULT
-                                    + "' global result type must be 'redirectAction' in package '"
-                                    + packageName + "'.", rs);
-                } else if (!("${" + ActionFlowInterceptor.VIEW_ACTION_PARAM + "}")
-                        .equals(rs.getParams().get(
-                                ServletActionRedirectResult.DEFAULT_PARAM))) {
-                    throw new ConfigurationException("The '"
-                            + ActionFlowInterceptor.GLOBAL_VIEW_RESULT
-                            + "' global result '"
-                            + ServletActionRedirectResult.DEFAULT_PARAM
-                            + "' parameter must be '${"
-                            + ActionFlowInterceptor.VIEW_ACTION_PARAM
-                            + "}' in package '" + packageName + "'.", rs);
-                }
-            }
-        }
-
         // holds action flows: {1:{nextAction:2,prevAction:0,index:1}}
         Map<String, ActionFlowStepConfig> actionFlows = new HashMap<String, ActionFlowStepConfig>();
 
@@ -250,6 +217,47 @@ public class ActionFlowConfigBuilder {
         if (actionFlows != null && !actionFlows.isEmpty()) {
             // build new package configuration with special actions
             PackageConfig.Builder pcb = new PackageConfig.Builder(packageConfig);
+
+            // view global result check
+            if (packageConfig.getAllGlobalResults().containsKey(
+                    ActionFlowInterceptor.GLOBAL_VIEW_RESULT)) {
+                ResultConfig rs = packageConfig.getAllGlobalResults().get(
+                        ActionFlowInterceptor.GLOBAL_VIEW_RESULT);
+                if (!ServletActionRedirectResult.class.getName().equals(
+                        rs.getClassName())) {
+                    throw new ConfigurationException(
+                            "The '"
+                                    + ActionFlowInterceptor.GLOBAL_VIEW_RESULT
+                                    + "' global result type must be 'redirectAction' in package '"
+                                    + packageName + "'.", rs);
+                } else if (!("${" + ActionFlowInterceptor.VIEW_ACTION_PARAM + "}")
+                        .equals(rs.getParams().get(
+                                ServletActionRedirectResult.DEFAULT_PARAM))) {
+                    throw new ConfigurationException("The '"
+                            + ActionFlowInterceptor.GLOBAL_VIEW_RESULT
+                            + "' global result '"
+                            + ServletActionRedirectResult.DEFAULT_PARAM
+                            + "' parameter must be '${"
+                            + ActionFlowInterceptor.VIEW_ACTION_PARAM
+                            + "}' in package '" + packageName + "'.", rs);
+                }
+            } else {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("There is no 'view' global result with name '"
+                            + ActionFlowInterceptor.GLOBAL_VIEW_RESULT
+                            + "' defined in '" + packageName
+                            + "' package. Creating one.", packageConfig);
+                }
+
+                // add view global result
+                ResultConfig viewGlobalResult = new ResultConfig.Builder(
+                        ActionFlowInterceptor.GLOBAL_VIEW_RESULT,
+                        ServletActionRedirectResult.class.getName()).addParam(
+                        ServletActionRedirectResult.DEFAULT_PARAM,
+                        "${" + ActionFlowInterceptor.VIEW_ACTION_PARAM + "}")
+                        .build();
+                pcb.addGlobalResultConfig(viewGlobalResult);
+            }
 
             // add view actions
             if (viewActionConfigs != null && !viewActionConfigs.isEmpty()) {

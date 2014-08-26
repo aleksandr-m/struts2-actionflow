@@ -60,7 +60,6 @@ public class WrongFlowConfigurationTest extends StrutsJUnit4TestCase<Object> {
                 { "/wrongNextParam/wrongNextParam" },
                 { "/wrongPrevParam/wrongPrevParam" },
                 { "/prevNoSuccess/prevNoSuccess" },
-                { "/noViewResult/noViewResult" },
                 { "/wrongViewResultType/wrongViewResultType" },
                 { "/wrongViewResultParam/wrongViewResultParam" }, };
         return Arrays.asList(data);

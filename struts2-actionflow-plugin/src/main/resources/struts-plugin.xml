@@ -35,10 +35,6 @@
         </interceptors>
 
         <default-interceptor-ref name="actionFlowDefaultStack" />
-
-        <global-results>
-            <result name="actionFlowViewResult" type="redirectAction">${viewAction}</result>
-        </global-results>
     </package>
 
 </struts>

@@ -148,7 +148,8 @@ public class ActionFlowStepParameterTest extends
         executeAction("/correctFlow/prev");
 
         previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals("firstFlowAction", previousAction);
+        Assert.assertEquals(ActionFlowInterceptor.FIRST_FLOW_ACTION_NAME,
+                previousAction);
 
         nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
         Assert.assertEquals("saveName-1", nextActionParam);
