@@ -169,7 +169,7 @@ public class ActionFlowConfigBuilderConfTest extends
         Assert.assertNotNull(flowConfigBuilder);
         Assert.assertNotNull(configuration);
 
-        final String packageName = "noViewResult";
+        final String packageName = "correctNoViewResult";
         Map<String, ActionFlowStepConfig> map = flowConfigBuilder
                 .createFlowMap(packageName, "next", "prev", "View", "execute");
 
@@ -226,7 +226,7 @@ public class ActionFlowConfigBuilderConfTest extends
         Assert.assertNotNull(flowConfigBuilder);
         Assert.assertNotNull(configuration);
 
-        final String packageName = "noViewResult";
+        final String packageName = "correctNoViewResult";
         final String prevActionName = "prevActionName";
         Map<String, ActionFlowStepConfig> map = flowConfigBuilder
                 .createFlowMap(packageName, "next", prevActionName, "View",
@@ -300,7 +300,7 @@ public class ActionFlowConfigBuilderConfTest extends
         Assert.assertNotNull(flowConfigBuilder);
         Assert.assertNotNull(configuration);
 
-        final String packageName = "noViewResult";
+        final String packageName = "correctNoViewResult";
         final String nextActionName = "nextActionName";
         Map<String, ActionFlowStepConfig> map = flowConfigBuilder
                 .createFlowMap(packageName, nextActionName, "prev", "View",

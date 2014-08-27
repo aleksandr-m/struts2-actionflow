@@ -167,7 +167,7 @@
         </action>
     </package>
 
-    <package name="noViewResult" namespace="/noViewResult" extends="struts-default">
+    <package name="correctNoViewResult" namespace="/correctNoViewResult" extends="struts-default">
         <interceptors>
             <interceptor name="actionFlow" class="com.amashchenko.struts2.actionflow.ActionFlowInterceptor" />
             
@@ -181,7 +181,7 @@
         
         <!-- no global view result -->
         
-        <action name="noViewResult">
+        <action name="correctNoViewResult">
             <result>homepage</result>
         </action>
         <action name="saveName-1" method="saveName-1">
@@ -201,6 +201,34 @@
             <result name="input">email</result>
             <result name="error">email</result>
             <result type="redirectAction">view</result>
+        </action>
+    </package>
+
+    <package name="correctActionExtends" namespace="/correctActionExtends" extends="actionflow-default">
+        <action name="correctActionExtends" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAction">
+            <result>homepage</result>
+        </action>
+        <action name="saveName-1" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAction">
+            <param name="actionFlowStep">1</param>
+            
+            <result name="input">name</result>
+            <result name="error">name</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <!-- different action class -->
+        <action name="savePhone-2" class="com.amashchenko.struts2.actionflow.mock.MockActionExtends">
+            <param name="actionFlowStep">2</param>
+        
+            <result name="input">phone</result>
+            <result name="error">phone</result>
+            <result type="redirectAction">view</result>
+        </action>
+        <action name="saveEmail-3" class="com.amashchenko.struts2.actionflow.mock.MockActionFlowAction">
+            <param name="actionFlowStep">3</param>
+        
+            <result name="input">email</result>
+            <result name="error">email</result>
+            <result>finish</result>
         </action>
     </package>
 
