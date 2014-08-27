@@ -10,6 +10,12 @@ A Struts2 plug-in for creating wizards (action flows).
 - Action flow scope to keep data, there is no need to use scoped model-driven 
 actions
 
+## Showcase
+
+Showcase application could be downloaded from the Maven Central Repository.
+
+[Download struts2-actionflow-showcase](http://search.maven.org/remotecontent?filepath=com/amashchenko/struts2/actionflow/struts2-actionflow-showcase/2.3.0/struts2-actionflow-showcase-2.3.0.war)
+
 ## Installation
 
 Copy struts2-actionflow-plugin-x.x.x.jar into your classpath (WEB-INF/lib). No other files need to be copied or created.
