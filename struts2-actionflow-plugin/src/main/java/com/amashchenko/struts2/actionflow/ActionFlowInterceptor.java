@@ -183,26 +183,10 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     public String intercept(ActionInvocation invocation) throws Exception {
         actionName = invocation.getInvocationContext().getName();
 
+        // initialize action flow configuration
         if (flowMap == null) {
-            String packageName = invocation.getProxy().getConfig()
-                    .getPackageName();
-            flowMap = flowConfigBuilder.createFlowMap(packageName,
-                    nextActionName, prevActionName, viewActionPostfix,
-                    viewActionMethod);
-
-            flowScopeFields = flowConfigBuilder
-                    .createFlowScopeFields(packageName);
-
-            // create action flow steps data
-            if (flowMap != null) {
-                TreeMap<Integer, String> m = new TreeMap<Integer, String>();
-                for (ActionFlowStepConfig cfg : flowMap.values()) {
-                    if (cfg.getIndex() < flowMap.size() - 1) {
-                        m.put(cfg.getIndex() + 1, cfg.getNextAction());
-                    }
-                }
-                flowStepsData = new ActionFlowStepsData(m);
-            }
+            initFlowConfiguration(invocation.getProxy().getConfig()
+                    .getPackageName());
         }
 
         indexCurrent = -1;
@@ -241,12 +225,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         // start
         if (startAction != null && startAction.equals(actionName)) {
-            session.put(PREVIOUS_FLOW_ACTION, null);
-            session.put(FLOW_SCOPE_KEY, null);
-
-            session.put(HIGHEST_CURRENT_ACTION_INDEX, null);
-
-            session.put(SKIP_ACTIONS, null);
+            clearSession(session);
         }
 
         // action flow steps aware
@@ -464,15 +443,37 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         // last flow action
         if (Action.SUCCESS.equals(result) && flowAction && lastFlowAction) {
-            session.put(PREVIOUS_FLOW_ACTION, null);
-            session.put(FLOW_SCOPE_KEY, null);
-
-            session.put(HIGHEST_CURRENT_ACTION_INDEX, null);
-
-            session.put(SKIP_ACTIONS, null);
+            clearSession(session);
         }
 
         return result;
+    }
+
+    private void initFlowConfiguration(final String packageName) {
+        flowMap = flowConfigBuilder.createFlowMap(packageName, nextActionName,
+                prevActionName, viewActionPostfix, viewActionMethod);
+
+        flowScopeFields = flowConfigBuilder.createFlowScopeFields(packageName);
+
+        // create action flow steps data
+        if (flowMap != null) {
+            TreeMap<Integer, String> m = new TreeMap<Integer, String>();
+            for (ActionFlowStepConfig cfg : flowMap.values()) {
+                if (cfg.getIndex() < flowMap.size() - 1) {
+                    m.put(cfg.getIndex() + 1, cfg.getNextAction());
+                }
+            }
+            flowStepsData = new ActionFlowStepsData(m);
+        }
+    }
+
+    void clearSession(final Map<String, Object> session) {
+        session.put(PREVIOUS_FLOW_ACTION, null);
+        session.put(FLOW_SCOPE_KEY, null);
+
+        session.put(HIGHEST_CURRENT_ACTION_INDEX, null);
+
+        session.put(SKIP_ACTIONS, null);
     }
 
     /**
@@ -489,10 +490,10 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
      *            session.
      */
     @SuppressWarnings("unchecked")
-    private void handleFlowScope(final Object action,
+    void handleFlowScope(final Object action,
             final Map<String, Object> session, final boolean fromFlowScope) {
         if (action != null && flowScopeFields != null && session != null) {
-            String actionClassName = action.getClass().getName();
+            final String actionClassName = action.getClass().getName();
 
             Map<String, Object> scopeMap = null;
             if (session.containsKey(FLOW_SCOPE_KEY)
@@ -508,23 +509,39 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                 for (PropertyDescriptor pd : flowScopeFields
                         .get(actionClassName)) {
                     try {
-                        Method getter = pd.getReadMethod();
+                        final Method getter = pd.getReadMethod();
                         if (getter != null) {
-                            Object val = getter.invoke(action);
-                            String scopeFieldKey = actionClassName + "."
-                                    + pd.getName();
+                            final Object val = getter.invoke(action);
+                            final String scopeFieldKey = getter.toString();
 
                             if (fromFlowScope) {
                                 if (val == null
                                         && scopeMap.containsKey(scopeFieldKey)) {
-                                    Method setter = pd.getWriteMethod();
+                                    final Method setter = pd.getWriteMethod();
                                     if (setter != null) {
+                                        if (LOG.isDebugEnabled()) {
+                                            LOG.debug("Setting the value: '"
+                                                    + scopeMap
+                                                            .get(scopeFieldKey)
+                                                    + "' for key: '"
+                                                    + scopeFieldKey
+                                                    + "' from the action flow scope into the action.");
+                                        }
+
                                         setter.invoke(action,
                                                 scopeMap.get(scopeFieldKey));
                                     }
                                 }
                             } else {
                                 if (val != null) {
+                                    if (LOG.isDebugEnabled()) {
+                                        LOG.debug("Storing the value: '"
+                                                + val
+                                                + "' for key: '"
+                                                + scopeFieldKey
+                                                + "' from the action into the action flow scope.");
+                                    }
+
                                     scopeMap.put(scopeFieldKey, val);
                                     session.put(FLOW_SCOPE_KEY, scopeMap);
                                 }

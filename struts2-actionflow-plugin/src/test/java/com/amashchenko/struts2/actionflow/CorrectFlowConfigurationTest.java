@@ -61,11 +61,12 @@ public class CorrectFlowConfigurationTest extends StrutsJUnit4TestCase<Object> {
         Assert.assertNotNull(map);
 
         // check firstFlowAction
-        String action = "firstFlowAction";
+        String action = ActionFlowInterceptor.FIRST_FLOW_ACTION_NAME;
 
         Assert.assertTrue(map.containsKey(action));
         Assert.assertEquals("saveName-1", map.get(action).getNextAction());
-        Assert.assertEquals("firstFlowAction", map.get(action).getPrevAction());
+        Assert.assertEquals(ActionFlowInterceptor.FIRST_FLOW_ACTION_NAME, map
+                .get(action).getPrevAction());
         Assert.assertEquals(0, map.get(action).getIndex());
 
         // check saveName
@@ -73,7 +74,8 @@ public class CorrectFlowConfigurationTest extends StrutsJUnit4TestCase<Object> {
 
         Assert.assertTrue(map.containsKey(action));
         Assert.assertEquals("savePhone-2", map.get(action).getNextAction());
-        Assert.assertEquals("firstFlowAction", map.get(action).getPrevAction());
+        Assert.assertEquals(ActionFlowInterceptor.FIRST_FLOW_ACTION_NAME, map
+                .get(action).getPrevAction());
         Assert.assertEquals(1, map.get(action).getIndex());
 
         // check savePhone

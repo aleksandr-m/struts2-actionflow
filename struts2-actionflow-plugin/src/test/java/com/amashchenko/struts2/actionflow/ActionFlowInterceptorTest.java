@@ -15,309 +15,268 @@
  */
 package com.amashchenko.struts2.actionflow;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.struts2.StrutsJUnit4TestCase;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
+import com.amashchenko.struts2.actionflow.mock.MockActionFlowAction;
 import com.amashchenko.struts2.actionflow.test.TestConstants;
 
 /**
- * Tests for ActionFlowInterceptor.
+ * Tests for action flow interceptor.
  * 
  * @author Aleksandr Mashchenko
  * 
  */
-@RunWith(Parameterized.class)
-public class ActionFlowInterceptorTest extends
-        StrutsJUnit4TestCase<ActionFlowInterceptor> {
+public class ActionFlowInterceptorTest {
 
-    /** Suffix to append. */
-    private String suffix;
-    /** Expected wrong order action name. */
-    private String expectedWrongOrderAction;
-    /** Expected wrong order view action parameter value. */
-    private String expectedWrongOrderViewParam;
-
-    /** Namespace. */
-    private String namespace;
-    /** Starting action. */
-    private String startingAction;
-    /** Next action. */
-    private String nextAction;
-    /** Previous action. */
-    private String prevAction;
-
-    /** {@inheritDoc} */
-    @Override
-    protected String getConfigPath() {
-        return "struts-plugin.xml, struts-test.xml";
-    }
-
-    /** Initialize method. */
-    @BeforeClass
-    public static void init() {
-        Logger logger = Logger.getLogger("");
-        logger.setLevel(Level.ALL);
-        if (logger.getHandlers().length > 0) {
-            logger.removeHandler(logger.getHandlers()[0]);
-        }
-    }
+    /** Action flow interceptor instance. */
+    private ActionFlowInterceptor actionFlowInterceptor = new ActionFlowInterceptor();
 
     /**
-     * Parameters to use.
-     * 
-     * @return Parameters as collection.
-     */
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> data() {
-        Object[][] data = new Object[][] {
-                { "", "saveName-1", "savePhone-2View" },
-                { "Override", null, null }, };
-        return Arrays.asList(data);
-    }
-
-    /**
-     * Parameterized constructor.
-     * 
-     * @param suffix
-     *            suffix.
-     * @param expectedWrongOrderAction
-     *            expected wrong order action name.
-     * @param expectedWrongOrderViewParam
-     *            expected wrong order view action parameter value.
-     */
-    public ActionFlowInterceptorTest(final String suffix,
-            final String expectedWrongOrderAction,
-            final String expectedWrongOrderViewParam) {
-        this.suffix = suffix;
-        this.expectedWrongOrderAction = expectedWrongOrderAction;
-        this.expectedWrongOrderViewParam = expectedWrongOrderViewParam;
-
-        this.namespace = "/correctFlow" + suffix;
-        this.startingAction = namespace + "/correctFlow" + suffix;
-        this.nextAction = namespace + "/next" + suffix;
-        this.prevAction = namespace + "/prev" + suffix;
-    }
-
-    /**
-     * Tests next action.
+     * Tests clear session method.
      * 
      * @throws Exception
-     *             when something goes wrong.
+     *             When something goes wrong.
      */
     @Test
-    public void testNext() throws Exception {
-        executeAction(startingAction);
-        initServletMockObjects();
-        executeAction(nextAction);
-        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals("saveName-1", previousAction);
+    public void testClearSession() throws Exception {
+        Assert.assertNotNull(actionFlowInterceptor);
 
-        String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
-        Assert.assertEquals("saveName-1", nextActionParam);
+        Map<String, Object> session = new HashMap<String, Object>();
+        session.put(TestConstants.PREVIOUS_FLOW_ACTION, "PREVIOUS_FLOW_ACTION");
+        session.put(TestConstants.FLOW_SCOPE_KEY, "FLOW_SCOPE_KEY");
+        session.put(TestConstants.HIGHEST_CURRENT_ACTION_INDEX,
+                "HIGHEST_CURRENT_ACTION_INDEX");
+        session.put(TestConstants.SKIP_ACTIONS, "SKIP_ACTIONS");
 
-        String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
-        Assert.assertEquals(null, prevActionParam);
+        // execute clearSession method
+        actionFlowInterceptor.clearSession(session);
 
-        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
-        Assert.assertEquals("savePhone-2View" + suffix, viewActionParam);
+        Assert.assertNull(session.get(TestConstants.PREVIOUS_FLOW_ACTION));
+        Assert.assertNull(session.get(TestConstants.FLOW_SCOPE_KEY));
+        Assert.assertNull(session
+                .get(TestConstants.HIGHEST_CURRENT_ACTION_INDEX));
+        Assert.assertNull(session.get(TestConstants.SKIP_ACTIONS));
     }
 
     /**
-     * Tests first previous action.
+     * Tests handleFlowScope method with nulls.
      * 
      * @throws Exception
-     *             when something goes wrong.
+     *             When something goes wrong.
      */
     @Test
-    public void testFirstPrev() throws Exception {
-        executeAction(startingAction);
-        initServletMockObjects();
-        executeAction(prevAction);
-        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals("firstFlowAction", previousAction);
+    public void testHandleFlowScopeNulls() throws Exception {
+        Assert.assertNotNull(actionFlowInterceptor);
 
-        String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
-        Assert.assertEquals(null, nextActionParam);
+        final MockActionFlowAction action = new MockActionFlowAction();
+        final Map<String, Object> session = new HashMap<String, Object>();
+        final boolean fromFlowScope = true;
 
-        String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
-        Assert.assertEquals("saveName-1View" + suffix, prevActionParam);
+        // set flowScopeFields in ActionFlowInterceptor
+        Field field = ActionFlowInterceptor.class
+                .getDeclaredField(TestConstants.FLOW_SCOPE_FIELD_NAME);
+        field.setAccessible(true);
+        Map<String, List<PropertyDescriptor>> map = new HashMap<String, List<PropertyDescriptor>>();
 
-        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
-        Assert.assertEquals(null, viewActionParam);
+        // flowScopeFields is null
+        actionFlowInterceptor.handleFlowScope(action, session, fromFlowScope);
+
+        field.set(actionFlowInterceptor, map);
+
+        // action is null
+        actionFlowInterceptor.handleFlowScope(null, session, fromFlowScope);
+        // session is null
+        actionFlowInterceptor.handleFlowScope(action, null, fromFlowScope);
     }
 
     /**
-     * Tests previous action.
+     * Tests handleFlowScope method setting values to scope.
      * 
      * @throws Exception
-     *             when something goes wrong.
+     *             When something goes wrong.
      */
+    @SuppressWarnings("unchecked")
     @Test
-    public void testPrev() throws Exception {
-        executeAction(startingAction);
-        initServletMockObjects();
-        request.getSession().setAttribute(TestConstants.PREVIOUS_FLOW_ACTION,
-                "savePhone-2");
-        executeAction(prevAction);
-        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals("saveName-1", previousAction);
+    public void testHandleFlowScopeSetToScope() throws Exception {
+        Assert.assertNotNull(actionFlowInterceptor);
 
-        String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
-        Assert.assertEquals(null, nextActionParam);
+        final MockActionFlowAction action = new MockActionFlowAction();
+        final Map<String, Object> session = new HashMap<String, Object>();
 
-        String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
-        Assert.assertEquals("savePhone-2View" + suffix, prevActionParam);
+        // set flowScopeFields in ActionFlowInterceptor
+        injectFlowScopeFields();
 
-        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
-        Assert.assertEquals(null, viewActionParam);
+        // phone in action
+        final String phoneActionValue = "phoneActionValue";
+        final String phoneScopeKey = MockActionFlowAction
+                .mockPropertyDescriptorPhone().getReadMethod().toString();
+        action.setPhone(phoneActionValue);
+
+        // execute handleFlowScope method
+        actionFlowInterceptor.handleFlowScope(action, session, false);
+
+        Assert.assertTrue(session.containsKey(TestConstants.FLOW_SCOPE_KEY));
+        Assert.assertTrue(session.get(TestConstants.FLOW_SCOPE_KEY) instanceof Map);
+
+        Map<String, Object> resultScopeMap = (Map<String, Object>) session
+                .get(TestConstants.FLOW_SCOPE_KEY);
+
+        Assert.assertNotNull(resultScopeMap);
+
+        Assert.assertTrue(resultScopeMap.containsKey(phoneScopeKey));
+        Assert.assertEquals(phoneActionValue, resultScopeMap.get(phoneScopeKey));
+
+        //
+        // same for wrong FLOW_SCOPE_KEY type
+        session.put(TestConstants.FLOW_SCOPE_KEY, "someStringNotMap");
+
+        // execute handleFlowScope method
+        actionFlowInterceptor.handleFlowScope(action, session, false);
+
+        Assert.assertTrue(session.containsKey(TestConstants.FLOW_SCOPE_KEY));
+        Assert.assertTrue(session.get(TestConstants.FLOW_SCOPE_KEY) instanceof Map);
+
+        resultScopeMap = (Map<String, Object>) session
+                .get(TestConstants.FLOW_SCOPE_KEY);
+
+        Assert.assertNotNull(resultScopeMap);
+
+        Assert.assertTrue(resultScopeMap.containsKey(phoneScopeKey));
+        Assert.assertEquals(phoneActionValue, resultScopeMap.get(phoneScopeKey));
     }
 
     /**
-     * Tests last next action.
+     * Tests handleFlowScope method setting null values to scope.
      * 
      * @throws Exception
-     *             when something goes wrong.
+     *             When something goes wrong.
      */
     @Test
-    public void testLastNext() throws Exception {
-        executeAction(startingAction);
-        initServletMockObjects();
-        request.getSession().setAttribute(TestConstants.PREVIOUS_FLOW_ACTION,
-                "savePhone-2");
-        request.getSession().setAttribute(
-                TestConstants.HIGHEST_CURRENT_ACTION_INDEX, 3);
-        executeAction(nextAction);
-        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals(null, previousAction);
+    public void testHandleFlowScopeSetToScopeNull() throws Exception {
+        Assert.assertNotNull(actionFlowInterceptor);
 
-        String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
-        Assert.assertEquals("saveEmail-3", nextActionParam);
+        final MockActionFlowAction action = new MockActionFlowAction();
+        final Map<String, Object> session = new HashMap<String, Object>();
 
-        String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
-        Assert.assertEquals(null, prevActionParam);
+        // set flowScopeFields in ActionFlowInterceptor
+        injectFlowScopeFields();
 
-        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
-        Assert.assertEquals(null, viewActionParam);
+        // phone in action is null
+        action.setPhone(null);
+
+        // execute handleFlowScope method
+        actionFlowInterceptor.handleFlowScope(action, session, false);
+
+        Assert.assertFalse(session.containsKey(TestConstants.FLOW_SCOPE_KEY));
     }
 
     /**
-     * Tests step parameter is a previous action.
+     * Tests handleFlowScope method setting values to action.
      * 
      * @throws Exception
-     *             when something goes wrong.
+     *             When something goes wrong.
      */
+    @SuppressWarnings("unchecked")
     @Test
-    public void testStepParameterPrevAction() throws Exception {
-        executeAction(startingAction);
-        initServletMockObjects();
-        request.getSession().setAttribute(TestConstants.PREVIOUS_FLOW_ACTION,
-                "savePhone-2");
-        request.setParameter("step" + suffix, "");
-        executeAction(nextAction);
-        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals("saveName-1", previousAction);
+    public void testHandleFlowScopeSetToAction() throws Exception {
+        Assert.assertNotNull(actionFlowInterceptor);
 
-        String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
-        Assert.assertEquals("saveName-1", nextActionParam);
+        final MockActionFlowAction action = new MockActionFlowAction();
+        final Map<String, Object> session = new HashMap<String, Object>();
 
-        String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
-        Assert.assertEquals(null, prevActionParam);
+        // set flowScopeFields in ActionFlowInterceptor
+        injectFlowScopeFields();
 
-        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
-        Assert.assertEquals("savePhone-2View" + suffix, viewActionParam);
+        // phone in action is null
+        action.setPhone(null);
+
+        final String phoneScopeValue = "phoneScopeValue";
+        final String phoneScopeKey = MockActionFlowAction
+                .mockPropertyDescriptorPhone().getReadMethod().toString();
+
+        Map<String, Object> scopeMap = new HashMap<String, Object>();
+        scopeMap.put(phoneScopeKey, phoneScopeValue);
+        session.put(TestConstants.FLOW_SCOPE_KEY, scopeMap);
+
+        // execute handleFlowScope method
+        actionFlowInterceptor.handleFlowScope(action, session, true);
+
+        // scope map from session must hold same values
+        final Map<String, Object> resultScopeMap = (Map<String, Object>) session
+                .get(TestConstants.FLOW_SCOPE_KEY);
+        Assert.assertNotNull(resultScopeMap);
+        Assert.assertTrue(resultScopeMap.containsKey(phoneScopeKey));
+        Assert.assertEquals(phoneScopeValue, resultScopeMap.get(phoneScopeKey));
+
+        // action
+        Assert.assertNotNull(action);
+        Assert.assertEquals(phoneScopeValue, action.getPhone());
     }
 
     /**
-     * Tests step parameter is a next action.
+     * Tests handleFlowScope method setting values to action when action already
+     * holds a value.
      * 
      * @throws Exception
-     *             when something goes wrong.
+     *             When something goes wrong.
      */
+    @SuppressWarnings("unchecked")
     @Test
-    public void testStepParameterNextAction() throws Exception {
-        executeAction(startingAction);
-        initServletMockObjects();
-        request.getSession().setAttribute(TestConstants.PREVIOUS_FLOW_ACTION,
-                "saveName-1");
-        request.getSession().setAttribute(
-                TestConstants.HIGHEST_CURRENT_ACTION_INDEX, 3);
-        request.setParameter("step" + suffix, "savePhone-2");
-        executeAction(nextAction);
-        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals(null, previousAction);
+    public void testHandleFlowScopeSetToActionWithValue() throws Exception {
+        Assert.assertNotNull(actionFlowInterceptor);
 
-        String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
-        Assert.assertEquals("saveEmail-3", nextActionParam);
+        final MockActionFlowAction action = new MockActionFlowAction();
+        final Map<String, Object> session = new HashMap<String, Object>();
 
-        String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
-        Assert.assertEquals(null, prevActionParam);
+        // set flowScopeFields in ActionFlowInterceptor
+        injectFlowScopeFields();
 
-        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
-        Assert.assertEquals(null, viewActionParam);
+        // phone in action
+        final String phoneActionValue = "phoneActionValue";
+        action.setPhone(phoneActionValue);
+
+        final String phoneScopeValue = "phoneScopeValue";
+        final String phoneScopeKey = MockActionFlowAction
+                .mockPropertyDescriptorPhone().getReadMethod().toString();
+
+        Map<String, Object> scopeMap = new HashMap<String, Object>();
+        scopeMap.put(phoneScopeKey, phoneScopeValue);
+        session.put(TestConstants.FLOW_SCOPE_KEY, scopeMap);
+
+        // execute handleFlowScope method
+        actionFlowInterceptor.handleFlowScope(action, session, true);
+
+        // scope map from session must hold same values
+        final Map<String, Object> resultScopeMap = (Map<String, Object>) session
+                .get(TestConstants.FLOW_SCOPE_KEY);
+        Assert.assertNotNull(resultScopeMap);
+        Assert.assertTrue(resultScopeMap.containsKey(phoneScopeKey));
+        Assert.assertEquals(phoneScopeValue, resultScopeMap.get(phoneScopeKey));
+
+        // action
+        Assert.assertNotNull(action);
+        // phone value must be same as before
+        Assert.assertEquals(phoneActionValue, action.getPhone());
     }
 
     /**
-     * Tests step parameter is a next action order forced.
+     * Sets value to private flowScopeFields field in ActionFlowInterceptor.
      * 
      * @throws Exception
-     *             when something goes wrong.
+     *             When something goes wrong.
      */
-    @Test
-    public void testStepParameterNextForceOrderAction() throws Exception {
-        executeAction(startingAction);
-        initServletMockObjects();
-        request.getSession().setAttribute(TestConstants.PREVIOUS_FLOW_ACTION,
-                "saveName-1");
-        request.getSession().setAttribute(
-                TestConstants.HIGHEST_CURRENT_ACTION_INDEX, 1);
-        request.setParameter("step" + suffix, "savePhone-2");
-        executeAction(nextAction);
-        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals(expectedWrongOrderAction, previousAction);
-
-        String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
-        Assert.assertEquals("saveEmail-3", nextActionParam);
-
-        String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
-        Assert.assertEquals(null, prevActionParam);
-
-        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
-        Assert.assertEquals(expectedWrongOrderViewParam, viewActionParam);
-    }
-
-    /**
-     * Tests wrong flow action order.
-     * 
-     * @throws Exception
-     *             when something goes wrong.
-     */
-    @Test
-    public void testWrongFlowOrder() throws Exception {
-        executeAction(startingAction);
-        initServletMockObjects();
-        request.getSession().setAttribute(TestConstants.PREVIOUS_FLOW_ACTION,
-                "saveName-1");
-        executeAction(namespace + "/saveEmail-3");
-        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals(expectedWrongOrderAction, previousAction);
-
-        String nextActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.NEXT_ACTION_PARAM);
-        Assert.assertEquals(null, nextActionParam);
-
-        String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
-        Assert.assertEquals(null, prevActionParam);
-
-        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
-        Assert.assertEquals(expectedWrongOrderViewParam, viewActionParam);
+    private void injectFlowScopeFields() throws Exception {
+        Field field = ActionFlowInterceptor.class
+                .getDeclaredField(TestConstants.FLOW_SCOPE_FIELD_NAME);
+        field.setAccessible(true);
+        field.set(actionFlowInterceptor,
+                MockActionFlowAction.mockFlowScopeFields());
     }
 }

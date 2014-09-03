@@ -29,6 +29,7 @@ public class TestConstants {
             + PREVIOUS_FLOW_ACTION + "']";
 
     public static final String FLOW_SCOPE_KEY = "actionFlowScope";
+    public static final String FLOW_SCOPE_FIELD_NAME = "flowScopeFields";
 
     /** Key for holding in session current highest action index. */
     public static final String HIGHEST_CURRENT_ACTION_INDEX = "actionFlowHighestCurrentActionIndex";
@@ -36,4 +37,6 @@ public class TestConstants {
     /** Expression for getting current highest action index from session. */
     public static final String SESSION_HIGHEST_CURRENT_ACTION_INDEX = "#session['"
             + HIGHEST_CURRENT_ACTION_INDEX + "']";
+
+    public static final String SKIP_ACTIONS = "actionFlowSkipActionsMap";
 }

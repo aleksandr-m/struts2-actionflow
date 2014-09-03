@@ -184,7 +184,8 @@ public class ActionFlowAwareTest extends
         executeAction("/correctFlowAware/prev");
 
         previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals("firstFlowAction", previousAction);
+        Assert.assertEquals(ActionFlowInterceptor.FIRST_FLOW_ACTION_NAME,
+                previousAction);
 
         String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
         Assert.assertEquals("saveName-1View", prevActionParam);
@@ -224,7 +225,8 @@ public class ActionFlowAwareTest extends
         executeAction("/correctFlowAware/prev");
 
         previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
-        Assert.assertEquals("firstFlowAction", previousAction);
+        Assert.assertEquals(ActionFlowInterceptor.FIRST_FLOW_ACTION_NAME,
+                previousAction);
 
         String prevActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.PREV_ACTION_PARAM);
         Assert.assertEquals("saveName-1View", prevActionParam);

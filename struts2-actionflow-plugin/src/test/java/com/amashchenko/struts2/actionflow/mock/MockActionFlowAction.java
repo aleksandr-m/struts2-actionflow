@@ -15,7 +15,13 @@
  */
 package com.amashchenko.struts2.actionflow.mock;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.amashchenko.struts2.actionflow.ActionFlowScope;
 import com.amashchenko.struts2.actionflow.ActionFlowStepsAware;
@@ -48,6 +54,31 @@ public class MockActionFlowAction extends ActionSupport implements
 
     /** Date. */
     private Date date;
+
+    /**
+     * Creates map action flow scope fields map for this mock action class.
+     * 
+     * @return Map of the action flow scope fields, where key is the name of the
+     *         action class (as returned by {@link Class#getName()}) and value
+     *         is list of {@link PropertyDescriptor}.
+     */
+    public static Map<String, List<PropertyDescriptor>> mockFlowScopeFields() {
+        Map<String, List<PropertyDescriptor>> map = new HashMap<String, List<PropertyDescriptor>>();
+        List<PropertyDescriptor> descriptors = new ArrayList<PropertyDescriptor>();
+
+        descriptors.add(mockPropertyDescriptorPhone());
+
+        map.put(MockActionFlowAction.class.getName(), descriptors);
+        return map;
+    }
+
+    public static PropertyDescriptor mockPropertyDescriptorPhone() {
+        try {
+            return new PropertyDescriptor("phone", MockActionFlowAction.class);
+        } catch (IntrospectionException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * @return the phone

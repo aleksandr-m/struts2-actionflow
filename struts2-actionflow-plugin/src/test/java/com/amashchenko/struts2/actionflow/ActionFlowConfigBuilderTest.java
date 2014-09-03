@@ -15,127 +15,64 @@
  */
 package com.amashchenko.struts2.actionflow;
 
-import java.beans.PropertyDescriptor;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.struts2.StrutsJUnit4TestCase;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.amashchenko.struts2.actionflow.entities.ActionFlowStepConfig;
-import com.amashchenko.struts2.actionflow.mock.MockActionFlowAction;
-import com.opensymphony.xwork2.inject.Inject;
+import com.opensymphony.xwork2.ActionSupport;
 
 /**
- * Tests for ActionFlowConfigBuilder.
+ * Tests for action flow configuration builder.
  * 
  * @author Aleksandr Mashchenko
  * 
  */
-public class ActionFlowConfigBuilderTest extends
-        StrutsJUnit4TestCase<ActionFlowConfigBuilder> {
+public class ActionFlowConfigBuilderTest {
 
-    /** Action flow configuration builder. */
-    @Inject
-    private ActionFlowConfigBuilder flowConfigBuilder;
-
-    /** {@inheritDoc} */
-    @Override
-    protected String getConfigPath() {
-        return "struts-plugin.xml, struts-test.xml";
-    }
+    /** Action flow configuration builder instance. */
+    private ActionFlowConfigBuilder actionFlowConfigBuilder = new ActionFlowConfigBuilder();
 
     /**
-     * Tests modifying of action flow configuration.
+     * Tests findField method.
      * 
      * @throws Exception
-     *             when something goes wrong.
+     *             When something goes wrong.
      */
     @Test
-    public void testModifyingFlowConfig() throws Exception {
-        injectStrutsDependencies(this);
-        Assert.assertNotNull(flowConfigBuilder);
+    public void testFindField() throws Exception {
+        Assert.assertNotNull(actionFlowConfigBuilder);
 
-        Map<String, ActionFlowStepConfig> map = flowConfigBuilder
-                .createFlowMap("correctFlow", "next", "prev", "View", "execute");
+        // existing field
+        Assert.assertNotNull(actionFlowConfigBuilder.findField(LevelOne.class,
+                "name"));
+        Assert.assertNotNull(actionFlowConfigBuilder.findField(LevelTwo.class,
+                "name"));
+        Assert.assertNotNull(actionFlowConfigBuilder.findField(Simple.class,
+                "name"));
 
-        Assert.assertNotNull(map);
+        // NOT existing field
+        Assert.assertNull(actionFlowConfigBuilder.findField(LevelTwo.class,
+                "notExistingField"));
+        Assert.assertNull(actionFlowConfigBuilder.findField(Simple.class,
+                "notExistingField"));
 
-        try {
-            map.put("key", null);
-            Assert.fail("The map must be unmodifiable. Should throw UnsupportedOperationException.");
-        } catch (Exception e) {
-            Assert.assertTrue(
-                    "The map must be unmodifiable. Should throw UnsupportedOperationException.",
-                    e instanceof UnsupportedOperationException);
-        }
-
-        try {
-            map.remove("saveName-1");
-            Assert.fail("The map must be unmodifiable. Should throw UnsupportedOperationException.");
-        } catch (Exception e) {
-            Assert.assertTrue(
-                    "The map must be unmodifiable. Should throw UnsupportedOperationException.",
-                    e instanceof UnsupportedOperationException);
-        }
+        // primitive and null
+        Assert.assertNull(actionFlowConfigBuilder.findField(int.class,
+                "notExistingField"));
+        Assert.assertNull(actionFlowConfigBuilder.findField(Simple.class, null));
+        Assert.assertNull(actionFlowConfigBuilder.findField(null, "name"));
+        Assert.assertNull(actionFlowConfigBuilder.findField(null, null));
     }
 
-    /**
-     * Tests modifying of action flow scope fields configuration.
-     * 
-     * @throws Exception
-     *             when something goes wrong.
-     */
-    @Test
-    public void testModifyingFlowScopeConfig() throws Exception {
-        injectStrutsDependencies(this);
-        Assert.assertNotNull(flowConfigBuilder);
+    class LevelOne extends ActionSupport {
+        private static final long serialVersionUID = 1L;
+        String name;
+    }
 
-        Map<String, List<PropertyDescriptor>> map = flowConfigBuilder
-                .createFlowScopeFields("correctFlow");
+    private class LevelTwo extends LevelOne {
+        private static final long serialVersionUID = 1L;
+    }
 
-        Assert.assertNotNull(map);
-
-        try {
-            map.put("key", null);
-            Assert.fail("The map must be unmodifiable. Should throw UnsupportedOperationException.");
-        } catch (Exception e) {
-            Assert.assertTrue(
-                    "The map must be unmodifiable. Should throw UnsupportedOperationException.",
-                    e instanceof UnsupportedOperationException);
-        }
-
-        try {
-            map.remove(MockActionFlowAction.class.getName());
-            Assert.fail("The map must be unmodifiable. Should throw UnsupportedOperationException.");
-        } catch (Exception e) {
-            Assert.assertTrue(
-                    "The map must be unmodifiable. Should throw UnsupportedOperationException.",
-                    e instanceof UnsupportedOperationException);
-        }
-
-        List<PropertyDescriptor> list = map.get(MockActionFlowAction.class
-                .getName());
-
-        Assert.assertNotNull(list);
-
-        try {
-            list.add(new PropertyDescriptor("phone", MockActionFlowAction.class));
-            Assert.fail("The list must be unmodifiable. Should throw UnsupportedOperationException.");
-        } catch (Exception e) {
-            Assert.assertTrue(
-                    "The list must be unmodifiable. Should throw UnsupportedOperationException.",
-                    e instanceof UnsupportedOperationException);
-        }
-
-        try {
-            list.remove(0);
-            Assert.fail("The list must be unmodifiable. Should throw UnsupportedOperationException.");
-        } catch (Exception e) {
-            Assert.assertTrue(
-                    "The list must be unmodifiable. Should throw UnsupportedOperationException.",
-                    e instanceof UnsupportedOperationException);
-        }
+    class Simple {
+        String name;
     }
 }
