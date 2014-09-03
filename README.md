@@ -18,7 +18,7 @@ Showcase application could be downloaded from the Maven Central Repository.
 
 ## Changelog
 
-See what is changed - [CHANGELOG](CHANGELOG.md)
+See what's changed - [CHANGELOG](CHANGELOG.md)
 
 ## Installation
 
@@ -155,7 +155,6 @@ As a result of that you can skip actions based on user input and current action 
     
             return action;
         }
-
     }
 
 ## License
