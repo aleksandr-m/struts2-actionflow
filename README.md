@@ -14,7 +14,7 @@ actions
 
 Showcase application could be downloaded from the Maven Central Repository.
 
-[Download struts2-actionflow-showcase](http://search.maven.org/remotecontent?filepath=com/amashchenko/struts2/actionflow/struts2-actionflow-showcase/2.3.0/struts2-actionflow-showcase-2.3.0.war)
+[Download struts2-actionflow-showcase](http://search.maven.org/remotecontent?filepath=com/amashchenko/struts2/actionflow/struts2-actionflow-showcase/2.3.4/struts2-actionflow-showcase-2.3.4.war)
 
 ## Changelog
 
@@ -31,7 +31,7 @@ If you are using Maven, add this to your project POM:
         <dependency>
             <groupId>com.amashchenko.struts2.actionflow</groupId>
             <artifactId>struts2-actionflow-plugin</artifactId>
-            <version>2.1.0</version>
+            <version>2.3.4</version>
         </dependency>
         ...
     </dependencies>
