@@ -20,6 +20,15 @@ Showcase application could be downloaded from the Maven Central Repository.
 
 See what's changed - [CHANGELOG](CHANGELOG.md)
 
+## Contributing
+
+Found a bug or have a feature request? [Create a new issue](https://github.com/aleksandr-m/struts2-actionflow/issues/new) or submit a [Pull Request](https://github.com/aleksandr-m/struts2-actionflow/pulls).
+
+## Questions
+
+If you have questions about how to use `struts2-actionflow-plugin` [create a new issue](https://github.com/aleksandr-m/struts2-actionflow/issues/new) or ask a question on [Stack Overflow](http://stackoverflow.com/questions/tagged/struts2-actionflow-plugin).
+
+
 ## Installation
 
 Copy struts2-actionflow-plugin-x.x.x.jar into your classpath (WEB-INF/lib). No other files need to be copied or created.
