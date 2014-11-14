@@ -192,8 +192,8 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         indexCurrent = -1;
         Integer stepCount = 1;
 
-        boolean flowAction = false;
-        boolean lastFlowAction = false;
+        final boolean flowAction;
+        final boolean lastFlowAction;
         if (flowMap.containsKey(actionName)) {
             flowAction = true;
 
@@ -202,9 +202,10 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             // this is needed when input result is returned
             stepCount = indexCurrent;
 
-            if (flowMap.get(actionName).getNextAction() == null) {
-                lastFlowAction = true;
-            }
+            lastFlowAction = flowMap.get(actionName).getNextAction() == null;
+        } else {
+            flowAction = false;
+            lastFlowAction = false;
         }
 
         boolean flowViewAction = false;
@@ -364,8 +365,8 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             session.put(PREVIOUS_FLOW_ACTION, prevAction);
         }
 
-        // execute global view result on not last flow action
-        if (flowAction && nextAction.equals(actionName) && !lastFlowAction) {
+        // add pre-result listener on correct flow action
+        if (flowAction && nextAction.equals(actionName)) {
             invocation.addPreResultListener(new PreResultListener() {
                 public void beforeResult(ActionInvocation invocation,
                         String resultCode) {
@@ -404,7 +405,9 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                                     .getPrevAction();
                             // override indexCurrent
                             indexCurrent = flowMap.get(actionName).getIndex();
-                        } else {
+                        } else if (!lastFlowAction) {
+                            // get next action if it isn't the last flow action
+                            // and not overridden from ActionFlowAware
                             nextFromAction = flowMap.get(actionName)
                                     .getNextAction();
 
@@ -414,18 +417,22 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                         invocation.getInvocationContext().getSession()
                                 .put(SKIP_ACTIONS, skipMap);
 
-                        invocation
-                                .getInvocationContext()
-                                .getValueStack()
-                                .set(VIEW_ACTION_PARAM,
-                                        nextFromAction + viewActionPostfix);
-                        invocation.setResultCode(GLOBAL_VIEW_RESULT);
+                        // execute global view result on not last flow action or
+                        // if next action is overridden from ActionFlowAware
+                        if (!lastFlowAction || nextFromAction != null) {
+                            invocation
+                                    .getInvocationContext()
+                                    .getValueStack()
+                                    .set(VIEW_ACTION_PARAM,
+                                            nextFromAction + viewActionPostfix);
+                            invocation.setResultCode(GLOBAL_VIEW_RESULT);
+                        }
                     }
                 }
             });
         }
 
-        String result = invocation.invoke();
+        final String result = invocation.invoke();
 
         // scope
         if (flowAction) {

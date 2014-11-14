@@ -90,6 +90,42 @@ public class ActionFlowAwareTest extends
     }
 
     /**
+     * Tests skipping last action on 'next'.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
+    @Test
+    public void testSkipNextLastAction() throws Exception {
+        executeAction("/correctFlowAware/correctFlowAware");
+        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
+        Assert.assertEquals(null, previousAction);
+        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
+        Assert.assertEquals(null, viewActionParam);
+        Integer highestCurrentIndex = (Integer) findValueAfterExecute(TestConstants.SESSION_HIGHEST_CURRENT_ACTION_INDEX);
+        Assert.assertEquals(null, highestCurrentIndex);
+
+        initServletMockObjectsPreserveSession();
+
+        request.getSession().setAttribute(TestConstants.PREVIOUS_FLOW_ACTION,
+                "saveAddress-4");
+        request.getSession().setAttribute(
+                TestConstants.HIGHEST_CURRENT_ACTION_INDEX, 4);
+        request.setParameter("name",
+                MockActionFlowAwareAction.SKIP_MULTIPLE_ACTIONS);
+        executeAction("/correctFlowAware/next");
+
+        previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
+        Assert.assertEquals("saveEmail-3", previousAction);
+
+        viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
+        Assert.assertEquals("saveAddress-4View", viewActionParam);
+
+        highestCurrentIndex = (Integer) findValueAfterExecute(TestConstants.SESSION_HIGHEST_CURRENT_ACTION_INDEX);
+        Assert.assertEquals(new Integer(4), highestCurrentIndex);
+    }
+
+    /**
      * Tests skipping action on 'next' with not defined action name.
      * 
      * @throws Exception
@@ -119,6 +155,42 @@ public class ActionFlowAwareTest extends
 
         highestCurrentIndex = (Integer) findValueAfterExecute(TestConstants.SESSION_HIGHEST_CURRENT_ACTION_INDEX);
         Assert.assertEquals(new Integer(1), highestCurrentIndex);
+    }
+
+    /**
+     * Tests skipping last action on 'next' with not defined action name.
+     * 
+     * @throws Exception
+     *             when something goes wrong.
+     */
+    @Test
+    public void testSkipNextLastActionWrongActionName() throws Exception {
+        executeAction("/correctFlowAware/correctFlowAware");
+        String previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
+        Assert.assertEquals(null, previousAction);
+        String viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
+        Assert.assertEquals(null, viewActionParam);
+        Integer highestCurrentIndex = (Integer) findValueAfterExecute(TestConstants.SESSION_HIGHEST_CURRENT_ACTION_INDEX);
+        Assert.assertEquals(null, highestCurrentIndex);
+
+        initServletMockObjectsPreserveSession();
+
+        request.getSession().setAttribute(TestConstants.PREVIOUS_FLOW_ACTION,
+                "saveAddress-4");
+        request.getSession().setAttribute(
+                TestConstants.HIGHEST_CURRENT_ACTION_INDEX, 4);
+        request.setParameter("name",
+                MockActionFlowAwareAction.WRONG_ACTION_NAME);
+        executeAction("/correctFlowAware/next");
+
+        previousAction = (String) findValueAfterExecute(TestConstants.SESSION_PREVIOUS_FLOW_ACTION);
+        Assert.assertEquals(null, previousAction);
+
+        viewActionParam = (String) findValueAfterExecute(ActionFlowInterceptor.VIEW_ACTION_PARAM);
+        Assert.assertEquals(null, viewActionParam);
+
+        highestCurrentIndex = (Integer) findValueAfterExecute(TestConstants.SESSION_HIGHEST_CURRENT_ACTION_INDEX);
+        Assert.assertEquals(null, highestCurrentIndex);
     }
 
     /**
