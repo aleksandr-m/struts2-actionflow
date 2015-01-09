@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8"/>
         <title>Struts2 ActionFlow Showcase</title>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
