@@ -26,7 +26,7 @@
     <packaging>war</packaging>
     <name>struts2-actionflow-showcase</name>
  	
-    <description>Struts2 ActionFlow Plug-in Showcase.</description>
+    <description>Showcase application for Struts2 ActionFlow Plugin.</description>
  
     <inceptionYear>2013</inceptionYear>
 

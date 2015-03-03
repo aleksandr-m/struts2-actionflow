@@ -26,7 +26,7 @@
     <packaging>jar</packaging>
     <name>struts2-actionflow-plugin</name>
  
-    <description>Struts2 ActionFlow Plug-in. A Struts2 plug-in for creating wizards (action flows).</description>
+    <description>Struts2 ActionFlow Plugin. A Struts2 plugin for creating wizards (action flows).</description>
  
     <inceptionYear>2013</inceptionYear>
 

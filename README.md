@@ -1,6 +1,6 @@
-# Struts2 ActionFlow Plug-in
+# Struts2 ActionFlow Plugin
 
-A Struts2 plug-in for creating wizards (action flows).
+A Struts2 plugin for creating wizards (action flows).
 
 ## Features Overview
 
@@ -38,7 +38,7 @@ If you are using Maven, add this to your project POM:
 
 ## Example Usage
 
-1. Install it by adding this plug-in dependency to your POM or by copying jar into /WEB-INF/lib directory.
+1. Install it by adding this plugin dependency to your POM or by copying jar into /WEB-INF/lib directory.
 2. Make your action package extend `actionflow-default` package.
 3. Add `<param name="actionFlowStep">` parameters to actions you want to include in action flows. (NOTE: the action must have an input result!)
 4. Use `next` and `prev` actions in JSP to move between wizard steps.

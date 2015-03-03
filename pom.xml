@@ -64,7 +64,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <struts2.version>2.3.16.3</struts2.version>
+        <java.version>1.6</java.version>
+        <struts2.version>2.3.20</struts2.version>
         <scm.url>scm:git:git@github.com:aleksandr-m/struts2-actionflow.git</scm.url>
         <url>https://github.com/aleksandr-m/struts2-actionflow</url>
     </properties>
@@ -83,15 +84,15 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.2</version>
                     <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
                         <encoding>${project.build.sourceEncoding}</encoding>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>com.amashchenko.maven.plugin</groupId>
                     <artifactId>gitflow-maven-plugin</artifactId>
-                    <version>1.0.6</version>
+                    <version>1.0.8</version>
                     <configuration>
                        <installProject>true</installProject>
                        <gitFlowConfig>
