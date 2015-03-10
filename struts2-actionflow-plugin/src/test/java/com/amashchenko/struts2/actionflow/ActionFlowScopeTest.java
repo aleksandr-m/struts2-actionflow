@@ -48,13 +48,52 @@ public class ActionFlowScopeTest extends
      *             When something goes wrong.
      */
     @Test
-    public void testGettingFromScope() throws Exception {
+    public void testGettingFromScopeInViewAction() throws Exception {
         executeAction("/correctFlow/correctFlow");
         initServletMockObjects();
 
         final String value = "phoneFromFlowScope";
 
         ActionProxy ap = getActionProxy("/correctFlow/savePhone-2View");
+
+        Assert.assertNotNull(ap);
+        Assert.assertNotNull(ap.getAction());
+        Assert.assertTrue(ap.getAction() instanceof MockActionFlowAction);
+        Assert.assertTrue(MockActionFlowAction.class
+                .isAnnotationPresent(ActionFlowScope.class));
+
+        MockActionFlowAction action = (MockActionFlowAction) ap.getAction();
+
+        Map<String, Object> sessionMap = new HashMap<String, Object>();
+        Map<String, Object> scopeMap = new HashMap<String, Object>();
+
+        // key for 'phone' field
+        final String key = MockActionFlowAction.mockPropertyDescriptorPhone()
+                .getReadMethod().toString();
+
+        scopeMap.put(key, value);
+        sessionMap.put(TestConstants.FLOW_SCOPE_KEY, scopeMap);
+        ap.getInvocation().getInvocationContext().setSession(sessionMap);
+
+        ap.execute();
+
+        Assert.assertEquals(value, action.getPhone());
+    }
+
+    /**
+     * Tests getting values from scope.
+     * 
+     * @throws Exception
+     *             When something goes wrong.
+     */
+    @Test
+    public void testGettingFromScopeInFlowAction() throws Exception {
+        executeAction("/correctFlow/correctFlow");
+        initServletMockObjects();
+
+        final String value = "phoneFromFlowScope";
+
+        ActionProxy ap = getActionProxy("/correctFlow/saveEmail-3");
 
         Assert.assertNotNull(ap);
         Assert.assertNotNull(ap.getAction());

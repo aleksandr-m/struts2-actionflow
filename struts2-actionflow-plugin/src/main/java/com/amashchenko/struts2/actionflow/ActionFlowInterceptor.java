@@ -238,7 +238,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         }
 
         // scope
-        if (flowViewAction) {
+        if (flowAction || flowViewAction) {
             handleFlowScope(invocation.getAction(), session, true);
         }
 
