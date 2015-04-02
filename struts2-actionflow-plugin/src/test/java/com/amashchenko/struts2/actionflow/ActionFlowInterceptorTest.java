@@ -55,6 +55,8 @@ public class ActionFlowInterceptorTest {
                 "HIGHEST_CURRENT_ACTION_INDEX");
         session.put(TestConstants.SKIP_ACTIONS, "SKIP_ACTIONS");
 
+        session.put(TestConstants.OVERRIDE_ACTION_NAME, "OVERRIDE_ACTION_NAME");
+
         // execute clearSession method
         actionFlowInterceptor.clearSession(session);
 
@@ -63,6 +65,7 @@ public class ActionFlowInterceptorTest {
         Assert.assertNull(session
                 .get(TestConstants.HIGHEST_CURRENT_ACTION_INDEX));
         Assert.assertNull(session.get(TestConstants.SKIP_ACTIONS));
+        Assert.assertNull(session.get(TestConstants.OVERRIDE_ACTION_NAME));
     }
 
     /**

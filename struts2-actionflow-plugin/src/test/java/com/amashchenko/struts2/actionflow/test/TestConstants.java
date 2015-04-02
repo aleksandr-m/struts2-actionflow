@@ -39,4 +39,6 @@ public class TestConstants {
             + HIGHEST_CURRENT_ACTION_INDEX + "']";
 
     public static final String SKIP_ACTIONS = "actionFlowSkipActionsMap";
+
+    public static final String OVERRIDE_ACTION_NAME = "actionFlowOverrideActionName";
 }
