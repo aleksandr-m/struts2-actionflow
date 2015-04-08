@@ -169,7 +169,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     private Map<String, ActionFlowStepConfig> flowMap;
 
     /** Holds action flow steps data. */
-    private ActionFlowStepsData flowStepsData;
+    private TreeMap<Integer, String> steps;
 
     /** Action flow configuration builder. */
     @Inject
@@ -226,10 +226,9 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         // action flow steps aware
         if (invocation.getAction() instanceof ActionFlowStepsAware) {
-            flowStepsData.setStepIndex(stepCount);
-
             ((ActionFlowStepsAware) invocation.getAction())
-                    .setActionFlowSteps(flowStepsData);
+                    .setActionFlowSteps(new ActionFlowStepsData(steps,
+                            stepCount));
         }
 
         // scope
@@ -470,13 +469,12 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         // create action flow steps data
         if (flowMap != null) {
-            TreeMap<Integer, String> m = new TreeMap<Integer, String>();
+            steps = new TreeMap<Integer, String>();
             for (ActionFlowStepConfig cfg : flowMap.values()) {
                 if (cfg.getIndex() < flowMap.size() - 1) {
-                    m.put(cfg.getIndex() + 1, cfg.getNextAction());
+                    steps.put(cfg.getIndex() + 1, cfg.getNextAction());
                 }
             }
-            flowStepsData = new ActionFlowStepsData(m);
         }
     }
 
