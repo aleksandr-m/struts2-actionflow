@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 Aleksandr Mashchenko.
+ * Copyright 2013-2015 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,6 +128,9 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     /** Key for holding in session map of skip actions. */
     private static final String SKIP_ACTIONS = "actionFlowSkipActionsMap";
 
+    /** Key for holding in session overridden action name. */
+    private static final String OVERRIDE_ACTION_NAME = "actionFlowOverrideActionName";
+
     /** Default next action name. */
     private static final String DEFAULT_NEXT_ACTION_NAME = "next";
     /** Default previous action name. */
@@ -166,22 +169,17 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     private Map<String, ActionFlowStepConfig> flowMap;
 
     /** Holds action flow steps data. */
-    private ActionFlowStepsData flowStepsData;
+    private TreeMap<Integer, String> steps;
 
     /** Action flow configuration builder. */
     @Inject
     private ActionFlowConfigBuilder flowConfigBuilder;
 
-    /** Current action name retrieved from invocation context. */
-    private String actionName;
-    /** Index of the current action from the flowMap. */
-    private int indexCurrent;
-
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
-        actionName = invocation.getInvocationContext().getName();
+        final String actionName = invocation.getInvocationContext().getName();
 
         // initialize action flow configuration
         if (flowMap == null) {
@@ -189,22 +187,20 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                     .getPackageName());
         }
 
-        indexCurrent = -1;
         Integer stepCount = 1;
 
-        boolean flowAction = false;
-        boolean lastFlowAction = false;
+        final boolean flowAction;
+        final boolean lastFlowAction;
         if (flowMap.containsKey(actionName)) {
             flowAction = true;
 
-            indexCurrent = flowMap.get(actionName).getIndex();
-
             // this is needed when input result is returned
-            stepCount = indexCurrent;
+            stepCount = flowMap.get(actionName).getIndex();
 
-            if (flowMap.get(actionName).getNextAction() == null) {
-                lastFlowAction = true;
-            }
+            lastFlowAction = flowMap.get(actionName).getNextAction() == null;
+        } else {
+            flowAction = false;
+            lastFlowAction = false;
         }
 
         boolean flowViewAction = false;
@@ -230,14 +226,13 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         // action flow steps aware
         if (invocation.getAction() instanceof ActionFlowStepsAware) {
-            flowStepsData.setStepIndex(stepCount);
-
             ((ActionFlowStepsAware) invocation.getAction())
-                    .setActionFlowSteps(flowStepsData);
+                    .setActionFlowSteps(new ActionFlowStepsData(steps,
+                            stepCount));
         }
 
         // scope
-        if (flowViewAction) {
+        if (flowAction || flowViewAction) {
             handleFlowScope(invocation.getAction(), session, true);
         }
 
@@ -308,8 +303,10 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         }
 
         // force order of flow actions
-        if (forceFlowStepsOrder && flowAction
-                && (highestCurrentIndex.intValue() + 1) < indexCurrent) {
+        if (forceFlowStepsOrder
+                && flowAction
+                && (highestCurrentIndex.intValue() + 1) < flowMap.get(
+                        actionName).getIndex()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("The forceFlowStepsOrder parameter is set to true. The '"
                         + actionName
@@ -364,12 +361,15 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
             session.put(PREVIOUS_FLOW_ACTION, prevAction);
         }
 
-        // execute global view result on not last flow action
-        if (flowAction && nextAction.equals(actionName) && !lastFlowAction) {
+        // add pre-result listener on correct flow action
+        if (flowAction && nextAction.equals(actionName)) {
             invocation.addPreResultListener(new PreResultListener() {
                 public void beforeResult(ActionInvocation invocation,
                         String resultCode) {
                     if (Action.SUCCESS.equals(resultCode)) {
+                        Map<String, Object> session = invocation
+                                .getInvocationContext().getSession();
+
                         // action flow aware
                         String nextFromAction = null;
                         if (invocation.getAction() instanceof ActionFlowAware) {
@@ -386,12 +386,9 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                         }
 
                         Map<String, String> skipMap = null;
-                        if (invocation.getInvocationContext().getSession()
-                                .containsKey(SKIP_ACTIONS)
-                                && invocation.getInvocationContext()
-                                        .getSession().get(SKIP_ACTIONS) instanceof Map) {
-                            skipMap = (Map<String, String>) invocation
-                                    .getInvocationContext().getSession()
+                        if (session.containsKey(SKIP_ACTIONS)
+                                && session.get(SKIP_ACTIONS) instanceof Map) {
+                            skipMap = (Map<String, String>) session
                                     .get(SKIP_ACTIONS);
                         } else {
                             skipMap = new HashMap<String, String>();
@@ -399,33 +396,38 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
                         if (nextFromAction != null) {
                             skipMap.put(nextFromAction, actionName);
 
-                            // override actionName
-                            actionName = flowMap.get(nextFromAction)
+                            String overriddenName = flowMap.get(nextFromAction)
                                     .getPrevAction();
-                            // override indexCurrent
-                            indexCurrent = flowMap.get(actionName).getIndex();
-                        } else {
+
+                            // override actionName
+                            session.put(OVERRIDE_ACTION_NAME, overriddenName);
+                        } else if (!lastFlowAction) {
+                            // get next action if it isn't the last flow action
+                            // and not overridden from ActionFlowAware
                             nextFromAction = flowMap.get(actionName)
                                     .getNextAction();
 
                             skipMap.remove(nextFromAction);
                         }
 
-                        invocation.getInvocationContext().getSession()
-                                .put(SKIP_ACTIONS, skipMap);
+                        session.put(SKIP_ACTIONS, skipMap);
 
-                        invocation
-                                .getInvocationContext()
-                                .getValueStack()
-                                .set(VIEW_ACTION_PARAM,
-                                        nextFromAction + viewActionPostfix);
-                        invocation.setResultCode(GLOBAL_VIEW_RESULT);
+                        // execute global view result on not last flow action or
+                        // if next action is overridden from ActionFlowAware
+                        if (!lastFlowAction || nextFromAction != null) {
+                            invocation
+                                    .getInvocationContext()
+                                    .getValueStack()
+                                    .set(VIEW_ACTION_PARAM,
+                                            nextFromAction + viewActionPostfix);
+                            invocation.setResultCode(GLOBAL_VIEW_RESULT);
+                        }
                     }
                 }
             });
         }
 
-        String result = invocation.invoke();
+        final String result = invocation.invoke();
 
         // scope
         if (flowAction) {
@@ -433,11 +435,21 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         }
 
         if (GLOBAL_VIEW_RESULT.equals(result) && flowAction) {
-            session.put(PREVIOUS_FLOW_ACTION, actionName);
+            // check if action name is overridden in ActionFlowAware
+            // remove override action name from session
+            String actionNameOverridden = (String) session
+                    .remove(OVERRIDE_ACTION_NAME);
+
+            if (actionNameOverridden == null) {
+                actionNameOverridden = actionName;
+            }
+
+            session.put(PREVIOUS_FLOW_ACTION, actionNameOverridden);
 
             // set highest current action index on a view result
-            if (indexCurrent > highestCurrentIndex) {
-                session.put(HIGHEST_CURRENT_ACTION_INDEX, indexCurrent);
+            if (flowMap.get(actionNameOverridden).getIndex() > highestCurrentIndex) {
+                session.put(HIGHEST_CURRENT_ACTION_INDEX,
+                        flowMap.get(actionNameOverridden).getIndex());
             }
         }
 
@@ -457,13 +469,12 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
 
         // create action flow steps data
         if (flowMap != null) {
-            TreeMap<Integer, String> m = new TreeMap<Integer, String>();
+            steps = new TreeMap<Integer, String>();
             for (ActionFlowStepConfig cfg : flowMap.values()) {
                 if (cfg.getIndex() < flowMap.size() - 1) {
-                    m.put(cfg.getIndex() + 1, cfg.getNextAction());
+                    steps.put(cfg.getIndex() + 1, cfg.getNextAction());
                 }
             }
-            flowStepsData = new ActionFlowStepsData(m);
         }
     }
 
@@ -474,6 +485,8 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         session.put(HIGHEST_CURRENT_ACTION_INDEX, null);
 
         session.put(SKIP_ACTIONS, null);
+
+        session.put(OVERRIDE_ACTION_NAME, null);
     }
 
     /**

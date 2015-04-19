@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 Aleksandr Mashchenko.
+ * Copyright 2013-2015 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,15 +29,19 @@ public class ActionFlowStepsData {
     private final TreeMap<Integer, String> steps;
 
     /** Currently active step index. */
-    private Integer stepIndex;
+    private final Integer stepIndex;
 
     /**
      * 
      * @param steps
      *            map of steps.
+     * @param stepIndex
+     *            active step index.
      */
-    public ActionFlowStepsData(final TreeMap<Integer, String> steps) {
+    public ActionFlowStepsData(final TreeMap<Integer, String> steps,
+            final Integer stepIndex) {
         this.steps = steps;
+        this.stepIndex = stepIndex;
     }
 
     /**
@@ -45,14 +49,6 @@ public class ActionFlowStepsData {
      */
     public Integer getStepIndex() {
         return stepIndex;
-    }
-
-    /**
-     * @param stepIndex
-     *            the stepIndex to set
-     */
-    public void setStepIndex(Integer stepIndex) {
-        this.stepIndex = stepIndex;
     }
 
     /**

@@ -1,6 +1,6 @@
-# Struts2 ActionFlow Plug-in
+# Struts2 ActionFlow Plugin
 
-A Struts2 plug-in for creating wizards (action flows).
+A Struts2 plugin for creating wizards (action flows).
 
 ## Features Overview
 
@@ -14,7 +14,7 @@ actions
 
 Showcase application could be downloaded from the Maven Central Repository.
 
-[Download struts2-actionflow-showcase](http://search.maven.org/remotecontent?filepath=com/amashchenko/struts2/actionflow/struts2-actionflow-showcase/2.3.4/struts2-actionflow-showcase-2.3.4.war)
+[Download struts2-actionflow-showcase](http://search.maven.org/remotecontent?filepath=com/amashchenko/struts2/actionflow/struts2-actionflow-showcase/2.4.0/struts2-actionflow-showcase-2.4.0.war)
 
 ## Changelog
 
@@ -40,14 +40,14 @@ If you are using Maven, add this to your project POM:
         <dependency>
             <groupId>com.amashchenko.struts2.actionflow</groupId>
             <artifactId>struts2-actionflow-plugin</artifactId>
-            <version>2.3.4</version>
+            <version>2.4.0</version>
         </dependency>
         ...
     </dependencies>
 
 ## Example Usage
 
-1. Install it by adding this plug-in dependency to your POM or by copying jar into /WEB-INF/lib directory.
+1. Install it by adding this plugin dependency to your POM or by copying jar into /WEB-INF/lib directory.
 2. Make your action package extend `actionflow-default` package.
 3. Add `<param name="actionFlowStep">` parameters to actions you want to include in action flows. (NOTE: the action must have an input result!)
 4. Use `next` and `prev` actions in JSP to move between wizard steps.
@@ -168,7 +168,7 @@ As a result of that you can skip actions based on user input and current action 
 
 ## License
 
-    Copyright 2013-2014 Aleksandr Mashchenko.
+    Copyright 2013-2015 Aleksandr Mashchenko.
  
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

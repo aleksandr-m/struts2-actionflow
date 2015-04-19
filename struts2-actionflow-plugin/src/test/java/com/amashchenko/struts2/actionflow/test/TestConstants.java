@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 Aleksandr Mashchenko.
+ * Copyright 2013-2015 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,4 +39,6 @@ public class TestConstants {
             + HIGHEST_CURRENT_ACTION_INDEX + "']";
 
     public static final String SKIP_ACTIONS = "actionFlowSkipActionsMap";
+
+    public static final String OVERRIDE_ACTION_NAME = "actionFlowOverrideActionName";
 }

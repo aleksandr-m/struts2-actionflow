@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.4.0
+
+* Improved action flow scope feature
+
+* Fixed possible thread safe issues in interceptor
+
+* Bugfixes and improvements
+
 ## v2.3.4
 
 * Making action flow scope feature work for inherited action classes

@@ -1,6 +1,6 @@
 <!-- 
 /*
- * Copyright 2013-2014 Aleksandr Mashchenko.
+ * Copyright 2013-2015 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@
     <parent>
         <groupId>com.amashchenko.struts2.actionflow</groupId>
         <artifactId>struts2-actionflow-parent</artifactId>
-        <version>2.3.4</version>
+        <version>2.4.0</version>
     </parent>
     <artifactId>struts2-actionflow-plugin</artifactId>
     <packaging>jar</packaging>
     <name>struts2-actionflow-plugin</name>
  
-    <description>Struts2 ActionFlow Plug-in. A Struts2 plug-in for creating wizards (action flows).</description>
+    <description>Struts2 ActionFlow Plugin. A Struts2 plugin for creating wizards (action flows).</description>
  
     <inceptionYear>2013</inceptionYear>
 
