@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.struts2.StrutsJUnit4TestCase;
-import org.apache.struts2.dispatcher.ServletDispatcherResult;
+import org.apache.struts2.result.ServletDispatcherResult;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.struts2.StrutsJUnit4TestCase;
-import org.apache.struts2.dispatcher.ServletActionRedirectResult;
+import org.apache.struts2.result.ServletActionRedirectResult;
 import org.junit.Assert;
 import org.junit.Test;
 

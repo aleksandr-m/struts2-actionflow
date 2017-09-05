@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.amashchenko.struts2.actionflow.entities.ActionFlowStepConfig;
 import com.amashchenko.struts2.actionflow.entities.ActionFlowStepsData;
 import com.opensymphony.xwork2.Action;
@@ -29,8 +32,6 @@ import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.inject.Inject;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import com.opensymphony.xwork2.interceptor.PreResultListener;
-import com.opensymphony.xwork2.util.logging.Logger;
-import com.opensymphony.xwork2.util.logging.LoggerFactory;
 
 /**
  * <!-- START SNIPPET: description -->
@@ -118,7 +119,7 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
     private static final long serialVersionUID = -8931708101962468929L;
 
     /** Logger. */
-    public static final Logger LOG = LoggerFactory
+    public static final Logger LOG = LogManager
             .getLogger(ActionFlowInterceptor.class);
 
     /** Key for holding in session the name of the previous flow action. */
@@ -250,12 +251,11 @@ public class ActionFlowInterceptor extends AbstractInterceptor {
         }
 
         // handling of back/forward buttons
-        Object[] stepParam = (Object[]) invocation.getInvocationContext()
-                .getParameters().get(stepParameterName);
-        boolean overriddenWithStep = false;
-        if (stepParam != null && stepParam.length > 0) {
-            String step = "" + stepParam[0];
+        String step = invocation.getInvocationContext().getParameters()
+                .get(stepParameterName).getValue();
 
+        boolean overriddenWithStep = false;
+        if (step != null) {
             if (step.isEmpty()) {
                 step = FIRST_FLOW_ACTION_NAME;
             }

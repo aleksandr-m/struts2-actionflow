@@ -15,10 +15,18 @@
  */
 package com.amashchenko.struts2.actionflow;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.struts2.StrutsJUnit4TestCase;
+import org.apache.struts2.dispatcher.Dispatcher;
+import org.apache.struts2.dispatcher.mapper.ActionMapping;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -39,6 +47,23 @@ public class ActionFlowScopeTest extends
     @Override
     protected String getConfigPath() {
         return "struts-plugin.xml, struts-test.xml";
+    }
+
+    @Override
+    protected String executeAction(String uri) throws ServletException,
+            UnsupportedEncodingException {
+        request.setRequestURI(uri);
+        ActionMapping mapping = getActionMapping(request);
+
+        assertNotNull(mapping);
+        Dispatcher.getInstance().serviceAction(request, response, mapping);
+
+        if (response.getStatus() != HttpServletResponse.SC_OK
+                && response.getStatus() != HttpServletResponse.SC_MOVED_TEMPORARILY)
+            throw new ServletException("Error code [" + response.getStatus()
+                    + "], Error: [" + response.getErrorMessage() + "]");
+
+        return response.getContentAsString();
     }
 
     /**

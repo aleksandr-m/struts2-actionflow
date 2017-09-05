@@ -30,7 +30,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.struts2.dispatcher.ServletActionRedirectResult;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.struts2.result.ServletActionRedirectResult;
 
 import com.amashchenko.struts2.actionflow.entities.ActionFlowStepConfig;
 import com.opensymphony.xwork2.Action;
@@ -42,8 +44,6 @@ import com.opensymphony.xwork2.config.entities.ActionConfig;
 import com.opensymphony.xwork2.config.entities.PackageConfig;
 import com.opensymphony.xwork2.config.entities.ResultConfig;
 import com.opensymphony.xwork2.inject.Inject;
-import com.opensymphony.xwork2.util.logging.Logger;
-import com.opensymphony.xwork2.util.logging.LoggerFactory;
 
 /**
  * Action flow configuration builder. Creates action flow configuration map.
@@ -54,7 +54,7 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
 public class ActionFlowConfigBuilder {
 
     /** Logger. */
-    public static final Logger LOG = LoggerFactory
+    public static final Logger LOG = LogManager
             .getLogger(ActionFlowConfigBuilder.class);
 
     /** Parameter indicating that this action belongs to action flow. */
